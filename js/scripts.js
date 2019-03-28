@@ -1,3 +1,12 @@
+/*
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+
+	You are currenlty need continue working on function interpretObject_e(obj){
+	the idea is it needs more features to parse information from the stuff into the array.  
+
+▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+*/
+
 
 /* do I need to check if it's an object? https://stackoverflow.com/questions/4186906/check-if-object-exists-in-javascript  
 if (typeof courseCatalog != "undefined") {
