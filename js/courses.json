@@ -1,0 +1,43 @@
+{ "catalog": {
+	"dept" : "ags",
+	"date" : "2019-2020 Fall",
+	"approval date" : "040119",
+	"courses": [ 
+		{	
+			"id":"POL3100",
+			"title":"Trends in American Thought and Theory",
+			"credits":"3",
+			"weeks":"5",
+			"desc":"This course considers American political thought as it influences the ongoing transformation of western political trends. Consideration will be given to the cultural, social, and economic influences that have shaped recent trends.",
+			"prerequisite_code":["POL2000","POL2100","POL2200"],
+			"corequisite":["POL2300"],
+			"fee":"",
+			"note":"",
+			"group":"POL" },
+		{
+			"id":"PSY4100",
+			"title":"Theories and Techniques of Individual Counseling",
+			"credits":"4",
+			"weeks":"6",
+			"desc":"This course is an introductory course for methods, techniques, and ethical considerations common to the counseling setting with individuals.  Specific interventions will be covered along with emphasis upon various theories of counseling.",
+			"prerequisite_code":[null],
+			"prerequisite_note":"any introductory psychology course",
+			"corequisite":[null],
+			"fee":"",
+			"note":"",
+			"group":"PSY" },
+		{
+			"id":"PSY4300",
+			"title":"Psychology Internship",
+			"credits":"3",
+			"weeks":"17",
+			"desc":"An internship provides the opportunity for students to gain valuable experience and expertise in applying learned concepts and theories in a workplace setting. This is a supervised experience of at least 150 hours performed in a Program Chair-approved professional environment representing a student’s discipline.",
+			"prerequisite_code":[null],
+			"prerequisite_note":": Junior standing in OCUOnline Plus and Program Chair approval of internship site prior to enrolling",
+			"corequisite":[null],
+			"fee":"",
+			"note":"",
+			"group":"PSY" },
+		]
+	}
+}
