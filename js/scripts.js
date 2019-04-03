@@ -28,14 +28,14 @@ function interpretPaste(){
  *	this step adds all "▐▐" (ALT+222) to anything that matches:
  *	^										-- starts at a new line
  *		[ ]{0,3}							-- a "space" from none upto 3 times
- *		([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
+ *		([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
  *		|									-- or                                   
- *		[A-Z]{3,4}[0-9]{3,4})    			-- the character set: ABC123 or ABCD1234 </Group#1>  
+ *		[A-Z]{2,4}[0-9]{3,4})    			-- the character set: AB123 or ABCD1234 </Group#1>  
  *	 
  */
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
-	var regex_a = /^[ ]{0,3}([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{3,4}[0-9]{3,4})/gm;
+	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4})/gm;
 	var result = string.replace(regex_a,'▐▐$1')
     document.getElementById("dump").innerHTML = result;
 }
@@ -58,15 +58,15 @@ function interpretPaste_b(){
  *	Starts buliding the document.className array
  *	^										-- starts at a new line
  *		[ ]{0,3}							-- a "space" from none upto 3 times
- *		([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
+ *		([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
  *		|									-- or                                   
- *		[A-Z]{3,4}[0-9]{3,4})    			-- the character set: ABC123 or ABCD1234 </Group#1>  
- *		(\w\d.,\-() ]*)						-- <Gropu#2> matches any Word or Digit or characters: ".,:-() " a greedy amount of times
+ *		[A-Z]{2,4}[0-9]{3,4})    			-- the character set: AB123 or ABCD1234 </Group#1>  
+ *		(\w\d.,\-() ]*)						-- <Gropu#2> matches any Word or Digit or characters: "’'`'.,:-/() " a greedy amount of times
  *		([\s])						`		-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
-	var regex_c = /^[ ]{0,3}([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{3,4}[0-9]{3,4})([\w\d.,:\-() ]*)([\s])/;
+	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4})([\w\d’'`.,:\-\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = '', className = '', matchGroups = [];
@@ -91,7 +91,6 @@ function interpretArray_c(){
 				thisCourse[className + "_error"].value = lastPart;
 				console.log(thisCourse[className + "_error"]);
 			}
-
 			thisCourse[className].id = className.trim();
 			thisCourse[className].titleFull = title.trim();
 			thisCourse[className] = interpretObject_e(interpretObject_d(thisCourse[className]));
@@ -142,26 +141,69 @@ function interpretObject_d(obj){
  * Processes the obj.value to extract:
  * - Format Description apart from:
  * - Notes/Prerequisite(s)/Recommendation(s) - in a raw format as to prepare for their own extraction
- * - Eliminate Return Characters from these
+ * - Eliminate any return Characters from these if they appear
+ * - Designed to separate from the description any "word or pattern" that separates the post-description
+ *   ^Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:|Recommendations: |Recommendations: |Recommendation: |Recommendations:|Recommendation:
+ *   ^\d\v -- looks for a digit at the beginning of the description (TRAD formatted descriptions)
+ *   Basically runs through every [OR] possibilty of Prerequistes: or Recommendations: to find the first real "break" in the description
  *
- *  ^Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:|Recommendations: |Recommendations: |Recommendation: |Recommendations:|Recommendation:
- *	^						-- starts at a new line
- *  Basically runs through every [OR] possibilty of Prerequistes: or Recommendations: to find the first real "break" in the description 
- */ 
+ *  Special for TRAD -- if the creditsValue is blank...we need to account for that and get it from TRAD Courses 
+ *  regex_e3: /^([a-zA-Z ’'`.,\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/
+ *  This regex is designed to research the description for a missing title-part that may exist becasue a return character has separated the title in TRAD Books
+ *  ^([a-zA-Z ’'`.,\-\/() ]{3,60})		-- at the start of the line the <Group#1> matches any letters or characters from 3-60 times
+ *  ([ \t]*)							-- <Group#2> contains an unlimited amount of spaces or tabs which will not be recorded
+ *  (\d)								-- <Group#3> matches the credits-digit which we will keep
+ *  ([\r\n])							-- <Group#4> matches the return character after this digit - which will not be recorded
+ *  ([\s\S]*)							-- <Group#5> matches any remaining charcter of anytype an unlimited amount of times
+ */
 function interpretObject_e(obj){
 	var regex_e = /^Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:|Recommendations: |Recommendations:|Recommendation: |Recommendation:/gm;
+	var regex_e2 = /^\d[\r\n]{1}/;
+	var regex_e3 = /^([a-zA-Z ’'`.,\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
+	var matchGroups = [];
 	obj.description = '';
 	obj.post_description = '';
+
 	obj.description = obj.value.replace(obj.id,'');
 	obj.description = obj.description.replace(obj.titleFull,'').trim();
 	obj.position = obj.description.search(regex_e);
+
+    // is it a TRAD Course - than creditsValue is blank?
+    // The credit value is most likely at the start of the description
+	if(obj.creditsValue === ""){
+		obj.creditsValue = obj.description.match(regex_e2);
+		if(obj.creditsValue !== null){
+			// found the credits value - the rest is the description
+			obj.creditsValue = obj.creditsValue[0].replace(/\v|\r|\n/gm,' ').trim();
+		} else {
+			// didn't find the credits value...maybe there was a return character in the title
+			// if so...must rebuild both Title & Description and finally set the credits value
+			matchGroups = obj.description.match(regex_e3);
+			if(matchGroups && matchGroups.length > 0){
+				// console.log(matchGroups);
+				// add the missing title text back to the title
+				obj.titleText = matchGroups[1] ? obj.titleFull + " " + matchGroups[1].trim() : obj.titleText;
+				// set the newly discovered creditsValue
+				obj.creditsValue = matchGroups[3] ? matchGroups[3].trim() : "";
+				// set the remaining descripion that doesn't contain the missing title portion or creditsValue
+				obj.description = matchGroups[5] ? matchGroups[5].trim() : obj.description ;
+			} else {
+				// IDK ... there is a problem
+				var error = {}
+				error[obj.id + "_error"] = obj.description;
+				document.catalogObj.courses.push(error);
+			}
+		}
+	}
+    
+	// Designed to catch the position of the first instance of Prerequisite or Recommendations -- need to change for trad to match more "split-words" between the description and the details
 	if(obj.position > 0){
 		obj.post_description = obj.description.substring(obj.position,obj.description.length);
 		obj.description = obj.description.substring(0,obj.position);
 	} else {
 		obj.description = obj.description.replace(/\v|\r|\n/gm,' ')
 	}
-	console.log(obj);
+
 	return obj;
 }
 
