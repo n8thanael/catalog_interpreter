@@ -168,6 +168,8 @@ function interpretObject_e(obj){
 	obj.description = obj.description.replace(obj.titleFull,'').trim();
 	obj.position = obj.description.search(regex_e);
 
+	detectDescriptionPieces(obj.description);
+
     // is it a TRAD Course - than creditsValue is blank?
     // The credit value is most likely at the start of the description
 	if(obj.creditsValue === ""){
@@ -201,10 +203,55 @@ function interpretObject_e(obj){
 		obj.post_description = obj.description.substring(obj.position,obj.description.length);
 		obj.description = obj.description.substring(0,obj.position);
 	} else {
-		obj.description = obj.description.replace(/\v|\r|\n/gm,' ')
+		obj.description = obj.description.replace(/\v|\r|\n|\t/gm,' ');
 	}
 
 	return obj;
+}
+
+/*
+ * receives a string (preferbly the the catalog obj.description
+ * -> obj.description should be well-formed relative to the progress of this program with the title not present
+ * creates and array of words and attempts to detect matches of keywords that let us know if the description has ended
+ * 
+ * breaks out those keywords and their pieces and returns as a new object
+ */
+function detectDescriptionPieces(desc){
+	// elminated all return characters
+	desc = desc.replace(/\v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' ');
+	descArray = desc.split(" ");
+	var toggle = '';
+	outputObj = {};
+	outputObj.desc = '';
+	outputObj.related = [];
+	outputObj.prerequisites = '';
+	outputObj.corequisites = '';
+	outputObj.offered = '';
+	outputObj.passFail = '';
+	outputObj.fee = '';
+	outputObj.repeatable = '';
+
+	descArray.forEach(function(value){
+		if(toggle == ""){
+			if(checkAgainstArray(value)){
+				toggle = value;
+			}
+		}
+	});
+}
+
+
+/*
+ * Checks the value against a list of possible strings
+ */  
+function checkAgainstArray(value){
+	value = value.toLowerCase();
+	var array = ['prerequisite:','prerequisites:','corequisites:','corequisite:','offered:','fee:','pass/fail','repeatable'];
+	var result = false;
+	for(var i = 0; i < array.length; i++ ){
+		result = (value == array[i]) ? true : false;
+	}
+	return result;
 }
 
 
