@@ -2,7 +2,9 @@
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
- Still working in "E" filling out he arrays that are used to power the website.
+Running file through the interpreter to find errors... shouldn't be long until I switch
+CM426P -- fixed it
+CD313 -- Amphersan appears in title
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -58,17 +60,17 @@ function interpretPaste_b(){
 
 /*
  *	Starts buliding the document.className array
- *	^										-- starts at a new line
- *		[ ]{0,3}							-- a "space" from none upto 3 times
- *		([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
- *		|									-- or                                   
- *		[A-Z]{2,4}[0-9]{3,4})    			-- the character set: AB123 or ABCD1234 </Group#1>  
- *		(\w\d.,\-() ]*)						-- <Gropu#2> matches any Word or Digit or characters: "’'`'.,:-/() " a greedy amount of times
- *		([\s])						`		-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
+ *	^												-- starts at a new line
+ *		[ ]{0,3}									-- a "space" from none upto 3 times
+ *		([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC or CM426P
+ *		|											-- or                                   
+ *		[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})    			-- the character set: AB123 or CM426P or ABCD1234 </Group#1>  
+ *		(\w\d.,\-() ]*)								-- <Gropu#2> matches any Word or Digit or characters: "’'`'.,:-/() " a greedy amount of times
+ *		([\s])										-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
-	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4})([\w\d’'`.,:\-\/() ]*)([\s])/;
+	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([\w\d’'`.,:\-\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
@@ -158,15 +160,14 @@ function interpretObject_d(obj){
  *  ([\s\S]*)							-- <Group#5> matches any remaining charcter of anytype an unlimited amount of times
  */
 function interpretObject_e(obj){
-	var regex_e = /^Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:|Recommendations: |Recommendations:|Recommendation: |Recommendation:/gm;
 	var regex_e2 = /^\d[\r\n]{1}/;
-	var regex_e3 = /^([a-zA-Z ’'`.,\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
+	var regex_e3 = /^([a-zA-Z ’'`.,&\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
 	var matchGroups = [];
 	obj.description = "";
 
 	obj.description = obj.value.replace(obj.id,'');
 	obj.description = obj.description.replace(obj.titleFull,'').trim();
-	obj.position = obj.description.search(regex_e);
+	//obj.position = obj.description.search(regex_e);
 
     // is it a TRAD Course - than creditsValue is blank?
     // The credit value is most likely at the start of the description
@@ -192,6 +193,7 @@ function interpretObject_e(obj){
 				var error = {}
 				error[obj.id + "_error"] = obj.description;
 				document.catalogObj.courses.push(error);
+
 			}
 		}
 	}
@@ -210,7 +212,7 @@ function interpretObject_e(obj){
  */
 function setDescriptionPieces(obj){
 	// elminated all return characters and other problematic spacing
-	regex_code = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}/;
+	regex_code = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/;
 	var desc = obj.description.replace(/\v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' ');
 	// create an array of all single words separated by (space)
 	descArray = desc.split(" ");
