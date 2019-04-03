@@ -30,12 +30,14 @@ function interpretPaste(){
  *		[ ]{0,3}							-- a "space" from none upto 3 times
  *		([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
  *		|									-- or                                   
- *		[A-Z]{2,4}[0-9]{3,4})    			-- the character set: AB123 or ABCD1234 </Group#1>  
+ *		[A-Z]{2,4}[0-9]{3,4})    			-- the character set: AB123 or ABCD1234 
+ *		|									-- or    
+ *		[A-Z]{2} \| [A-Z ]{2,20}[\r\n]		-- matches: "CD | CHEMICAL DEPENDENCY" or "CE | CHRISTIAN EDUCATION"   </Group#1>
  *	 
  */
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
-	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4})/gm;
+	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
 	var result = string.replace(regex_a,'▐▐$1')
     document.getElementById("dump").innerHTML = result;
 }
@@ -79,7 +81,7 @@ function interpretArray_c(){
 			// console.log(className);
 			thisCourse[className] = {};
 			thisCourse[className].value = value.trim();
-			// it's possible the is a missing course number
+			// it's possible there is a missing course number
 			// if this is the case, there may likely be a "double" return character
 			// this would signify that that should be the true end of the description... 
 			if(thisCourse[className].value.search(/[\v\r\n]{2}/gm) != -1){
@@ -89,7 +91,6 @@ function interpretArray_c(){
 				thisCourse[className].value = firstPart;
 				thisCourse[className + "_error"] = {};
 				thisCourse[className + "_error"].value = lastPart;
-				console.log(thisCourse[className + "_error"]);
 			}
 			thisCourse[className].id = className.trim();
 			thisCourse[className].titleFull = title.trim();
