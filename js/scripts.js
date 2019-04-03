@@ -69,7 +69,7 @@ function interpretArray_c(){
 	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4})([\w\d’'`.,:\-\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
-		let title = '', className = '', matchGroups = [];
+		let title = "", className = "", matchGroups = [];
 		var value = document.catalogObj.rawArray[i];
 		matchGroups = value.match(regex_c);
 		//console.log(matchGroups);
@@ -118,11 +118,11 @@ function interpretObject_d(obj){
 	var regex_d = /^([\w\d.,:\- ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
 	var matchGroups = [];
 	var pos;
-	obj.titleText = '';
-	obj.weeksText = '';
-	obj.weeksValue = '';
-	obj.creditsText = '';
-	obj.creditsValue = '';
+	obj.titleText = "";
+	obj.weeksText = "";
+	obj.weeksValue = "";
+	obj.creditsText = "";
+	obj.creditsValue = "";
 	//console.log(obj);
 	matchGroups = obj.titleFull.match(regex_d);
 	if(matchGroups && matchGroups.length > 0){
@@ -161,14 +161,11 @@ function interpretObject_e(obj){
 	var regex_e2 = /^\d[\r\n]{1}/;
 	var regex_e3 = /^([a-zA-Z ’'`.,\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
 	var matchGroups = [];
-	obj.description = '';
-	obj.post_description = '';
+	obj.description = "";
 
 	obj.description = obj.value.replace(obj.id,'');
 	obj.description = obj.description.replace(obj.titleFull,'').trim();
 	obj.position = obj.description.search(regex_e);
-
-	detectDescriptionPieces(obj.description);
 
     // is it a TRAD Course - than creditsValue is blank?
     // The credit value is most likely at the start of the description
@@ -197,52 +194,107 @@ function interpretObject_e(obj){
 			}
 		}
 	}
-    
-	// Designed to catch the position of the first instance of Prerequisite or Recommendations -- need to change for trad to match more "split-words" between the description and the details
-	if(obj.position > 0){
-		obj.post_description = obj.description.substring(obj.position,obj.description.length);
-		obj.description = obj.description.substring(0,obj.position);
-	} else {
-		obj.description = obj.description.replace(/\v|\r|\n|\t/gm,' ');
-	}
 
+	// Split up the description into proper pieces
+	obj = setDescriptionPieces(obj);
 	return obj;
 }
 
 /*
- * receives a string (preferbly the the catalog obj.description
+ * receives catalog obj
  * -> obj.description should be well-formed relative to the progress of this program with the title not present
  * creates and array of words and attempts to detect matches of keywords that let us know if the description has ended
- * 
  * breaks out those keywords and their pieces and returns as a new object
+ * \v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' '  --> Replaces any:  return, | letter(space): | (space)x2 or more with a single space
  */
-function detectDescriptionPieces(desc){
-	// elminated all return characters
-	desc = desc.replace(/\v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' ');
+function setDescriptionPieces(obj){
+	// elminated all return characters and other problematic spacing
+	regex_code = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}/;
+	var desc = obj.description.replace(/\v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' ');
+	// create an array of all single words separated by (space)
 	descArray = desc.split(" ");
-	var toggle = '';
-	outputObj = {};
-	outputObj.desc = '';
-	outputObj.related = [];
-	outputObj.prerequisites = '';
-	outputObj.corequisites = '';
-	outputObj.offered = '';
-	outputObj.passFail = '';
-	outputObj.fee = '';
-	outputObj.repeatable = '';
+	// toggle is capable of later applying a case/system that watched for key words and acted differently based on those... see notes below
+	var toggle = "";
+	var result = null;
+	var match = "";
+	obj.descPre = "";
+	obj.descPost = "";
+	obj.preCodes = [];
+	obj.coCodes = [];
+	obj.errCodes = [];
 
 	descArray.forEach(function(value){
+		var valueClean = value.replace(/[:;,\/ ]/,"");
+		if((typeof valueClean) === "string"){
+			valueClean = valueClean.toLowerCase();
+		}
+
+
+		// singular cases of certain words must be forced to plural
+		switch(valueClean){
+			case "prerequisite":
+				valueClean = "prerequisites";
+				break;
+			case "corequisite":
+				valueClean = "corequisites";
+				break;
+		}
+
 		if(toggle == ""){
 			if(checkAgainstArray(value)){
-				toggle = value;
+				// TRUE - it's in the list of possible course-properties that end the description
+				// since the toggle is placed to the "clean value" - it would be possible to make a more complex system
+				toggle = valueClean;
+				obj.descPost += '\r\n' + value + " ";
+			} else {
+				// no results match push to pre description
+				obj.descPre += value + " ";
+			}
+		// toggle has a value
+		} else {
+			// if we've run into another word to toggle recording actions, change toggle to setup data output on the next run
+			if(checkAgainstArray(value)){
+				toggle = valueClean;
+				obj.descPost += '\r\n' + value + " ";
+			} else {
+				// It would be possible here at a later time to create a complex toggle/based assignment system
+				// This would to push unique values to separate fields for re-construction in to the array system
+				// As an example the folloing based on 'toggle' with push the course code to the appropriate output object array
+
+				// are we dealing with a course code?
+				if((typeof valueClean) === "string"){
+					valueClean = valueClean.toUpperCase();
+					match = valueClean.match(regex_code);
+					if(match){
+						result = valueClean.match(regex_code)[0];
+						if(result !== null){
+							switch(toggle){
+								case "prerequisites" :
+									obj.preCodes.push(result);
+									break;
+								case "corequisites" :
+									obj.coCodes.push(result);
+									break;
+								default:
+									obj.errCodes.push(result);
+							}
+						}
+					}
+				}
+			obj.descPost += value + " ";
 			}
 		}
 	});
+
+	obj.descPre = obj.descPre.trim();
+	obj.descPost = obj.descPost.trim();
+	return obj;
 }
 
 
 /*
- * Checks the value against a list of possible strings
+ * Checks the value against a list of possible course-properties that end the description
+ * returns: true|false
  */  
 function checkAgainstArray(value){
 	value = value.toLowerCase();
@@ -250,8 +302,10 @@ function checkAgainstArray(value){
 	var result = false;
 	for(var i = 0; i < array.length; i++ ){
 		result = (value == array[i]) ? true : false;
+		if(result){
+			return result;
+		}
 	}
-	return result;
 }
 
 
@@ -283,7 +337,7 @@ function loadClasses(obj){
  * pretty-prints the JSON to the screen at #dump 
  */ 
 function prettyPrintJson(obj){
-	let output = '';
+	let output = "";
 	Object.getOwnPropertyNames(obj).forEach(key => {
 		let value = obj[key];
 		if(key == "courses"){
@@ -305,49 +359,3 @@ function prettyPrintJson(obj){
 
 	document.getElementById("dump").innerHTML = course + ": <br>" + output;
 }
-
-/* discover 
-
-/*
-sofar:
-^(|\s)([A-Z]{3,4}[0-9]{3,4}|[A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3})\s{0,1}([a-zA-z\d\s\(\)]{1,}([^\n]*))
-
-Works...
-^(|\s)([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{3,4}[0-9]{3,4})\s{0,1}([a-zA-z\d (\)]{1,50}[\r\n]{0,1})
-
-Sofar.... trying to limit
-^(|\s)([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{3,4}[0-9]{3,4})\s{0,1}([a-zA-z\d() ]{1,50})([\s]{1,50})([\w\W\D\s]*)(?=( [A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}| [A-Z]{3,4}[0-9]{3,4}))
-
-
-Kinda works ... forward look-ahead does eliminate the next tone... but also doesn't catch it :-( 
-^(|\s)([A-Z]{3,4}[0-9]{3,4}-[A-Z]{0,3}|[A-Z]{3,4}[0-9]{3,4})\s{0,1}([a-zA-z\d() ]{0,50})([\s]{1,50})(.*)(?=(|\s)([A-Z]{3,4}[0-9]{3,4}-[A-Z]{0,3}|[A-Z]{3,4}[0-9]{3,4}))
-
-Close but doesn't capture return spaces that shouldn't be there...
-^(|\s)([A-Z]{3,4}[0-9]{3,4}-[A-Z]{0,3}|[A-Z]{3,4}[0-9]{3,4})\s{0,1}([a-zA-z\d() ]{0,50})([\s]{1,50})(.*)(?=( |\s))
-
-Left off with this one
-\s([A-Z]{3,4}[0-9]{3,4}-[A-Z]{0,3}|[A-Z]{3,4}[0-9]{3,4})\s{0,1}([a-zA-z\d() ]{0,99})([\s]{1,50})
-Basically I need to find the end of the block with something and capture everything else until the next "Hit"
-
-My Lastest:
-
-^(?<code>(|\s)[A-Z]{3,4}[0-9]{3,4}|[A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3})([\s\S]*?)(?=\k<code>)
-
-Names this group: <code>
-(|\s)[A-Z]{3,4}[0-9]{3,4}|[A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3})
-Any thing Group
-([\s\S]*?)
-Look ahead for the code group again and do not match
-(?=\k<code>)
-
-
-----> Got it, first I have to replace any code-instance found on the first line with a "~~""
-^(?<code>(|[ ]{0,3})[A-Z]{3,4}[0-9]{3,4}|[A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3})([\s\S]*?)(?=~~)
-
-----> First replace anthing this matches with "~~" prior to that group
-^((|[ ]{0,3}[A-Z]{3,4}[0-9]{3,4}|[A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3})
-
-
-(Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:)
-*/
-
