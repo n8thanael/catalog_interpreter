@@ -1,11 +1,12 @@
 /*
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-
-	You are currenlty need continue working on function interpretObject_e(obj){
-	the idea is it needs more features to parse information from the stuff into the array.  
-
-▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-*/
+ *
+ *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+ *
+ Still working in "E" filling out he arrays that are used to power the website.
+ *
+ *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+ *
+ */
 
 
 /* do I need to check if it's an object? https://stackoverflow.com/questions/4186906/check-if-object-exists-in-javascript  
@@ -62,7 +63,7 @@ function interpretPaste_b(){
  *		[A-Z]{3,4}[0-9]{3,4})    			-- the character set: ABC123 or ABCD1234 </Group#1>  
  *		(\w\d.,\-() ]*)						-- <Gropu#2> matches any Word or Digit or characters: ".,:-() " a greedy amount of times
  *		([\s])						`		-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
-*/
+ */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
 	var regex_c = /^[ ]{0,3}([A-Z]{3,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{3,4}[0-9]{3,4})([\w\d.,:\-() ]*)([\s])/;
@@ -143,19 +144,24 @@ function interpretObject_d(obj){
  * - Notes/Prerequisite(s)/Recommendation(s) - in a raw format as to prepare for their own extraction
  * - Eliminate Return Characters from these
  *
- *  ^([\w\d.,:\- ]*)(\([\w\d ]*\))([\d ]* weeks| week)$
+ *  ^Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:|Recommendations: |Recommendations: |Recommendation: |Recommendations:|Recommendation:
  *	^						-- starts at a new line
- *  ([\w\d.,:\- ]*)		    -- <Group#1> matches any Word or Digit or characters: ".,:-() " a greedy amount of times
- *  (\([\w\d ]*\))			-- <Group#2> matches "(" and any word or digit or space a greedy amount of times ending in ")"
- *  ([\d ]* weeks| week)	-- <Group#3> matches any number or space a greedy amount of times looking for "weeks" or "week" following 
- *	$						-- End of line reached
+ *  Basically runs through every [OR] possibilty of Prerequistes: or Recommendations: to find the first real "break" in the description 
  */ 
 function interpretObject_e(obj){
+	var regex_e = /^Prerequisites: |Prerequisite: |Prerequisites:|Prerequisite:|Recommendations: |Recommendations:|Recommendation: |Recommendation:/gm;
 	obj.description = '';
-	console.log(obj);
-	obj.description = obj.value.replace(obj.id,'')
-	obj.description = obj.description.replace(/\v|\r|\n/gm,' ')
+	obj.post_description = '';
+	obj.description = obj.value.replace(obj.id,'');
 	obj.description = obj.description.replace(obj.titleFull,'').trim();
+	obj.position = obj.description.search(regex_e);
+	if(obj.position > 0){
+		obj.post_description = obj.description.substring(obj.position,obj.description.length);
+		obj.description = obj.description.substring(0,obj.position);
+	} else {
+		obj.description = obj.description.replace(/\v|\r|\n/gm,' ')
+	}
+	console.log(obj);
 	return obj;
 }
 
