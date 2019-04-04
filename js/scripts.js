@@ -15,6 +15,8 @@ MU385 - Course credit value can be actually be:  "(0 or 1)" to accomodate
 SS205 - Course name contains dates: SS205 United States History I: 1492 – 1877 which have a different type of dash: –
 WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to accomodate -- need to imporove on prior system of () recognition to allow for any interals.
  * catch and fix mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
+HSV4000 - expand this capability to fix formatting tab characters should be found: (3 credits) 5 weeks Students ([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)
+
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -87,10 +89,9 @@ function interpretArray_c(){
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
-		var value = repairMissingReturnCharacters(document.catalogObj.rawArray[i]);
+		var value = repairMissingCharacters(document.catalogObj.rawArray[i]);
 		//console.log(value);
 		matchGroups = value.match(regex_c);
-		// console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
 			className = matchGroups[1] ? matchGroups[1] : undefined;
 			title = matchGroups[2] ? matchGroups[2] : undefined;
@@ -105,14 +106,14 @@ function interpretArray_c(){
 				var firstPart = thisCourse[className].value.substr(0,position);
 				var lastPart = thisCourse[className].value.substr(position);
 				thisCourse[className].value = firstPart;
-				thisCourse[className + "_error1"] = {};
-				thisCourse[className + "_error1"].value = lastPart;
+				thisCourse[className + "_error_1"] = {};
+				// console.log('FP:' + firstPart + "|LP" + lastPart);
+				thisCourse[className + "_error_1"].value = lastPart;
 			}
 			thisCourse[className].id = className.trim();
 			thisCourse[className].titleFull = title.trim();
 			thisCourse[className] = interpretObject_e(interpretObject_d(thisCourse[className]));
 		} else if(value) {
-			// console.log(value);
 			classname = '_error_' + i; 
 			thisCourse['error_' + i] = value;
 		}
@@ -173,7 +174,7 @@ function interpretObject_d(obj){
  */
 function interpretObject_e(obj){
 	var regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
-	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
+	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
 	var regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 	var matchGroups = [];
 	obj.description = "";
@@ -211,7 +212,7 @@ function interpretObject_e(obj){
 			} else {
 				// IDK ... there is a problem
 				var error = {}
-				error[obj.id + "_error2"] = obj.description;
+				error[obj.id + "_error_2"] = obj.description;
 				document.catalogObj.courses.push(error);
 			}
 		}
@@ -386,13 +387,15 @@ function prettyPrintJson(obj){
  * catch and repair mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
  * recieves a string, checks for error and returns either a newly formatted outputString, or the original string 
  */
-function repairMissingReturnCharacters(string){
+function repairMissingCharacters(string){
 	outputString = '';
-	regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
+	// regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
+	regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)/;
 	if(string.length > 0){
-		var matchGroups = string.match(regex_z1);
+		var matchGroups = string.match(regex_z2);
 		if(Array.isArray(matchGroups)){
-			outputString = matchGroups[1] ? matchGroups[1].trim() + "\r\n" : "";
+			// console.log(matchGroups);
+			outputString = matchGroups[1] ? matchGroups[1].trim() + "\t" : "";
 			outputString += matchGroups[3] ? matchGroups[3].trim() : "";
 			return outputString;
 		}
