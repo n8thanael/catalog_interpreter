@@ -8,6 +8,8 @@ CD213 -- Amphersan appears in title: Fixed it
 CD313 (unsure of error)
 CD211 - error: spaces were found after course number value
 CD491 - Description starts with CD491 - solved with Positive look-ahead (?= [A-Z]) var regex_a
+CD313 - error: Fixed issue with spaces after course number value
+CD495 - Error with course number value needs to be 2 digits
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -82,7 +84,7 @@ function interpretArray_c(){
 		let title = "", className = "", matchGroups = [];
 		var value = document.catalogObj.rawArray[i];
 		matchGroups = value.match(regex_c);
-		console.log(matchGroups);
+		// console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
 			className = matchGroups[1] ? matchGroups[1] : undefined;
 			title = matchGroups[2] ? matchGroups[2] : undefined;
@@ -166,8 +168,8 @@ function interpretObject_d(obj){
  *  ([\s\S]*)							-- <Group#5> matches any remaining charcter of anytype an unlimited amount of times
  */
 function interpretObject_e(obj){
-	var regex_e2 = /^\d[ ]{0,3}[\r\n]{1}/;
-	var regex_e3 = /^([a-zA-Z\d ’'`.,&:\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
+	var regex_e2 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/;
+	var regex_e3 = /^([a-zA-Z\d ’'`.,&:\-\/() ]{3,60})([ \t]*)([\d]{1,2})([ ]{0,3}[\r\n])([\s\S]*)/;
 	var matchGroups = [];
 	obj.description = "";
 
@@ -185,7 +187,7 @@ function interpretObject_e(obj){
 		} else {
 			// didn't find the credits value...maybe there was a return character in the title
 			// if so...must rebuild both Title & Description and finally set the credits value
-			console.log(obj.description + "--" + obj.id);
+			// console.log(obj.description + "--" + obj.id);
 			matchGroups = obj.description.match(regex_e3);
 			if(matchGroups && matchGroups.length > 0){
 				// console.log(matchGroups);
