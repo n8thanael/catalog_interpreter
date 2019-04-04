@@ -10,6 +10,7 @@ CD211 - error: spaces were found after course number value
 CD491 - Description starts with CD491 - solved with Positive look-ahead (?= [A-Z]) var regex_a
 CD313 - error: Fixed issue with spaces after course number value
 CD495 - Error with course number value needs to be 2 digits
+GB201 - Error Course name has an astrics
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -73,12 +74,12 @@ function interpretPaste_b(){
  *		([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC or CM426P
  *		|											-- or                                   
  *		[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})    			-- the character set: AB123 or CM426P or ABCD1234 </Group#1>  
- *		(a-zA-Z ’'`.,&\-\/() ]*)					-- <Gropu#2> matches any Letter or Digit or characters: "’'`'.,&:-/() " a greedy amount of times
+ *		(a-zA-Z ’'`.,&\-\/() ]*)					-- <Gropu#2> matches any Letter or Digit or characters: "*’'`'.,&:-/() " a greedy amount of times
  *		([\s])										-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
-	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d ’'`.,&:\-\/() ]*)([\s])/;
+	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d *’'`.,&:\-\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
@@ -161,7 +162,7 @@ function interpretObject_d(obj){
  *  Special for TRAD -- if the creditsValue is blank...we need to account for that and get it from TRAD Courses 
  *  regex_e3: /^([a-zA-Z ’'`.,\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/
  *  This regex is designed to research the description for a missing title-part that may exist becasue a return character has separated the title in TRAD Books
- *  ^([a-zA-Z ’'`.,\-\/() ]{3,60})		-- at the start of the line the <Group#1> matches any letters or characters from 3-60 times
+ *  ^([a-zA-Z *’'`.,\-\/() ]{3,60})		-- at the start of the line the <Group#1> matches any letters or characters from 3-60 times
  *  ([ \t]*)							-- <Group#2> contains an unlimited amount of spaces or tabs which will not be recorded
  *  (\d)								-- <Group#3> matches the credits-digit which we will keep
  *  ([\r\n])							-- <Group#4> matches the return character after this digit - which will not be recorded
@@ -169,7 +170,7 @@ function interpretObject_d(obj){
  */
 function interpretObject_e(obj){
 	var regex_e2 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/;
-	var regex_e3 = /^([a-zA-Z\d ’'`.,&:\-\/() ]{3,60})([ \t]*)([\d]{1,2})([ ]{0,3}[\r\n])([\s\S]*)/;
+	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\/() ]{3,60})([ \t]*)([\d]{1,2})([ ]{0,3}[\r\n])([\s\S]*)/;
 	var matchGroups = [];
 	obj.description = "";
 
