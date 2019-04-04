@@ -4,7 +4,10 @@
  *
 Running file through the interpreter to find errors... shouldn't be long until I switch
 CM426P -- fixed it
-CD313 -- Amphersan appears in title
+CD213 -- Amphersan appears in title: Fixed it
+CD313 (unsure of error)
+CD211 - error: spaces were found after course number value
+CD491 - Description starts with CD491 - solved with Positive look-ahead (?= [A-Z]) var regex_a
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -39,7 +42,10 @@ function interpretPaste(){
  */
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
-	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
+	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
+	/* it was found that this regex did not ignore descriptions where the first word was a course code such as: "CD491 and CD492 introduce the student..."
+	 *	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
+	 */
 	var result = string.replace(regex_a,'▐▐$1')
     document.getElementById("dump").innerHTML = result;
 }
@@ -55,7 +61,7 @@ function interpretPaste_b(){
 	var array = string.split('▐▐');
 	document.catalogObj.rawArray = array;
     document.getElementById("dump").innerHTML = array;
-    console.log(array);
+    // console.log(array);
 }
 
 /*
@@ -65,18 +71,18 @@ function interpretPaste_b(){
  *		([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC or CM426P
  *		|											-- or                                   
  *		[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})    			-- the character set: AB123 or CM426P or ABCD1234 </Group#1>  
- *		(\w\d.,\-() ]*)								-- <Gropu#2> matches any Word or Digit or characters: "’'`'.,:-/() " a greedy amount of times
+ *		(a-zA-Z ’'`.,&\-\/() ]*)					-- <Gropu#2> matches any Letter or Digit or characters: "’'`'.,&:-/() " a greedy amount of times
  *		([\s])										-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
-	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([\w\d’'`.,:\-\/() ]*)([\s])/;
+	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d ’'`.,&:\-\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
 		var value = document.catalogObj.rawArray[i];
 		matchGroups = value.match(regex_c);
-		//console.log(matchGroups);
+		console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
 			className = matchGroups[1] ? matchGroups[1] : undefined;
 			title = matchGroups[2] ? matchGroups[2] : undefined;
@@ -91,15 +97,15 @@ function interpretArray_c(){
 				var firstPart = thisCourse[className].value.substr(0,position);
 				var lastPart = thisCourse[className].value.substr(position);
 				thisCourse[className].value = firstPart;
-				thisCourse[className + "_error"] = {};
-				thisCourse[className + "_error"].value = lastPart;
+				thisCourse[className + "_error1"] = {};
+				thisCourse[className + "_error1"].value = lastPart;
 			}
 			thisCourse[className].id = className.trim();
 			thisCourse[className].titleFull = title.trim();
 			thisCourse[className] = interpretObject_e(interpretObject_d(thisCourse[className]));
 		} else if(value) {
 			// console.log(value);
-			classname = 'error_' + i; 
+			classname = '_error_' + i; 
 			thisCourse['error_' + i] = value;
 		}
 		document.catalogObj.courses.push(thisCourse);
@@ -160,8 +166,8 @@ function interpretObject_d(obj){
  *  ([\s\S]*)							-- <Group#5> matches any remaining charcter of anytype an unlimited amount of times
  */
 function interpretObject_e(obj){
-	var regex_e2 = /^\d[\r\n]{1}/;
-	var regex_e3 = /^([a-zA-Z ’'`.,&\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
+	var regex_e2 = /^\d[ ]{0,3}[\r\n]{1}/;
+	var regex_e3 = /^([a-zA-Z\d ’'`.,&:\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/;
 	var matchGroups = [];
 	obj.description = "";
 
@@ -179,6 +185,7 @@ function interpretObject_e(obj){
 		} else {
 			// didn't find the credits value...maybe there was a return character in the title
 			// if so...must rebuild both Title & Description and finally set the credits value
+			console.log(obj.description + "--" + obj.id);
 			matchGroups = obj.description.match(regex_e3);
 			if(matchGroups && matchGroups.length > 0){
 				// console.log(matchGroups);
@@ -191,7 +198,7 @@ function interpretObject_e(obj){
 			} else {
 				// IDK ... there is a problem
 				var error = {}
-				error[obj.id + "_error"] = obj.description;
+				error[obj.id + "_error2"] = obj.description;
 				document.catalogObj.courses.push(error);
 
 			}
