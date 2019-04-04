@@ -16,6 +16,7 @@ SS205 - Course name contains dates: SS205 United States History I: 1492 – 1877
 WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to accomodate -- need to imporove on prior system of () recognition to allow for any interals.
  * catch and fix mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
 HSV4000 - expand this capability to fix formatting tab characters should be found: (3 credits) 5 weeks Students ([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)
+BIB2010 - Having trouble with the "/" in the title  -- Fixed by expanding the capability of nterpretObject_d's regex_d
 
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
@@ -125,15 +126,15 @@ function interpretArray_c(){
 /*
  * Processes the obj.title to extract title, credits and/or weeks values
  * it then splits and adds more properties to the object before returning it
- *  ^([\w\d.,:\-\– ]*)(\([\w\d ]*\))([\d ]* weeks| week)$
- *	^						-- starts at a new line
- *  ([\w\d.,:\-\– ]*)		-- <Group#1> matches any Word or Digit or characters: ".,:-–() " a greedy amount of times
- *  (\([\w\d ]*\))			-- <Group#2> matches "(" and any word or digit or space a greedy amount of times ending in ")"
- *  ([\d ]* weeks| week)	-- <Group#3> matches any number or space a greedy amount of times looking for "weeks" or "week" following 
- *	$						-- End of line reached
+ *  var regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
+ *	^									-- starts at a new line
+ *  ([a-zA-Z\d *’'`.,&:\-\–\/() ]*)		-- <Group#1> matches any Word or Digit or characters: "a-zA-Z# *’'`.,&:-–/() " a greedy amount of times
+ *  (\([\w\d ]*\))						-- <Group#2> matches "(" and any word or digit or space a greedy amount of times ending in ")"
+ *  ([\d ]* weeks| week)				-- <Group#3> matches any number or space a greedy amount of times looking for "weeks" or "week" following 
+ *	$									-- End of line reached
  */ 
 function interpretObject_d(obj){
-	var regex_d = /^([\w\d.,:\-\– ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
+	var regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
 	var matchGroups = [];
 	var pos;
 	obj.titleText = "";
@@ -196,7 +197,7 @@ function interpretObject_e(obj){
 			// if so...must rebuild both Title & Description and finally set the credits value
 			// console.log(obj.description + "--" + obj.id);
 			matchGroups = obj.description.match(regex_e3);
-			// console.log(matchGroups);
+			console.log("Line:200: " + matchGroups);
 			if(matchGroups && matchGroups.length > 0){
 				// add the missing title text back to the title
 				obj.titleText = matchGroups[1] ? obj.titleFull + " " + matchGroups[1].trim() : obj.titleText;
@@ -390,7 +391,7 @@ function prettyPrintJson(obj){
 function repairMissingCharacters(string){
 	outputString = '';
 	// regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
-	regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)/;
+	regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;
 	if(string.length > 0){
 		var matchGroups = string.match(regex_z2);
 		if(Array.isArray(matchGroups)){
