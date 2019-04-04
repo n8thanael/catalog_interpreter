@@ -7,7 +7,7 @@ CM426P -- fixed it
 CD213 -- Amphersan appears in title: Fixed it
 CD313 (unsure of error)
 CD211 - error: spaces were found after course number value
-CD491 - Description starts with CD491
+CD491 - Description starts with CD491 - solved with Positive look-ahead (?= [A-Z]) var regex_a
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -42,7 +42,10 @@ function interpretPaste(){
  */
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
-	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
+	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
+	/* it was found that this regex did not ignore descriptions where the first word was a course code such as: "CD491 and CD492 introduce the student..."
+	 *	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
+	 */
 	var result = string.replace(regex_a,'▐▐$1')
     document.getElementById("dump").innerHTML = result;
 }
