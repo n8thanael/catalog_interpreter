@@ -14,6 +14,7 @@ GB201 - Error Course name has an astrics
 MU385 - Course credit value can be actually be:  "(0 or 1)" to accomodate
 SS205 - Course name contains dates: SS205 United States History I: 1492 – 1877 which have a different type of dash: –
 WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to accomodate -- need to imporove on prior system of () recognition to allow for any interals.
+ * catch and fix mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -86,7 +87,8 @@ function interpretArray_c(){
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
-		var value = document.catalogObj.rawArray[i];
+		var value = repairMissingReturnCharacters(document.catalogObj.rawArray[i]);
+		//console.log(value);
 		matchGroups = value.match(regex_c);
 		// console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
@@ -378,6 +380,24 @@ function prettyPrintJson(obj){
 	});
 
 	document.getElementById("dump").innerHTML = course + ": <br>" + output;
+}
+
+/*
+ * catch and repair mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
+ * recieves a string, checks for error and returns either a newly formatted outputString, or the original string 
+ */
+function repairMissingReturnCharacters(string){
+	outputString = '';
+	regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
+	if(string.length > 0){
+		var matchGroups = string.match(regex_z1);
+		if(Array.isArray(matchGroups)){
+			outputString = matchGroups[1] ? matchGroups[1].trim() + "\r\n" : "";
+			outputString += matchGroups[3] ? matchGroups[3].trim() : "";
+			return outputString;
+		}
+	}
+	return string;
 }
 
 
