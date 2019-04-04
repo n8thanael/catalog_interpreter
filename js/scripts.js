@@ -11,8 +11,9 @@ CD491 - Description starts with CD491 - solved with Positive look-ahead (?= [A-Z
 CD313 - error: Fixed issue with spaces after course number value
 CD495 - Error with course number value needs to be 2 digits
 GB201 - Error Course name has an astrics
-MU385 - Course credit value can be actually be:  "(0 or 1)" -- wow
+MU385 - Course credit value can be actually be:  "(0 or 1)" to accomodate
 SS205 - Course name contains dates: SS205 United States History I: 1492 – 1877 which have a different type of dash: –
+WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to accomodate -- need to imporove on prior system of () recognition to allow for any interals.
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -153,28 +154,25 @@ function interpretObject_d(obj){
 
 /*
  * Processes the obj.value to extract:
- * - Format Description apart from:
- * - Notes/Prerequisite(s)/Recommendation(s) - in a raw format as to prepare for their own extraction
- * - Eliminate any return Characters from these if they appear
- * - Designed to separate from the description any "word or pattern" that separates the post-description
+ * - Designed to separate from the description from the title especially pulling out credit values and weeks etc.
+ *  regex_e1:/^[\d]{1,2}[ ]{0,3}[\r\n]{1}/;
 
- *   ^\(0 or 1\)|[\d]{1,2}[ ]{0,3}[\r\n]{1}
- *   ^\d\v -- looks for a digit at the beginning of the description (TRAD formatted descriptions)
- *   Basically runs through every [OR] possibilty of Prerequistes: or Recommendations: to find the first real "break" in the description
  *
  *  Special for TRAD -- if the creditsValue is blank...we need to account for that and get it from TRAD Courses 
- *  regex_e3: /^([a-zA-Z ’'`.,\-\/() ]{3,60})([ \t]*)(\d)([\r\n])([\s\S]*)/
+ *  regex_e3: /^[a-zA-Z\d *’'`.,&:\-\–\\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/
  *  This regex is designed to research the description for a missing title-part that may exist becasue a return character has separated the title in TRAD Books
  *  ^([a-zA-Z *’'`.,\-\/() ]{3,60})		-- at the start of the line the <Group#1> matches any letters or characters from 3-60 times
  *  ([ \t]*)							-- <Group#2> contains an unlimited amount of spaces or tabs which will not be recorded
- *  ([\d]{1,2}|\(0 or 1\))				-- <Group#3> matches up to "2" the credits-digits OR it matches the exact text: (0 or 1)
+ *  ([\d]{1,2}							-- <Group#3> matches up to "2" the credits-digits 
+ 		|\([\d] or [\d]\)				-- OR it matches: (# or #)
+ 		|\([\d]{1,2}[\-\–][\d]{1,2}\))	-- OR it matches: (#-#)			
  *  ([\r\n])							-- <Group#4> matches the return character after this digit - which will not be recorded
  *  ([\s\S]*)							-- <Group#5> matches any remaining charcter of anytype an unlimited amount of times
  */
 function interpretObject_e(obj){
 	var regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
-	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\\/() ]{3,60})([ \t]*)([\d]{1,2}|\(0 or 1\))([ ]{0,3}[\r\n])([\s\S]*)/;
-	var regex_e4 = /^[ ]*(\(0 or 1\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
+	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
+	var regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 	var matchGroups = [];
 	obj.description = "";
 
@@ -204,9 +202,10 @@ function interpretObject_e(obj){
 				// set the remaining descripion that doesn't contain the missing title portion or creditsValue
 				obj.description = matchGroups[5] ? matchGroups[5].trim() : obj.description ;
 			} else if(Array.isArray(obj.description.match(regex_e4))) {
+				matchGroups = obj.description.match(regex_e4);
 				// the system detected that there was a (0 or 1) instead of a well formed set of digits
-				obj.creditsValue = '(0 or 1)';
-				obj.description = obj.description.replace(/\(0 or 1\)/,'').trim();
+				obj.creditsValue = matchGroups[1] ? matchGroups[1].trim() : "";
+				obj.description = obj.description.replace(matchGroups[1],'').trim();
 			} else {
 				// IDK ... there is a problem
 				var error = {}
@@ -383,11 +382,13 @@ function prettyPrintJson(obj){
 
 
 /*
+
 Incompatibilities:
 TRAD CATALOG:
 1.)	Junior Recital MU385 & MU485 to have a [TAB] instead of spaces
 	Also if they don't end in a number, I need it in perenthasis: (0 or 1) please
 
-2.)  
+2.) WL425 Worship Leader Internship	1-6
+	Needs to be: (1-6)
 
 */
