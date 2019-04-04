@@ -12,6 +12,7 @@ CD313 - error: Fixed issue with spaces after course number value
 CD495 - Error with course number value needs to be 2 digits
 GB201 - Error Course name has an astrics
 MU385 - Course credit value can be actually be:  "(0 or 1)" -- wow
+SS205 - Course name contains dates: SS205 United States History I: 1492 – 1877 which have a different type of dash: –
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -80,7 +81,7 @@ function interpretPaste_b(){
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
-	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d *’'`.,&:\-\/() ]*)([\s])/;
+	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
@@ -120,15 +121,15 @@ function interpretArray_c(){
 /*
  * Processes the obj.title to extract title, credits and/or weeks values
  * it then splits and adds more properties to the object before returning it
- *  ^([\w\d.,:\- ]*)(\([\w\d ]*\))([\d ]* weeks| week)$
+ *  ^([\w\d.,:\-\– ]*)(\([\w\d ]*\))([\d ]* weeks| week)$
  *	^						-- starts at a new line
- *  ([\w\d.,:\- ]*)		    -- <Group#1> matches any Word or Digit or characters: ".,:-() " a greedy amount of times
+ *  ([\w\d.,:\-\– ]*)		-- <Group#1> matches any Word or Digit or characters: ".,:-–() " a greedy amount of times
  *  (\([\w\d ]*\))			-- <Group#2> matches "(" and any word or digit or space a greedy amount of times ending in ")"
  *  ([\d ]* weeks| week)	-- <Group#3> matches any number or space a greedy amount of times looking for "weeks" or "week" following 
  *	$						-- End of line reached
  */ 
 function interpretObject_d(obj){
-	var regex_d = /^([\w\d.,:\- ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
+	var regex_d = /^([\w\d.,:\-\– ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
 	var matchGroups = [];
 	var pos;
 	obj.titleText = "";
@@ -172,7 +173,7 @@ function interpretObject_d(obj){
  */
 function interpretObject_e(obj){
 	var regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
-	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\/() ]{3,60})([ \t]*)([\d]{1,2}|\(0 or 1\))([ ]{0,3}[\r\n])([\s\S]*)/;
+	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\\/() ]{3,60})([ \t]*)([\d]{1,2}|\(0 or 1\))([ ]{0,3}[\r\n])([\s\S]*)/;
 	var regex_e4 = /^[ ]*(\(0 or 1\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 	var matchGroups = [];
 	obj.description = "";
