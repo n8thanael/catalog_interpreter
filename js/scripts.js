@@ -17,7 +17,7 @@ WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to acco
  * catch and fix mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
 HSV4000 - expand this capability to fix formatting tab characters should be found: (3 credits) 5 weeks Students ([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)
 BIB2010 - Having trouble with the "/" in the title  -- Fixed by expanding the capability of nterpretObject_d's regex_d
-
+MINE0000 - oops, swapped weeks & values
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -146,10 +146,10 @@ function interpretObject_d(obj){
 	matchGroups = obj.titleFull.match(regex_d);
 	if(matchGroups && matchGroups.length > 0){
 		obj.titleText = matchGroups[1] ? matchGroups[1].trim() : undefined;
-		obj.weeksText = matchGroups[2] ? matchGroups[2].trim() : undefined;
+		obj.weeksText = matchGroups[3] ? matchGroups[3].trim() : undefined;
 		pos = obj.weeksText.search(/\d/);
 		obj.weeksValue = obj.weeksText.charAt(pos);
-		obj.creditsText = matchGroups[3] ? matchGroups[3].trim() : undefined;
+		obj.creditsText = matchGroups[2] ? matchGroups[2].trim() : undefined;
 		pos = obj.creditsText.search(/\d/);
 		obj.creditsValue = obj.creditsText.charAt(pos);
 	}
@@ -197,7 +197,6 @@ function interpretObject_e(obj){
 			// if so...must rebuild both Title & Description and finally set the credits value
 			// console.log(obj.description + "--" + obj.id);
 			matchGroups = obj.description.match(regex_e3);
-			console.log("Line:200: " + matchGroups);
 			if(matchGroups && matchGroups.length > 0){
 				// add the missing title text back to the title
 				obj.titleText = matchGroups[1] ? obj.titleFull + " " + matchGroups[1].trim() : obj.titleText;
