@@ -32,6 +32,7 @@ if (typeof courseCatalog != "undefined") {
 function InterpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
+	document.getElementById("output").innerHTML = convertCatalogObj2HTML();
 }
 
 function output(){
@@ -93,10 +94,12 @@ function interpretPaste_b(paste){
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
+	document.catalogObj.courseErr = [];
 	document.catalogObj.courseRef = [];
 	var referenceLoader = 0;
 	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
+		var error = false;
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
 		var value = repairMissingCharacters(document.catalogObj.rawArray[i]);
@@ -116,24 +119,31 @@ function interpretArray_c(){
 				var firstPart = thisCourse[className].value.substr(0,position);
 				var lastPart = thisCourse[className].value.substr(position);
 				thisCourse[className].value = firstPart;
-				thisCourse[className + "_error_1"] = {};
-				// console.log('FP:' + firstPart + "|LP" + lastPart);
-				thisCourse[className + "_error_1"].value = lastPart;
+				document.catalogObj.courseErr["error_c_" + i] = {}
+				document.catalogObj.courseErr["error_c_" + i].value = lastPart;
+				let refobj = {"class":"error_c_" + i};
+				refobj.ref = referenceLoader;
+				document.catalogObj.courseRef.push(refobj);
+				error = true;
 			}
 			thisCourse[className].id = className.trim();
 			thisCourse[className].titleFull = title.trim();
 			thisCourse[className] = interpretObject_e(interpretObject_d(thisCourse[className]));
 		} else if(value) {
-			classname = '_error_' + i; 
-			thisCourse['error_' + i] = value;
+			document.catalogObj.courseErr["error_c2_" + i] = {}
+			document.catalogObj.courseErr["error_c2_" + i].value = value;
+			let refobj = {"class":"error_c2_" + i};
+			refobj.ref = referenceLoader;
+			document.catalogObj.courseRef.push(refobj);
+			error = true;
 		}
-		if(className.length > 3){
+		if(!error && className !== ""){
 			let refobj = {"class":className};
-			refobj.ref = i;
-			document.catalogObj.courseRef[referenceLoader] = refobj;
+			refobj.ref = referenceLoader;
+			document.catalogObj.courseRef.push(refobj);
+			document.catalogObj.courses.push(thisCourse);
 			referenceLoader++;
 		}
-		document.catalogObj.courses.push(thisCourse);
 	}
 	return document.catalogObj.courses;
 }
@@ -195,7 +205,6 @@ function interpretObject_e(obj){
 	var regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 	var matchGroups = [];
 	obj.description = "";
-
 	obj.description = obj.value.replace(obj.id,'');
 	obj.description = obj.description.replace(obj.titleFull,'').trim();
 	//obj.position = obj.description.search(regex_e);
@@ -226,10 +235,11 @@ function interpretObject_e(obj){
 				obj.creditsValue = matchGroups[1] ? matchGroups[1].trim() : "";
 				obj.description = obj.description.replace(matchGroups[1],'').trim();
 			} else {
-				// IDK ... there is a problem
-				var error = {}
-				error[obj.id + "_error_2"] = obj.description;
-				document.catalogObj.courses.push(error);
+				document.catalogObj.courseErr["error_e_" + obj.id] = {}
+				document.catalogObj.courseErr["error_e_" + obj.id].value = obj.desription;
+				let refobj = {"class":"error_e_" + obj.id};
+				refobj.ref = "error_e_" + obj.id;
+				document.catalogObj.courseRef.push(refobj);
 			}
 		}
 	}
@@ -395,7 +405,6 @@ function prettyPrintJson(obj){
 		output = output + "<br>" + key + ": " + value;
 		}
 	});
-
 	document.getElementById("dump").innerHTML = course + ": <br>" + output;
 }
 
