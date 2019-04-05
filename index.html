@@ -27,7 +27,12 @@
 			    <label>Paste Here <span>.in</span></label>
 			    <textarea class="form-control" id="paste" rows="3"></textarea>
 			    <hr>
-			    <button class="btn btn-primary" id="interpret" onclick="interpretPaste()">Interpret</button>
+			    <label class="switch">
+				  <input type="checkbox" checked name="togglebox">
+				  <span class="slider round"></span>
+				</label>
+			    <button class="btn btn-primary disabled" id="interpret_courses" onclick="InterpretCourses()">Interpret Courses</button>
+			    <button class="btn btn-primary" id="interpret_programs" onclick="interpretPrograms()">Interpret Programs</button>
 			  </div>
 	    	</div>
 	    	<div class="col out">
@@ -41,8 +46,11 @@
 	    <button class="btn btn-primary" onclick="interpretPaste_a()">Interepret A</button>
 	    <button class="btn btn-primary" onclick="interpretPaste_b()">Interepret B</button>
 	    <button class="btn btn-primary" onclick="interpretArray_c()">Array C</button>
+	    <button class="btn btn-primary" onclick="convertCatalogObj2HTML()">Convert Catalog Object 2 HTML </button>
 	    <pre id="dump">
 	    </pre>
 	</div>
+ 	<script src="js/interface.js"></script>
+ 	<script src="js/templates.js"></script>
 </body>
 </html>

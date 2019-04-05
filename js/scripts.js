@@ -29,6 +29,11 @@ if (typeof courseCatalog != "undefined") {
    alert("GOT THERE");
 }*/
 
+function InterpretCourses(){
+	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
+	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
+}
+
 function output(){
 	document.getElementById("dump").innerHTML = JSON.stringify(courseCatalog, null, 2);
 }
@@ -57,21 +62,23 @@ function interpretPaste_a(){
 	 *	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
 	 */
 	var result = string.replace(regex_a,'▐▐$1')
-    document.getElementById("dump").innerHTML = result;
+    // document.getElementById("dump").innerHTML = result;
+    return result;
 }
 
 /*
  *  Starts the document.result.raw array
  *	.split('▐▐') looks breaks up the content into an array by using the double bars [ALT+222] as separators
  */
-function interpretPaste_b(){
+function interpretPaste_b(paste){
 	document.catalogObj = {};
 	var array = [];
-	var string = document.getElementById("paste").value;
+	//var string = document.getElementById("paste").value;
+	string = paste;
 	var array = string.split('▐▐');
 	document.catalogObj.rawArray = array;
-    document.getElementById("dump").innerHTML = array;
-    // console.log(array);
+    //document.getElementById("dump").innerHTML = array;
+    return array;
 }
 
 /*
@@ -86,6 +93,8 @@ function interpretPaste_b(){
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
+	document.catalogObj.courseRef = [];
+	var referenceLoader = 0;
 	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var thisCourse = {};
@@ -118,8 +127,15 @@ function interpretArray_c(){
 			classname = '_error_' + i; 
 			thisCourse['error_' + i] = value;
 		}
+		if(className.length > 3){
+			let refobj = {"class":className};
+			refobj.ref = i;
+			document.catalogObj.courseRef[referenceLoader] = refobj;
+			referenceLoader++;
+		}
 		document.catalogObj.courses.push(thisCourse);
 	}
+	return document.catalogObj.courses;
 }
 
 
