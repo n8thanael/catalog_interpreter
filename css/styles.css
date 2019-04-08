@@ -99,9 +99,17 @@ input:checked + .slider:before {
 	padding:0.1em 0.3em;
 }
 
+.error .course_title{
+  background-color:orange;
+}
+
 .course_title > a{
     width: 100%;
     display: inline-block;
+}
+
+.error .course_title a{
+  color:white;
 }
 
 .course_title > a > span{

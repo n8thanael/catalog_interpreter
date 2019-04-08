@@ -17,14 +17,12 @@ function convertCatalogObj2HTML(button){
 		var course_html
 
 		if(courseId.includes("error")){
-			console.log(courseObjRef);
-			var course = document.catalogObj.courses[courseObjRef][courseId];
 			console.log(course);
-			var courseValue = typeof course.value == 'string' ?  course.value : "";
+			var courseErrorValue = typeof document.catalogObj.courseErr[courseId].value == 'string' ?  document.catalogObj.courseErr[courseId].value : "";
 			var course_html = `
 			<div class="course error" id="course_${courseId}">
 				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">ERROR: ${courseId}</a></div>
-				<div id="course_desc_${courseId}" class="collapse">${course.value}</div>
+				<div id="course_desc_${courseId}" class="collapse">${ courseErrorValue}</div>
 			</div>`;
 		} else {
 			var course = document.catalogObj.courses[courseObjRef][courseId];
