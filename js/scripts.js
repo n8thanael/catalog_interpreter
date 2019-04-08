@@ -18,6 +18,7 @@ WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to acco
 HSV4000 - expand this capability to fix formatting tab characters should be found: (3 credits) 5 weeks Students ([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)
 BIB2010 - Having trouble with the "/" in the title  -- Fixed by expanding the capability of nterpretObject_d's regex_d
 MINE0000 - oops, swapped weeks & values
+ * Clear up errors that seem to have a Trad-single digit on the first line of the description.
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -65,7 +66,7 @@ function interpretPaste_a(){
 	 *	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
 	 */
 	var result = string.replace(regex_a,'▐▐$1')
-	if(debug){
+	if(document.catalogObj.debug){
 	    document.getElementById("dump").innerHTML = result;
 	} else {
 	    return result;
@@ -78,14 +79,16 @@ function interpretPaste_a(){
  */
 function interpretPaste_b(paste){
 	var array = [];
-	//var string = document.getElementById("paste").value;
-	string = paste;
+	if(document.catalogObj.debug){
+		var string = document.getElementById("paste").value;
+	} else {
+	    string = paste;		
+	}
+
 	var array = string.split('▐▐');
 	document.catalogObj.rawArray = array;
-	if(debug){
+	if(document.catalogObj.debug){
 		document.getElementById("dump").innerHTML = array;
-	} else {
-	    return array;
 	}
 }
 
@@ -126,32 +129,34 @@ function interpretArray_c(){
 				var firstPart = thisCourse[className].value.substr(0,position);
 				var lastPart = thisCourse[className].value.substr(position);
 				thisCourse[className].value = firstPart;
-				document.catalogObj.courseErr["error_c_" + i] = {}
-				document.catalogObj.courseErr["error_c_" + i].value = lastPart;
-				let refobj = {"class":"error_c_" + i};
-				refobj.ref = referenceLoader;
-				document.catalogObj.courseRef.push(refobj);
-				error = true;
+				error = "C";
 			}
 			thisCourse[className].id = className.trim();
 			thisCourse[className].titleFull = title.trim();
 			thisCourse[className] = interpretObject_e(interpretObject_d(thisCourse[className]));
 		} else if(value) {
 			// Not going to record errors that have no apparent value (may have return characters spamming them.)
-			if(value.lenght > 10){
+			if(value.length > 10){
 				document.catalogObj.courseErr["error_c2_" + i] = {}
 				document.catalogObj.courseErr["error_c2_" + i].value = value;
 				let refobj = {"class":"error_c2_" + i};
 				refobj.ref = referenceLoader;
 				document.catalogObj.courseRef.push(refobj);
-				error = true;
+				error = "C2";
 			}
 		}
-		if(!error && className !== ""){
+		console.log(error);
+		if(className !== "" && error !== "C2"){
 			let refobj = {"class":className};
 			refobj.ref = referenceLoader;
 			document.catalogObj.courseRef.push(refobj);
 			document.catalogObj.courses.push(thisCourse);
+			if(error == "C" ){
+				document.catalogObj.courseErr["error_c_" + i] = {}
+				document.catalogObj.courseErr["error_c_" + i].value = lastPart;
+				let error_C_obj = {"class":"error_c_" + i};
+		     	document.catalogObj.courseRef.push(error_C_obj);
+	     	}
 			referenceLoader++;
 		}
 	}
@@ -178,7 +183,6 @@ function interpretObject_d(obj){
 	obj.weeksValue = "";
 	obj.creditsText = "";
 	obj.creditsValue = "";
-	//console.log(obj);
 	matchGroups = obj.titleFull.match(regex_d);
 	if(matchGroups && matchGroups.length > 0){
 		obj.titleText = matchGroups[1] ? matchGroups[1].trim() : undefined;
@@ -189,6 +193,7 @@ function interpretObject_d(obj){
 		pos = obj.creditsText.search(/\d/);
 		obj.creditsValue = obj.creditsText.charAt(pos);
 	}
+	// console.log(obj);
 	return obj;
 }
 
@@ -224,6 +229,9 @@ function interpretObject_e(obj){
 	if(obj.creditsValue === ""){
 		obj.creditsValue = obj.description.match(regex_e1);
 		if(obj.creditsValue !== null){
+			// Credits Value found needs to be removed from the description
+			console.log(obj.description);
+			obj.description = obj.description.substr(obj.creditsValue[0].length);
 			// found the credits value - the rest is the description
 			obj.creditsValue = obj.creditsValue[0].replace(/\v|\r|\n/gm,' ').trim();
 		} else {
@@ -232,6 +240,7 @@ function interpretObject_e(obj){
 			// if so...must rebuild both Title & Description and finally set the credits value
 			// console.log(obj.description + "--" + obj.id);
 			matchGroups = obj.description.match(regex_e3);
+			console.log(matchGroups);
 			if(matchGroups && matchGroups.length > 0){
 				// add the missing title text back to the title
 				obj.titleText = matchGroups[1] ? obj.titleFull + " " + matchGroups[1].trim() : obj.titleText;
@@ -245,6 +254,7 @@ function interpretObject_e(obj){
 				obj.creditsValue = matchGroups[1] ? matchGroups[1].trim() : "";
 				obj.description = obj.description.replace(matchGroups[1],'').trim();
 			} else {
+				console.log("error_e");
 				document.catalogObj.courseErr["error_e_" + obj.id] = {}
 				document.catalogObj.courseErr["error_e_" + obj.id].value = obj.desription;
 				let refobj = {"class":"error_e_" + obj.id};
@@ -256,6 +266,7 @@ function interpretObject_e(obj){
 
 	// Split up the description into proper pieces
 	obj = setDescriptionPieces(obj);
+	// console.log(obj);
 	return obj;
 }
 

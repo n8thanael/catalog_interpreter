@@ -47,7 +47,7 @@ function convertCatalogObj2HTML(button){
 			} else if(agsTrad == 'TRAD'){
 				var course_html = `
 				<div class="course" id="course_${courseId}">
-					<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
+					<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
 					<div id="course_desc_${courseId}" class="collapse">
 						<div class="course_preDesc">${courseDescPre}</div>
 						<div class="course_postDesc">${courseDescPost}</div>
