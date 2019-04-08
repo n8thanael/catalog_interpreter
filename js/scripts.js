@@ -130,12 +130,15 @@ function interpretArray_c(){
 			thisCourse[className].titleFull = title.trim();
 			thisCourse[className] = interpretObject_e(interpretObject_d(thisCourse[className]));
 		} else if(value) {
-			document.catalogObj.courseErr["error_c2_" + i] = {}
-			document.catalogObj.courseErr["error_c2_" + i].value = value;
-			let refobj = {"class":"error_c2_" + i};
-			refobj.ref = referenceLoader;
-			document.catalogObj.courseRef.push(refobj);
-			error = true;
+			// Not going to record errors that have no apparent value (may have return characters spamming them.)
+			if(value.lenght > 10){
+				document.catalogObj.courseErr["error_c2_" + i] = {}
+				document.catalogObj.courseErr["error_c2_" + i].value = value;
+				let refobj = {"class":"error_c2_" + i};
+				refobj.ref = referenceLoader;
+				document.catalogObj.courseRef.push(refobj);
+				error = true;
+			}
 		}
 		if(!error && className !== ""){
 			let refobj = {"class":className};
