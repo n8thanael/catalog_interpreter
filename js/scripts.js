@@ -239,7 +239,7 @@ function interpretObject_e(obj){
 			// if so...must rebuild both Title & Description and finally set the credits value
 			// console.log(obj.description + "--" + obj.id);
 			matchGroups = obj.description.match(regex_e3);
-			console.log(matchGroups);
+			// console.log(matchGroups);
 			if(matchGroups && matchGroups.length > 0){
 				// add the missing title text back to the title
 				obj.titleText = matchGroups[1] ? obj.titleFull + " " + matchGroups[1].trim() : obj.titleText;
