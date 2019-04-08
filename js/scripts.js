@@ -145,7 +145,7 @@ function interpretArray_c(){
 				error = "C2";
 			}
 		}
-		console.log(error);
+		// console.log(error);
 		if(className !== "" && error !== "C2"){
 			let refobj = {"class":className};
 			refobj.ref = referenceLoader;
@@ -230,7 +230,6 @@ function interpretObject_e(obj){
 		obj.creditsValue = obj.description.match(regex_e1);
 		if(obj.creditsValue !== null){
 			// Credits Value found needs to be removed from the description
-			console.log(obj.description);
 			obj.description = obj.description.substr(obj.creditsValue[0].length);
 			// found the credits value - the rest is the description
 			obj.creditsValue = obj.creditsValue[0].replace(/\v|\r|\n/gm,' ').trim();
