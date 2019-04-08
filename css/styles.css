@@ -28,7 +28,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: magenta;
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -45,13 +44,46 @@
   transition: .4s;
 }
 
-input:checked + .slider {
+input:checked + .slider.course_program {
   background-color: orange;
 }
 
-input:focus + .slider {
+input:focus + .slider.course_program {
   box-shadow: 0 0 1px orange;
 }
+
+input:checked + .slider.ags_trad {
+  background-color: #007bff;
+}
+
+input:focus + .slider.ags_trad {
+  box-shadow: 0 0 1px #007bff;
+}
+
+.slider.course_program {
+  background-color: magenta;
+}
+
+.slider.course_program:before {
+  background-color: white;
+}
+
+.slider.ags_trad {
+  background-color: #28a745;
+}
+
+.slider.ags_trad:before {
+  background-color: white;
+}
+
+#ags_trad{
+   pointer-events: none;
+}
+
+#ags_trad.trad.btn-success{
+  background-color: #007bff !important;
+}
+
 
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);

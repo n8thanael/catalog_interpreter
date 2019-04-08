@@ -14,7 +14,7 @@
 	<script type="text/javascript" src="js/ags_1920_courses.json"></script>
  	<script src="js/scripts.js"></script>
  	<div class="container">
- 		<h1>| Catalog Interpreter ·•»</h1>
+ 		<h1>| Catalog Interpreter ·•» v.1.0</h1>
 	    <div class="row">
 	    	<div class="col in">
 			  <div class="form-group">
@@ -28,12 +28,18 @@
 			    <textarea class="form-control" id="paste" rows="3"></textarea>
 			    <hr>
 			    <label class="switch">
-				  <input type="checkbox" name="togglebox">
-				  <span class="slider round"></span>
+				  <input type="checkbox" name="toggle_course_program">
+				  <span class="slider round course_program"></span>
 				</label>
 			    <button class="btn btn-primary" id="interpret_courses" onclick="InterpretCourses()">Interpret Courses</button>
 			    <button class="btn btn-primary disabled" id="interpret_programs" onclick="interpretPrograms()">Interpret Programs</button>
 			    <button class="btn btn-primary" id="convert" onclick="convertCatalogObj2HTML()">Convert</button>
+			    <hr>
+   			    <label class="switch">
+				  <input type="checkbox" name="toggle_ags_trad">
+				  <span class="slider round ags_trad"></span>
+				</label>
+				<button class="btn btn-success" id="ags_trad">AGS</button>
 			  </div>
 	    	</div>
 	    	<div class="col out">

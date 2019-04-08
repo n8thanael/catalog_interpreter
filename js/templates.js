@@ -1,5 +1,6 @@
 function convertCatalogObj2HTML(button){
 	var outputAll = '';
+	var agsTrad = document.querySelector("#ags_trad").innerHTML
 	for(i=0; i < document.catalogObj.courseRef.length; i++){
 		var courseId = document.catalogObj.courseRef[i].class;
      	var courseObjRef = document.catalogObj.courseRef[i].ref;
@@ -17,7 +18,6 @@ function convertCatalogObj2HTML(button){
 		var course_html
 
 		if(courseId.includes("error")){
-			console.log(course);
 			var courseErrorValue = typeof document.catalogObj.courseErr[courseId].value == 'string' ?  document.catalogObj.courseErr[courseId].value : "";
 			var course_html = `
 			<div class="course error" id="course_${courseId}">
@@ -35,17 +35,28 @@ function convertCatalogObj2HTML(button){
 			var courseDescPre = typeof course.descPre == 'string' ? course.descPre : "";
 			var courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
 			var courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
-			var course_html = `
-			<div class="course" id="course_${courseId}">
-				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
-				<div id="course_desc_${courseId}" class="collapse">
-					<div class="course_preDesc">${courseDescPre}</div>
-					<div class="course_postDesc">${courseDescPost}</div>
-				</div>
-			</div>`;
+			if(agsTrad == 'AGS'){
+				var course_html = `
+				<div class="course" id="course_${courseId}">
+					<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText}&nbsp;${courseCreditsText}&nbsp;${courseWeeksText}</a></div>
+					<div id="course_desc_${courseId}" class="collapse">
+						<div class="course_preDesc">${courseDescPre}</div>
+						<div class="course_postDesc">${courseDescPost}</div>
+					</div>
+				</div>`;
+			} else if(agsTrad == 'TRAD'){
+				var course_html = `
+				<div class="course" id="course_${courseId}">
+					<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
+					<div id="course_desc_${courseId}" class="collapse">
+						<div class="course_preDesc">${courseDescPre}</div>
+						<div class="course_postDesc">${courseDescPost}</div>
+					</div>
+				</div>`;
+			}
 		}
 
-	outputAll += course_html;
+	outputAll += course_html;		
 	}
 	if(button){
    	  document.getElementById("output").innerHTML = outputAll;
