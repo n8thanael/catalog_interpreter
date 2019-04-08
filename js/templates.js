@@ -4,6 +4,7 @@ function convertCatalogObj2HTML(button){
 		var courseId = document.catalogObj.courseRef[i].class;
      	var courseObjRef = document.catalogObj.courseRef[i].ref;
 
+		var courseValue = "";
 		var courseTitleFull = "";
 		var courseTitleText = "";
 		var courseWeeksText = "";
@@ -16,10 +17,14 @@ function convertCatalogObj2HTML(button){
 		var course_html
 
 		if(courseId.includes("error")){
+			console.log(courseObjRef);
+			var course = document.catalogObj.courses[courseObjRef][courseId];
+			console.log(course);
+			var courseValue = typeof course.value == 'string' ?  course.value : "";
 			var course_html = `
 			<div class="course error" id="course_${courseId}">
 				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">ERROR: ${courseId}</a></div>
-				<div id="course_desc_${courseId}" class="collapse">${course}</div>
+				<div id="course_desc_${courseId}" class="collapse">${course.value}</div>
 			</div>`;
 		} else {
 			var course = document.catalogObj.courses[courseObjRef][courseId];
@@ -34,7 +39,7 @@ function convertCatalogObj2HTML(button){
 			var courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
 			var course_html = `
 			<div class="course" id="course_${courseId}">
-				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
+				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
 				<div id="course_desc_${courseId}" class="collapse">
 					<div class="course_preDesc">${courseDescPre}</div>
 					<div class="course_postDesc">${courseDescPost}</div>
