@@ -1,4 +1,4 @@
-.row > div {
+.col.in, .col.out {
 	border:1px solid blue;
 }
 
@@ -59,6 +59,19 @@ input:checked + .slider.ags_trad {
 input:focus + .slider.ags_trad {
   box-shadow: 0 0 1px #007bff;
 }
+
+.slider.debug{
+  background-color: grey;
+}
+
+input:checked + .slider.debug {
+  background-color: black;
+}
+
+input:focus + .slider.debug {
+  box-shadow: 0 0 1px black;
+}
+
 
 .slider.course_program {
   background-color: magenta;
