@@ -1,4 +1,4 @@
-/*
+/*  V1.1
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -19,6 +19,7 @@ HSV4000 - expand this capability to fix formatting tab characters should be foun
 BIB2010 - Having trouble with the "/" in the title  -- Fixed by expanding the capability of nterpretObject_d's regex_d
 MINE0000 - oops, swapped weeks & values
  * Clear up errors that seem to have a Trad-single digit on the first line of the description.
+TE224AYA - Troubles with extremely short codes and other problems in this area for Trad
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -50,18 +51,20 @@ function interpretPaste(){
 
 /*
  *	this step adds all "▐▐" (ALT+222) to anything that matches:
- *	^										-- starts at a new line
- *		[ ]{0,3}							-- a "space" from none upto 3 times
- *		([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC 
- *		|									-- or                                   
- *		[A-Z]{2,4}[0-9]{3,4})    			-- the character set: AB123 or ABCD1234 
- *		|									-- or    
- *		[A-Z]{2} \| [A-Z ]{2,20}[\r\n]		-- matches: "CD | CHEMICAL DEPENDENCY" or "CE | CHRISTIAN EDUCATION"   </Group#1>
+ *	^												-- starts at a new line
+ *		[ ]{0,3}									-- a "space" from none upto 3 times
+ *		([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234ABC-ABC or AB123-A
+ *		(?= [A-Z]) 									-- positive look-ahead tries to find the next letter is a single capital
+ *		|											-- or                                   
+ *		[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}				-- the character set: AB123 or ABCD1234 or ABC123ABC
+ *		(?= [A-Z])
+ *		|											-- or    
+ *		[A-Z]{2} \| [A-Z ]{2,20}[\r\n]				-- matches: "CD | CHEMICAL DEPENDENCY" or "CE | CHRISTIAN EDUCATION"   </Group#1>
  *	 
  */
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
-	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
+	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
 	/* it was found that this regex did not ignore descriptions where the first word was a course code such as: "CD491 and CD492 introduce the student..."
 	 *	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
 	 */
@@ -107,7 +110,7 @@ function interpretArray_c(){
 	document.catalogObj.courseErr = [];
 	document.catalogObj.courseRef = [];
 	var referenceLoader = 0;
-	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
+	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
 		var error = false;
 		var thisCourse = {};
