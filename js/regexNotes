@@ -1,0 +1,26 @@
+Regex Draft
+
+-- captures the Course Codes
+([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])
+
+-- captures the ALL-CAPS program name
+^[ ]{0,3}[A-Z ]{6,}(?=[\r\n])
+
+-- capture the Concentration Title Line
+^[ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n])
+
+-- captures a bullet point line
+(•\t|»[ \t]*)([\S ]*)(?=\n)
+
+-- captures Headings: Semester Credits | Concentration Objectives | Major Objectives | Available + Courses | Required + Courses
+^[ ]{0,3}
+([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses)
+([\r\n])
+
+-- catches strange artifact-lines that "straggle" between majors:
+([ ]{0,}\v[ ]{0,}\v)[\S ]{1,}([ ]{0,}\v[ ]{0,}\v)
+
+-- Considering wht to do about "General Eduation" - this captures a portion of the line ending in the page number
+(|See | - see )General Education Requirements[a-zA-Z .]{1,}42-43[.]{0,1}[\r\n]
+-- Another forumla to capture General Education
+^[\S\t ]{1,}credits in General Education

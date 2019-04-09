@@ -4,14 +4,21 @@ var programButton = document.querySelector("#interpret_programs");
 var debug_toggle = document.querySelector("input[name=toggle_debug]");
 var debug_content = document.querySelector("#debug_content");
 
+
+// default settings:
+document.catalogObj.mode = 'courses';
+console.log('mode:' + document.catalogObj.mode);
 toggle_course_program.addEventListener( 'change', function() {
     if(this.checked) {
+    	document.catalogObj.mode = 'programs';
     	courseButton.classList.add("disabled");
     	programButton.classList.remove("disabled");
     } else {
+     	document.catalogObj.mode = 'courses';
     	courseButton.classList.remove("disabled");
     	programButton.classList.add("disabled");
     }
+   	console.log('mode:' + document.catalogObj.mode);
 });
 
 var toggle_ags_trad = document.querySelector("input[name=toggle_ags_trad]");

@@ -1,25 +1,10 @@
-/*  V1.1
+/*
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
-Running file through the interpreter to find errors... shouldn't be long until I switch
-CM426P -- fixed it
-CD213 -- Amphersan appears in title: Fixed it
-CD313 (unsure of error)
-CD211 - error: spaces were found after course number value
-CD491 - Description starts with CD491 - solved with Positive look-ahead (?= [A-Z]) var regex_a
-CD313 - error: Fixed issue with spaces after course number value
-CD495 - Error with course number value needs to be 2 digits
-GB201 - Error Course name has an astrics
-MU385 - Course credit value can be actually be:  "(0 or 1)" to accomodate
-SS205 - Course name contains dates: SS205 United States History I: 1492 – 1877 which have a different type of dash: –
-WL425 - Course credit value is 1-6 -- needs to be "(1-6)" in parenthesis to accomodate -- need to imporove on prior system of () recognition to allow for any interals.
- * catch and fix mistakes in formatting where a return character should be found between "# weeks This" -> ([\s\S]*\d weeks)([ ]*)(This[\s\S]*)
-HSV4000 - expand this capability to fix formatting tab characters should be found: (3 credits) 5 weeks Students ([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*)
-BIB2010 - Having trouble with the "/" in the title  -- Fixed by expanding the capability of nterpretObject_d's regex_d
-MINE0000 - oops, swapped weeks & values
- * Clear up errors that seem to have a Trad-single digit on the first line of the description.
-TE224AYA - Troubles with extremely short codes and other problems in this area for Trad
+ *  currently working on interpretProgramArray_c()
+ *  Building a function that will return to ipa_c() an array of programs and their titles as found in the text 
+ * collectCourseCodesFromPrograms(string) -- currently messed up
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -33,10 +18,16 @@ if (typeof courseCatalog != "undefined") {
 
 document.catalogObj = {};
 
-function InterpretCourses(){
+function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
 	document.getElementById("output").innerHTML = convertCatalogObj2HTML();
+}
+
+function interpretPrograms(){
+	interpretPaste_b(interpretPaste_a());
+	var objDump = interpretProgramArray_c();
+	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
 }
 
 function output(){
@@ -49,26 +40,30 @@ function interpretPaste(){
 	// prettyPrintJson(courseCatalog);
 }
 
-/*
- *	this step adds all "▐▐" (ALT+222) to anything that matches:
- *	^												-- starts at a new line
- *		[ ]{0,3}									-- a "space" from none upto 3 times
- *		([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234ABC-ABC or AB123-A
- *		(?= [A-Z]) 									-- positive look-ahead tries to find the next letter is a single capital
- *		|											-- or                                   
- *		[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}				-- the character set: AB123 or ABCD1234 or ABC123ABC
- *		(?= [A-Z])
- *		|											-- or    
- *		[A-Z]{2} \| [A-Z ]{2,20}[\r\n]				-- matches: "CD | CHEMICAL DEPENDENCY" or "CE | CHRISTIAN EDUCATION"   </Group#1>
- *	 
- */
+// this portion of the code breaks down the text and adds special characters which make it easier to parse out pieces for futher development
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
-	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
-	/* it was found that this regex did not ignore descriptions where the first word was a course code such as: "CD491 and CD492 introduce the student..."
-	 *	var regex_a = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;
-	 */
-	var result = string.replace(regex_a,'▐▐$1')
+	var regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
+	var regex_a2 = /^[ ]{0,3}([A-Z ]{6,}(?=[\r\n]))/gm; // looking for Program Names
+	var regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
+	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses([\r\n]))/gm; // looking for headings
+	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
+	var regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
+	var regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
+
+	//mode changes the regex from a1 to a2
+	if(document.catalogObj.mode == "courses"){
+		var string = string.replace(regex_a1,'▐▐$1');  // adds (ALT+222)
+	} else if (document.catalogObj.mode == "programs"){
+		var string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221)
+		var string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220)
+		var string = string.replace(regex_a4,'██$1');  // adds (ALT+219)
+		var string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218)
+		var string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217)
+		var string = string.replace(regex_a_,"¡¡$1¿¿");  // adds (ALT+173) before and (ALT+168) after
+	}
+	var result = string;
+
 	if(document.catalogObj.debug){
 	    document.getElementById("dump").innerHTML = result;
 	} else {
@@ -77,8 +72,7 @@ function interpretPaste_a(){
 }
 
 /*
- *  Starts the document.result.raw array
- *	.split('▐▐') looks breaks up the content into an array by using the double bars [ALT+222] as separators
+ *	.split('▐▐') and .split('▌▌') breaks up the content in a raw array depending on the mode selected
  */
 function interpretPaste_b(paste){
 	var array = [];
@@ -87,12 +81,68 @@ function interpretPaste_b(paste){
 	} else {
 	    string = paste;		
 	}
-
-	var array = string.split('▐▐');
-	document.catalogObj.rawArray = array;
-	if(document.catalogObj.debug){
-		document.getElementById("dump").innerHTML = array;
+    
+	if(document.catalogObj.mode == "courses"){
+		var array = string.split('▐▐');
+		document.catalogObj.rawCourses = array;
+		if(document.catalogObj.debug){
+			document.getElementById("dump").innerHTML = array;
+		}
+	} else if (document.catalogObj.mode == "programs"){
+		var array = string.split('▌▌');
+		document.catalogObj.rawPrograms = array;
 	}
+}
+
+// sets up all the concentration arrays and raw text within
+function interpretProgramArray_c(){
+	var regex_pa_c1 = /^([ ]{0,3}[A-Z ]{5,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2
+	var regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z ]{5,}[\r\n])([\s\S]*)/gm; // separeates the major's title from the rest of the raw text
+	var regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
+	document.catalogObj.programs = [];
+	for(var i = 0; i < document.catalogObj.rawPrograms.length; i++){
+		let rawProgram = document.catalogObj.rawPrograms[i];
+		let matchGroups = rawProgram.match(regex_pa_c1);
+		let major = '';
+		// console.log(matchGroups);
+		if(matchGroups && matchGroups.length > 0){
+			// else ignore the line
+			var thisMajor = {};
+			thisMajor['Concentrations'] = [];
+			thisMajor['conRef'] = [];
+			thisMajor.courses = [];
+			major = matchGroups[1] ? matchGroups[1].trim() : undefined;
+			thisMajor.rawText = matchGroups[2] ? matchGroups[2].trim() : undefined;
+			// split out the concentration if they exist
+			var conPosition = thisMajor.rawText.search(/▄▄/gm);// start of a concentration
+			if(conPosition !== -1){
+				thisMajor.majorText = thisMajor.rawText.substr(0,conPosition);
+				var conText = thisMajor.rawText.substr(conPosition);
+				var conArray = conText.split('▄▄');
+				for(var j=0; j < conArray.length; j++){
+					var matchConGroups = conArray[j].match(regex_pa_c3);
+					if(matchConGroups && matchConGroups.length > 0){
+						var thisCon = {};
+						thisCon.courses = [];
+						thisCon.title = matchConGroups[1] ? matchConGroups[1].trim() : undefined;
+						thisCon.title = thisCon.title.replace("  "," ");
+						thisMajor['conRef'].push(thisCon.title);
+						thisCon.rawText = matchConGroups[3] ? matchConGroups[3].trim() : undefined;
+						thisCon.courses = collectCourseCodesFromPrograms(thisCon.rawText);
+						thisMajor['Concentrations'][thisCon.title] = thisCon;
+					}
+				}
+			} else {
+				thisMajor.majorText = thisMajor.rawText;
+			}
+
+		}
+
+		if(major){
+			thisMajor.courses = collectCourseCodesFromPrograms(thisMajor.majorText);
+			document.catalogObj.programs[major] = thisMajor;
+		}
+	} 
 }
 
 /*
@@ -111,11 +161,11 @@ function interpretArray_c(){
 	document.catalogObj.courseRef = [];
 	var referenceLoader = 0;
 	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
-	for(var i = 0; i < document.catalogObj.rawArray.length; i++){ 
+	for(var i = 0; i < document.catalogObj.rawCourses.length; i++){ 
 		var error = false;
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
-		var value = repairMissingCharacters(document.catalogObj.rawArray[i]);
+		var value = repairMissingCharacters(document.catalogObj.rawCourses[i]);
 		//console.log(value);
 		matchGroups = value.match(regex_c);
 		if(matchGroups && matchGroups.length > 0){
@@ -281,7 +331,7 @@ function interpretObject_e(obj){
  */
 function setDescriptionPieces(obj){
 	// elminated all return characters and other problematic spacing
-	regex_code = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/;
+	regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/;
 	var desc = obj.description.replace(/\v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' ');
 	// create an array of all single words separated by (space)
 	descArray = desc.split(" ");
@@ -336,9 +386,9 @@ function setDescriptionPieces(obj){
 				// are we dealing with a course code?
 				if((typeof valueClean) === "string"){
 					valueClean = valueClean.toUpperCase();
-					match = valueClean.match(regex_code);
+					match = valueClean.match(regex_z1);
 					if(match){
-						result = valueClean.match(regex_code)[0];
+						result = valueClean.match(regex_z1)[0];
 						if(result !== null){
 							switch(toggle){
 								case "prerequisites" :
@@ -449,6 +499,26 @@ function repairMissingCharacters(string){
 		}
 	}
 	return string;
+}
+
+// interprets a string and returns an array of program codes and their matching descriptions
+function collectCourseCodesFromPrograms(string){
+	var array = [];
+	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+	regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ ]{0,3}[\r\n]{0,1})/gm;
+	var matchGroups = string.match(regex_z3);
+	console.log(matchGroups);
+	if(Array.isArray(matchGroups)){
+		for(var i = 0; i < matchGroups.length; i++){
+			var matchMoreGroups = matchGroups[i].match(regex_z3);
+			var thisCourseCode = '';
+			var thisCourseName = '';
+			thisCourseCode = matchMoreGroups[1] ? matchMoreGroups[1].trim() : "";
+			thisCourseName = matchMoreGroups[3] ? matchMoreGroups[3].trim() : "";
+			array[thisCourseCode] = thisCourseName;
+		}
+	}
+	return array;
 }
 
 
