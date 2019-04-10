@@ -60,7 +60,7 @@ function interpretPaste_a(){
 		var string = string.replace(regex_a4,'██$1');  // adds (ALT+219)
 		var string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218)
 		var string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217)
-		var string = string.replace(regex_a_,"¡¡$1¿¿");  // adds (ALT+173) before and (ALT+168) after
+		var string = string.replace(regex_a_,"¡¡$1¿¿\n");  // adds (ALT+173) before and (ALT+168) with a new line after
 	}
 	var result = string;
 
@@ -128,6 +128,8 @@ function interpretProgramArray_c(){
 						thisCon.title = thisCon.title.replace("  "," ");
 						thisMajor['conRef'].push(thisCon.title);
 						thisCon.rawText = matchConGroups[3] ? matchConGroups[3].trim() : undefined;
+						thisCon.rawArray = createProgramRawArray_d(thisCon.rawText);
+						thisCon.cleanArray = interpretProgramTemplateArray_e(thisCon.rawArray);
 						thisCon.courses = collectCourseCodesFromPrograms(thisCon.rawText);
 						thisMajor['Concentrations'][thisCon.title] = thisCon;
 					}
@@ -140,9 +142,154 @@ function interpretProgramArray_c(){
 
 		if(major){
 			thisMajor.courses = collectCourseCodesFromPrograms(thisMajor.majorText);
+			thisMajor.rawArray = createProgramRawArray_d(thisMajor.majorText);
+			thisMajor.cleanArray = interpretProgramTemplateArray_e(thisMajor.rawArray);
 			document.catalogObj.programs[major] = thisMajor;
 		}
 	} 
+}
+
+// simply creates a rawArray of Lines and eliminates 100% junk strings
+function createProgramRawArray_d(string){
+	const rawArray = string.split(/\n/gm);
+	return rawArray
+}
+
+// receives an array of a program or concentration's slingle lines and formats it into a renderable array of "flatened" outputs
+// this programs a linear array which the templtes will simply "play" like actions that set HTML in order
+// kind of a complex switch/if/else headache -- sorry :-(
+function interpretProgramTemplateArray_e(rawArray){
+	const cleanArray = [];
+	// enable comblex list-counters and  syste,
+	var lc_layerA = 0;
+	var lc_layerB = 0;
+	var count_paragraph = 0;
+	var count_junk = 0;
+
+	// loops across the arrays and sets various "counters" inorder to intigrate data "forward" into the flat clean-array
+	for(let i = 0; i < rawArray.length; i++){
+		let skip = false;
+		let text = '';
+		let type = '';
+		let firstTwoCharacters = rawArray[i].substr(0,2);
+		// allows the renderer to issue errors and cautions
+		let error = false;
+		let caution = false;
+		switch(firstTwoCharacters){
+			case '██':
+				// heading
+				text = rawArray[i].substr(2);
+				type = "heading";
+				// a heading was discovered - this necessitates the end of both prior list layers
+				if(lc_layerA + lc_layerB > 0){
+					if(lc_layerB > 0){ cleanArray[i-1 + "_lc_end"] += '_B'; }
+					if(lc_layerA > 0){ cleanArray[i-1 + "_lc_end"] += '_A'; }
+					lc_layerA = 0;  // reset list counter
+					lc_layerB = 0;  // reset list counter
+				}
+				count_paragraph = 0;
+				count_junk = 0;
+				break;
+			case '┌┌':
+				// list1
+				text = rawArray[i].substr(2);
+				type = "list1";
+				// Issue the start of 1st layer list it did not previously appear 
+				if(lc_layerA == 0){ cleanArray[i-1 + "_lc_start"] += '_A';}
+				// detect and reset the 2nd layer list since it was nested and another layer 1 line item apeared
+				if(lc_layerB > 0){ cleanArray[i-1 + "_lc_end"] += '_B'; lc_layerN = 0; }
+				lc_layerA++;
+				lc_layerB = 0;
+				count_paragraph = 0;
+				count_junk = 0;
+				break;
+			case '┘┘':
+				// list2
+				text = rawArray[i].substr(2);
+				type = "list2";
+				// Issue the start of 2nd layer list it did not previously appear 
+				if(lc_layerB == 0){ cleanArray[i-1 + "_lc_start"] += '_B';}
+				lc_layerB++;
+				count_paragraph = 0;
+				count_junk = 0;
+				break;
+			default:
+				// console.log(rawArray[i]);
+				// eliminate junk array lines completely
+				if(rawArray[i].length < 4){
+					caution = false;
+					error = true;
+					text = rawArray[i];
+					type = 'error';
+					count_junk++;
+				} else {
+					// identifies a capital letter followed by multiple words seaparted by spaces - indicates sentence-formatted text
+					// if found it could indicate that this is part of a multi-break paragraph that needs united.
+					// We need to count paragraphs then and ensure the paragraph joins back with prior text.
+					const regex_e1 = /^[A-Z]{1}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`.,&:\-\–\/() ]*/;
+					if(rawArray[i].search(regex_e1) !== -1){
+						// this is the first detected "paragraph" proceed as normal.
+						if(count_paragraph == 0){
+							text = rawArray[i];			
+							type = "paragraph";
+							count_paragraph++;
+						// there are more than 1 detected "paragraphs" in a row... accumulate text to the prior one and skip the normal output
+						// include a "caution"
+						} else {
+							caution = true;
+							skip = true;
+							// it's possible that there were junk lines splitting up paragraphs ... include junk counter
+							if(Array.isArray(cleanArray[i - (count_paragraph + count_junk)])){
+								cleanArray[i - (count_paragraph + count_junk)]['text'] = cleanArray[i - (count_paragraph + count_junk)]['text'] + " " + rawArray[i];
+								count_paragraph++;
+							} else {
+								caution = false;
+								skip = false;
+								error = true;
+								type = "error";
+								text = rawArray[i];
+							}
+						}
+					} else {
+						type = "unknown";
+						text = rawArray[i];
+						if(lc_layerB > 0){ cleanArray[i-1 + "_lc_end"] += '_B'; }
+						if(lc_layerA > 0){ cleanArray[i-1 + "_lc_end"] += '_A'; }
+						lc_layerA = 0;  // reset list counter
+						lc_layerB = 0;  // reset list counter
+					}
+					// unknown, blank, error - or continuation of prior line with inserted line break
+					// the line contained very little if no word-formed characters "A bat cat denied" - breaks up lists
+					//error = true;
+					// the line contained word-formed characters, but was short and ended in curious punctuation - reformat lists to include
+					// the line contained word-formed characters, was extensive and should be break up lists  - breaks up lists
+					//caution = true;
+				}
+		}
+		// looks behind and before to assume list-capabilities ... predictive
+		if(!skip){
+			if (error) {
+				cleanArray[i + "_error"] = [];
+				cleanArray[i + "_error"]['text'] = text;
+				cleanArray[i + "_error"]['type'] = type;
+			} else {
+				cleanArray[i] = [];
+				cleanArray[i]['text'] = text;
+				cleanArray[i]['type'] = type;
+			}
+		}
+		if(caution){
+			cleanArray[i + "_caution"] = [];
+			cleanArray[i + "_caution"]['text'] = "The text compiled above may not be formatted correctly.";
+		}
+
+		if(i == rawArray.length){
+			// this iteration is the last one in the loop...check and ensure all lists are closed here
+			if(lc_layerB > 0){ cleanArray[i+1 + "_lc_end"] += '_B'; }
+			if(lc_layerA > 0){ cleanArray[i+1 + "_lc_end"] += '_A'; }
+		}
+	} // end of for loop
+	return cleanArray
 }
 
 /*
@@ -540,5 +687,8 @@ TRAD CATALOG:
 
 2.) WL425 Worship Leader Internship	1-6
 	Needs to be: (1-6)
+
+AGS PROGRAMS:
+1.)  Organizational Leadership Concentration --- does not have a return character afterwards
 
 */

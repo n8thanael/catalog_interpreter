@@ -24,3 +24,13 @@ Regex Draft
 (|See | - see )General Education Requirements[a-zA-Z .]{1,}42-43[.]{0,1}[\r\n]
 -- Another forumla to capture General Education
 ^[\S\t ]{1,}credits in General Education
+
+
+---> Templating
+ --> .split on all /r/n
+ --> If first characters are "type" - then appropriately encode in complex template - 
+ if not, erase or join array
+ --> Split array -> Wash Array (Join, Erase .etc)
+
+ -> How do I "pre-fix/Post-fix" a list? ┌┌ & ┘┘ ???
+ -> Decision Counter? - !! would be best in Wash Steps... then the templating engine just encounters a list-start * list end line...
