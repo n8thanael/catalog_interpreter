@@ -4,7 +4,7 @@
  *
  *  currently working on interpretProgramArray_c()
  *  Building a function that will return to ipa_c() an array of programs and their titles as found in the text 
- * collectCourseCodesFromPrograms(string) -- currently messed up
+ *  collectCourseCodesFromPrograms(string) -- currently messed up
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -503,20 +503,29 @@ function repairMissingCharacters(string){
 
 // interprets a string and returns an array of program codes and their matching descriptions
 function collectCourseCodesFromPrograms(string){
-	var array = [];
+	let array = [];
 	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
-	regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ ]{0,3}[\r\n]{0,1})/gm;
-	var matchGroups = string.match(regex_z3);
-	console.log(matchGroups);
-	if(Array.isArray(matchGroups)){
-		for(var i = 0; i < matchGroups.length; i++){
-			var matchMoreGroups = matchGroups[i].match(regex_z3);
-			var thisCourseCode = '';
-			var thisCourseName = '';
-			thisCourseCode = matchMoreGroups[1] ? matchMoreGroups[1].trim() : "";
-			thisCourseName = matchMoreGroups[3] ? matchMoreGroups[3].trim() : "";
-			array[thisCourseCode] = thisCourseName;
+	const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;
+	let primeMatchArray = string.match(regex_z3);
+	if(Array.isArray(primeMatchArray)){
+		// iterate through each match to get to the group values  
+		for(let i = 0; i < primeMatchArray.length; i++){
+			let subMatchArray = [];
+			// iterate throught every sub match and extract each group value
+			while ((subMatchArray = regex_z3.exec(primeMatchArray[i])) !== null) {
+			    // This is necessary to avoid infinite loops with zero-width matches
+			    if (subMatchArray.index === regex_z3.lastIndex) {
+			        regex_z3.lastIndex++;
+			    }
+			    // pulls out the Code and Name of each Course into an array - it may actually be "text instructions" instead of an actual course name
+			    subMatchArray.forEach(() => {
+			    	thisCourseCode = subMatchArray[1] ? subMatchArray[1].trim() : "";
+					thisCourseName = subMatchArray[3] ? subMatchArray[3].trim() : "";
+					array[thisCourseCode] = thisCourseName;
+			    });
+			}
 		}
+
 	}
 	return array;
 }
