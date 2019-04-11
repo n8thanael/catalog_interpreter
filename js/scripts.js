@@ -2,9 +2,7 @@
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
- *  currently working on interpretProgramArray_c()
- *  Building a function that will return to ipa_c() an array of programs and their titles as found in the text 
- *  collectCourseCodesFromPrograms(string) -- currently messed up
+ *  Currently working on Templtes.js - establishing well-formed output.
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
