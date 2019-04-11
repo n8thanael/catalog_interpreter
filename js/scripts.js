@@ -44,7 +44,7 @@ function interpretPaste(){
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
 	var regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
-	var regex_a2 = /^[ ]{0,3}([A-Z ]{6,}(?=[\r\n]))/gm; // looking for Program Names
+	var regex_a2 = /^[ ]{0,3}([A-Z\t: ]{6,}(?=[\r\n]))/gm; // looking for MAJORS / Program Names
 	var regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
 	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective([\r\n]))/gm; // looking for headings
 	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
@@ -59,6 +59,7 @@ function interpretPaste_a(){
 	} else if (document.catalogObj.mode == "programs"){
 		string = fixDoubleSpacesBetweenWords(string);
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
+		console.log(string);
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
@@ -101,8 +102,8 @@ function interpretPaste_b(paste){
 
 // sets up all the concentration arrays and raw text within
 function interpretProgramArray_c(){
-	var regex_pa_c1 = /^([ ]{0,3}[A-Z ]{5,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2
-	var regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z ]{5,}[\r\n])([\s\S]*)/gm; // separeates the major's title from the rest of the raw text
+	var regex_pa_c1 = /^(^[ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2
+	var regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z: ]{5,}[\r\n])([\s\S]*)/gm; // separeates the major's title from the rest of the raw text
 	var regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
 	document.catalogObj.programs = [];
 	for(var i = 0; i < document.catalogObj.rawPrograms.length; i++){

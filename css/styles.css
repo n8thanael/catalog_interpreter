@@ -186,7 +186,7 @@ input:checked + .slider:before {
 #output h4{
   font-size:1.1em;
   font-weight:400;
-  padding:0.5em 0em;
+  padding:0.5em .5em 0em 0em;
   border-bottom: 2px solid #ddd;;
 }
 
