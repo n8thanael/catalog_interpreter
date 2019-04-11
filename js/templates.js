@@ -87,7 +87,7 @@ function convertPrograms2HTML(button){
 		program_html += `<h2>${major}</h2>`;
 		var iterator = array.keys();
 		for (let key of iterator){
-			console.log(key + " " + array[key]);
+			// console.log(key + " " + array[key]);
 		}
 		/*.forEach(function(index){
 			console.log(index);

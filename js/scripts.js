@@ -163,18 +163,19 @@ function interpretProgramTemplateArray_e(rawArray){
 	// enable comblex list-counters and  syste,
 	var lc_layerA = 0;
 	var lc_layerB = 0;
+	// the Last Good Index variable will 'keep' whatever paragraphs or list items were last entered, so that array.splice() can insert items within this.
+	var lastGoodIndex = 0;
+	// we need count paragraph incase we've indicated there is one we want to join together with the previous paragraph which isn't interupted by a title or list item
 	var count_paragraph = 0;
-	var count_junk = 0;
-
 	// loops across the arrays and sets various "counters" inorder to intigrate data "forward" into the flat clean-array
 	for(let i = 0; i < rawArray.length; i++){
-		let skip = false;
 		let text = '';
 		let type = '';
 		let firstTwoCharacters = rawArray[i].substr(0,2);
 		// allows the renderer to issue errors and cautions
 		let error = false;
 		let caution = false;
+
 		switch(firstTwoCharacters){
 			case '██':
 				// heading
@@ -182,46 +183,42 @@ function interpretProgramTemplateArray_e(rawArray){
 				type = "heading";
 				// a heading was discovered - this necessitates the end of both prior list layers
 				if(lc_layerA + lc_layerB > 0){
-					if(lc_layerB > 0){ cleanArray[i-1 + "_lc_end"] += '_B'; }
-					if(lc_layerA > 0){ cleanArray[i-1 + "_lc_end"] += '_A'; }
-					lc_layerA = 0;  // reset list counter
-					lc_layerB = 0;  // reset list counter
+					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
+					  // reset counters
+					lc_layerA = 0;
+					lc_layerB = 0;
 				}
 				count_paragraph = 0;
-				count_junk = 0;
 				break;
 			case '┌┌':
 				// list1
 				text = rawArray[i].substr(2);
 				type = "list1";
 				// Issue the start of 1st layer list it did not previously appear 
-				if(lc_layerA == 0){ cleanArray[i-1 + "_lc_start"] += '_A';}
+				if(lc_layerA == 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_start_A"});}
 				// detect and reset the 2nd layer list since it was nested and another layer 1 line item apeared
-				if(lc_layerB > 0){ cleanArray[i-1 + "_lc_end"] += '_B'; lc_layerN = 0; }
-				lc_layerA++;
+				if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+				lc_layerA++;  // increase list counter
+				  // reset counters
 				lc_layerB = 0;
 				count_paragraph = 0;
-				count_junk = 0;
 				break;
 			case '┘┘':
 				// list2
 				text = rawArray[i].substr(2);
 				type = "list2";
 				// Issue the start of 2nd layer list it did not previously appear 
-				if(lc_layerB == 0){ cleanArray[i-1 + "_lc_start"] += '_B';}
-				lc_layerB++;
+				if(lc_layerB == 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_start_B"});}
+				lc_layerB++;  // increase list counter
 				count_paragraph = 0;
-				count_junk = 0;
 				break;
 			default:
-				// console.log(rawArray[i]);
-				// eliminate junk array lines completely
+				// Push Junk Array Lines as Errors
 				if(rawArray[i].length < 4){
-					caution = false;
 					error = true;
 					text = rawArray[i];
 					type = 'error';
-					count_junk++;
 				} else {
 					// identifies a capital letter followed by multiple words seaparted by spaces - indicates sentence-formatted text
 					// if found it could indicate that this is part of a multi-break paragraph that needs united.
@@ -229,22 +226,24 @@ function interpretProgramTemplateArray_e(rawArray){
 					const regex_e1 = /^[A-Z]{1}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`.,&:\-\–\/() ]*/;
 					if(rawArray[i].search(regex_e1) !== -1){
 						// this is the first detected "paragraph" proceed as normal.
+						console.log(i +" | " + count_paragraph + " |: " + rawArray[i]);
 						if(count_paragraph == 0){
 							text = rawArray[i];			
 							type = "paragraph";
 							count_paragraph++;
-						// there are more than 1 detected "paragraphs" in a row... accumulate text to the prior one and skip the normal output
+						// there are more than 1 detected "paragraphs" in a row... accumulate text to the prior one
 						// include a "caution"
 						} else {
 							caution = true;
-							skip = true;
 							// it's possible that there were junk lines splitting up paragraphs ... include junk counter
-							if(Array.isArray(cleanArray[i - (count_paragraph + count_junk)])){
-								cleanArray[i - (count_paragraph + count_junk)]['text'] = cleanArray[i - (count_paragraph + count_junk)]['text'] + " " + rawArray[i];
+							if(cleanArray[lastGoodIndex-1].type == "paragraph"){
+								cleanArray[lastGoodIndex-1].text = cleanArray[lastGoodIndex-1].text + " " + rawArray[i];
 								count_paragraph++;
+								caution = true;
+								type = "caution";
+								text = rawArray[i];
 							} else {
 								caution = false;
-								skip = false;
 								error = true;
 								type = "error";
 								text = rawArray[i];
@@ -253,10 +252,12 @@ function interpretProgramTemplateArray_e(rawArray){
 					} else {
 						type = "unknown";
 						text = rawArray[i];
-						if(lc_layerB > 0){ cleanArray[i-1 + "_lc_end"] += '_B'; }
-						if(lc_layerA > 0){ cleanArray[i-1 + "_lc_end"] += '_A'; }
+						if(lc_layerA > 0){cleanArray.push({'text':'','type':"lc_end_A"});}
+						if(lc_layerB > 0){cleanArray.push({'text':'','type':"lc_end_B"});}
 						lc_layerA = 0;  // reset list counter
 						lc_layerB = 0;  // reset list counter
+						count_paragraph = 0;
+						caution = true;
 					}
 					// unknown, blank, error - or continuation of prior line with inserted line break
 					// the line contained very little if no word-formed characters "A bat cat denied" - breaks up lists
@@ -267,26 +268,20 @@ function interpretProgramTemplateArray_e(rawArray){
 				}
 		}
 		// looks behind and before to assume list-capabilities ... predictive
-		if(!skip){
-			if (error) {
-				cleanArray[i + "_error"] = [];
-				cleanArray[i + "_error"]['text'] = text;
-				cleanArray[i + "_error"]['type'] = type;
-			} else {
-				cleanArray[i] = [];
-				cleanArray[i]['text'] = text;
-				cleanArray[i]['type'] = type;
-			}
-		}
-		if(caution){
-			cleanArray[i + "_caution"] = [];
-			cleanArray[i + "_caution"]['text'] = "The text compiled above may not be formatted correctly.";
+		if (error || caution) {
+			cleanArray.push({'text': text,'type':type});
+		} else {
+			cleanArray.push({'text': text,'type':type});
+			lastGoodIndex = cleanArray.length;
 		}
 
-		if(i == rawArray.length){
+		if(i+1 == rawArray.length){
 			// this iteration is the last one in the loop...check and ensure all lists are closed here
-			if(lc_layerB > 0){ cleanArray[i+1 + "_lc_end"] += '_B'; }
-			if(lc_layerA > 0){ cleanArray[i+1 + "_lc_end"] += '_A'; }
+			cleanArray.push();
+			if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
+			if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+			lc_layerA = 0;  // reset list counter
+			lc_layerB = 0;  // reset list counter
 		}
 	} // end of for loop
 	return cleanArray
