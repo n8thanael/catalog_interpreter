@@ -3,6 +3,7 @@
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
  *  Currently working on Templtes.js - establishing well-formed output.
+ *  PROGERROR: information Tech Batchelor - Paragrah Missed
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -44,7 +45,7 @@ function interpretPaste_a(){
 	var regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
 	var regex_a2 = /^[ ]{0,3}([A-Z ]{6,}(?=[\r\n]))/gm; // looking for Program Names
 	var regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
-	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses([\r\n]))/gm; // looking for headings
+	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|[a-zA-Z ]*Objective([\r\n]))/gm; // looking for headings
 	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 	var regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
 	var regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
@@ -174,6 +175,10 @@ function interpretProgramTemplateArray_e(rawArray){
 		let error = false;
 		let caution = false;
 
+		// fix any hyphen- ated words that occur
+		// fix any double  spaces between words
+		rawArray[i] = fixDoubleSpacesBetweenWords(fixHyphenatedWords(rawArray[i]));
+
 		switch(firstTwoCharacters){
 			case '██':
 				// heading
@@ -218,10 +223,18 @@ function interpretProgramTemplateArray_e(rawArray){
 					text = rawArray[i];
 					type = 'error';
 				} else {
+					//simply fix any lines at this point that lead or end with spaces 
+					rawArray[i] = rawArray[i].trim();
+					// find and strip any odd characters from the text as well as throw an error, but continue processing
+					if (rawArray[i].search(/[¡█┌┘]{1,}/) !== -1){
+						cleanArray.push({'text':rawArray[i],'type':"error"});
+						rawArray[i] = rawArray[i].replace(/[¡█┌┘]{1,}/, '');
+						console.log(lastGoodIndex +" | "+ rawArray[i]);
+					}
 					// identifies a capital letter followed by multiple words seaparted by spaces - indicates sentence-formatted text
 					// if found it could indicate that this is part of a multi-break paragraph that needs united.
 					// We need to count paragraphs then and ensure the paragraph joins back with prior text.
-					const regex_e1 = /^[A-Z]{1}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`.,&:\-\–\/() ]*/;
+					const regex_e1 = /^[a-zA-Z\d]{1,2}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`.,&:\-\–\/() ]*/;
 					if(rawArray[i].search(regex_e1) !== -1){
 						// this is the first detected "paragraph" proceed as normal.
 						// console.log(i +" | " + count_paragraph + " |: " + rawArray[i]);
@@ -265,6 +278,7 @@ function interpretProgramTemplateArray_e(rawArray){
 					//caution = true;
 				}
 		}
+
 		// looks behind and before to assume list-capabilities ... predictive
 		if (error || caution) {
 			cleanArray.push({'text': text,'type':type});
@@ -670,6 +684,27 @@ function collectCourseCodesFromPrograms(string){
 	return array;
 }
 
+function fixHyphenatedWords(string){
+	const regex_z4 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z]{1,} )([\s\S]*)/;
+	matchGroups = string.match(regex_z4);
+	console.log(matchGroups);
+	if(Array.isArray(matchGroups)) {
+		var fixedWord = matchGroups[2].replace("- ","");
+		string = matchGroups[1] + fixedWord + matchGroups[3];
+	}
+	return string;
+}
+
+function fixDoubleSpacesBetweenWords(string){
+	const regex_z5 = /([\s\S]*)( [a-zA-Z][a-z]{1,}  [a-z][a-z]{1,} )([\s\S]*)/;
+	matchGroups = string.match(regex_z5);
+	console.log(matchGroups);
+	if(Array.isArray(matchGroups)) {
+		var fixedWord = matchGroups[2].replace("  "," ");
+		string = matchGroups[1] + fixedWord + matchGroups[3];
+	}
+	return string;
+}
 
 /*
 

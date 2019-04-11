@@ -90,21 +90,32 @@ function convertPrograms2HTML(button){
 		var array = progObj[major]['cleanArray'];
 		program_html += `<h2>${major}</h2>`;
 		array.forEach(function(index){
-			// console.log(index);
-			if(index.type == "lc_start_A" || index.type == "lc_end_B"){
-				program_html += `	<ul>`;
-			}
-			if(index.type == "lc_end_A" || index.type == "lc_end_B"){
-				program_html += `	</ul>`;
-			}
-			if(index.type == "list1" || index.type == "list1"){
-				program_html += `		<li>${index.text}</li>`;
-			}
-			if(index.type == "heading"){
-				program_html += `<h3>${index.text}</h3>`;
-			}
-			if(index.type == "paragraph"){
-				program_html += `<p>${index.text}</p>`;
+			switch(index.type){
+				case 'lc_start_A':
+					program_html += `<ul>`;
+					break;
+				case 'lc_start_B':
+					program_html += `	<ul>`;
+					break;
+				case 'lc_end_A':
+					program_html += `</ul>`;
+					break;
+				case 'lc_end_B':
+					program_html += `	</ul>`;
+					break;
+				case 'list1':
+					program_html += `	<li>${index.text}</li>`;
+					break;
+				case 'list2':
+					program_html += `		<li>${index.text}</li>`;
+					break;
+				case 'heading':
+					program_html += `<h3>${index.text}</h3>`;
+					break;
+				case 'paragraph':
+					program_html += `<p>${index.text}</p>`;
+					break;
+				// console.log(index);
 			}
 		});// end of array.forEach
 		
