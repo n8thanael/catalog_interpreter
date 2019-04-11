@@ -49,6 +49,8 @@ function interpretPaste_a(){
 	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective([\r\n]))/gm; // looking for headings
 	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 	var regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
+	var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[CREDITScredits]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
+	var regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
 	var regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
 
 	//mode changes the regex from a1 to a2
@@ -56,12 +58,14 @@ function interpretPaste_a(){
 		var string = string.replace(regex_a1,'▐▐$1');  // adds (ALT+222)
 	} else if (document.catalogObj.mode == "programs"){
 		string = fixDoubleSpacesBetweenWords(string);
-		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221)
-		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220)
-		string = string.replace(regex_a4,'██$1');  // adds (ALT+219)
-		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218)
-		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217)
-		string = string.replace(regex_a_,"¡¡$1¿¿\n");  // adds (ALT+173) before and (ALT+168) with a new line after
+		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
+		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
+		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
+		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
+		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217) = Sub List Item
+		string = string.replace(regex_a7,'╪╪$2<span class="right_just">$3</span>');  // adds (ALT+216) - Sub Heading with Right Justify)
+		string = string.replace(regex_a8,'┌┌$2<span class="right_just">$3</span>');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
+		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
 	var result = string;
 
@@ -187,6 +191,20 @@ function interpretProgramTemplateArray_e(rawArray){
 				text = rawArray[i].substr(2);
 				type = "heading";
 				// a heading was discovered - this necessitates the end of both prior list layers
+				if(lc_layerA + lc_layerB > 0){
+					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
+					  // reset counters
+					lc_layerA = 0;
+					lc_layerB = 0;
+				}
+				count_paragraph = 0;
+				break;
+			case '╪╪':
+				// Sub Heading
+				text = rawArray[i].substr(2);
+				type = "subheading";
+				//  - this necessitates the end of both prior list layers
 				if(lc_layerA + lc_layerB > 0){
 					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
 					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
