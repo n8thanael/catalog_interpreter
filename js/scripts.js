@@ -3,7 +3,8 @@
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
  *  Currently working on Templtes.js - establishing well-formed output.
- *  PROGERROR: information Tech Batchelor - Paragrah Missed
+ 
+ *   -- wasn't caught here: pg 59 Adult and Graduate Studies Program | 2018-2019 Academic Catalog
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -45,7 +46,7 @@ function interpretPaste_a(){
 	var regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
 	var regex_a2 = /^[ ]{0,3}([A-Z ]{6,}(?=[\r\n]))/gm; // looking for Program Names
 	var regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
-	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|[a-zA-Z ]*Objective([\r\n]))/gm; // looking for headings
+	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective([\r\n]))/gm; // looking for headings
 	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 	var regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
 	var regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
@@ -54,12 +55,13 @@ function interpretPaste_a(){
 	if(document.catalogObj.mode == "courses"){
 		var string = string.replace(regex_a1,'▐▐$1');  // adds (ALT+222)
 	} else if (document.catalogObj.mode == "programs"){
-		var string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221)
-		var string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220)
-		var string = string.replace(regex_a4,'██$1');  // adds (ALT+219)
-		var string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218)
-		var string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217)
-		var string = string.replace(regex_a_,"¡¡$1¿¿\n");  // adds (ALT+173) before and (ALT+168) with a new line after
+		string = fixDoubleSpacesBetweenWords(string);
+		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221)
+		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220)
+		string = string.replace(regex_a4,'██$1');  // adds (ALT+219)
+		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218)
+		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217)
+		string = string.replace(regex_a_,"¡¡$1¿¿\n");  // adds (ALT+173) before and (ALT+168) with a new line after
 	}
 	var result = string;
 
@@ -177,7 +179,7 @@ function interpretProgramTemplateArray_e(rawArray){
 
 		// fix any hyphen- ated words that occur
 		// fix any double  spaces between words
-		rawArray[i] = fixDoubleSpacesBetweenWords(fixHyphenatedWords(rawArray[i]));
+		rawArray[i] = fixHyphenatedWords(rawArray[i]);
 
 		switch(firstTwoCharacters){
 			case '██':
@@ -242,6 +244,10 @@ function interpretProgramTemplateArray_e(rawArray){
 							text = rawArray[i];			
 							type = "paragraph";
 							count_paragraph++;
+							if(lc_layerA > 0){cleanArray.push({'text':'','type':"lc_end_A"});}
+							if(lc_layerB > 0){cleanArray.push({'text':'','type':"lc_end_B"});}
+							lc_layerA = 0;  // reset list counter
+							lc_layerB = 0;  // reset list counter
 						// there are more than 1 detected "paragraphs" in a row... accumulate text to the prior one
 						// include a "caution"
 						} else {
@@ -685,9 +691,9 @@ function collectCourseCodesFromPrograms(string){
 }
 
 function fixHyphenatedWords(string){
-	const regex_z4 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z]{1,} )([\s\S]*)/;
+	const regex_z4 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
 	matchGroups = string.match(regex_z4);
-	console.log(matchGroups);
+	//console.log(matchGroups);
 	if(Array.isArray(matchGroups)) {
 		var fixedWord = matchGroups[2].replace("- ","");
 		string = matchGroups[1] + fixedWord + matchGroups[3];
@@ -696,12 +702,12 @@ function fixHyphenatedWords(string){
 }
 
 function fixDoubleSpacesBetweenWords(string){
-	const regex_z5 = /([\s\S]*)( [a-zA-Z][a-z]{1,}  [a-z][a-z]{1,} )([\s\S]*)/;
+	const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} )([ ]{0,2}[\s\S]*)/;
 	matchGroups = string.match(regex_z5);
-	console.log(matchGroups);
+	//console.log(matchGroups);
 	if(Array.isArray(matchGroups)) {
-		var fixedWord = matchGroups[2].replace("  "," ");
-		string = matchGroups[1] + fixedWord + matchGroups[3];
+		var fixedWord = matchGroups[2].replace(" ","");
+		string = matchGroups[1].trim() + " " + fixedWord + " " + matchGroups[3].trim();
 	}
 	return string;
 }
@@ -718,5 +724,12 @@ TRAD CATALOG:
 
 AGS PROGRAMS:
 1.)  Organizational Leadership Concentration --- does not have a return character afterwards
+2.)  Need to make sure concentrations have return characters after them - I'm not programing in prediction/detection for those
+3.)  REQUIRED HUMAN SERVICES COURSES	21 CREDITS - and other text-boxes simply don't work
+     --> Can't be ALL_CAPS
+     --> Can't be text-box
+     --> everything else is fine...
+4.)  can't have bulleted lists split by return characters... as in: "24 credits at the 3000-level or above*" on pg 56
+
 
 */

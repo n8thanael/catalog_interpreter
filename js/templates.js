@@ -79,53 +79,54 @@ function convertCatalogObj2HTML(button){
 function convertPrograms2HTML(button){
 	const progObj = document.catalogObj.programs;
 	var outputAll = '';
-	var program_html = '';
 	var agsTrad = document.querySelector("#ags_trad").innerHTML
 
 	Object.keys(progObj).forEach(function(major){
+		outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
 		var concObj = progObj[major]['Concentrations'];
 		Object.keys(concObj).forEach(function(concentration){
-			console.log(concentration);
+			outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
 		});
-		var array = progObj[major]['cleanArray'];
-		program_html += `<h2>${major}</h2>`;
-		array.forEach(function(index){
-			switch(index.type){
-				case 'lc_start_A':
-					program_html += `<ul>`;
-					break;
-				case 'lc_start_B':
-					program_html += `	<ul>`;
-					break;
-				case 'lc_end_A':
-					program_html += `</ul>`;
-					break;
-				case 'lc_end_B':
-					program_html += `	</ul>`;
-					break;
-				case 'list1':
-					program_html += `	<li>${index.text}</li>`;
-					break;
-				case 'list2':
-					program_html += `		<li>${index.text}</li>`;
-					break;
-				case 'heading':
-					program_html += `<h3>${index.text}</h3>`;
-					break;
-				case 'paragraph':
-					program_html += `<p>${index.text}</p>`;
-					break;
-				// console.log(index);
-			}
-		});// end of array.forEach
-		
 	}); // end Object.keys().forEach loop
-
-	outputAll += program_html;
 
 	if(button){
    	  document.getElementById("output").innerHTML = outputAll;
 	} else {
 	  return outputAll
 	}
+}
+
+function majorAndConcentrationOutput(array, major){
+	output_html = '';
+	output_html += `<h2>${major}</h2>`;
+	array.forEach(function(index){
+		switch(index.type){
+			case 'lc_start_A':
+				output_html += `<ul>`;
+				break;
+			case 'lc_start_B':
+				output_html += `	<ul>`;
+				break;
+			case 'lc_end_A':
+				output_html += `</ul>`;
+				break;
+			case 'lc_end_B':
+				output_html += `	</ul>`;
+				break;
+			case 'list1':
+				output_html += `	<li>${index.text}</li>`;
+				break;
+			case 'list2':
+				output_html += `		<li>${index.text}</li>`;
+				break;
+			case 'heading':
+				output_html += `<h3>${index.text}</h3>`;
+				break;
+			case 'paragraph':
+				output_html += `<p>${index.text}</p>`;
+				break;
+			// console.log(index);
+		}
+	});// end of array.forEach
+	return output_html
 }
