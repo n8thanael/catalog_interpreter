@@ -139,7 +139,7 @@ input:checked + .slider:before {
 }
 .course_title{
 	font-weight:400;
-	font-size:1.5em;
+	font-size:1.3em;
 	background-color:#ddd;
 	padding:0.1em 0.3em;
 }
@@ -167,4 +167,18 @@ input:checked + .slider:before {
 
 .course_postDesc {
 	font-style: italic;
+}
+
+#output h2{
+  font-size:2em;
+  font-weight:400;
+  border-bottom:2px solid #ddd;
+  margin-top:2em;
+}
+
+#output h3{
+  font-size:1.5em;
+  font-weight:400;
+  background-color:#ddd;
+  padding:0.1em 0.3em;
 }

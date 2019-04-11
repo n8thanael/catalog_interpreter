@@ -224,7 +224,7 @@ function interpretProgramTemplateArray_e(rawArray){
 					const regex_e1 = /^[A-Z]{1}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d *’'`.,&:\-\–\/() ]*/;
 					if(rawArray[i].search(regex_e1) !== -1){
 						// this is the first detected "paragraph" proceed as normal.
-						console.log(i +" | " + count_paragraph + " |: " + rawArray[i]);
+						// console.log(i +" | " + count_paragraph + " |: " + rawArray[i]);
 						if(count_paragraph == 0){
 							text = rawArray[i];			
 							type = "paragraph";

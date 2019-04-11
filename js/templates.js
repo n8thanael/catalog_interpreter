@@ -1,9 +1,9 @@
 function convert(){
 	console.log('convert:' + document.catalogObj.mode);
 	if(document.catalogObj.mode == 'courses'){
-		convertCatalogObj2HTML();
+		convertCatalogObj2HTML(true);
 	} else if(document.catalogObj.mode == 'programs'){
-		convertPrograms2HTML();
+		convertPrograms2HTML(true);
 	}
 }
 
@@ -83,35 +83,34 @@ function convertPrograms2HTML(button){
 	var agsTrad = document.querySelector("#ags_trad").innerHTML
 
 	Object.keys(progObj).forEach(function(major){
+		var concObj = progObj[major]['Concentrations'];
+		Object.keys(concObj).forEach(function(concentration){
+			console.log(concentration);
+		});
 		var array = progObj[major]['cleanArray'];
 		program_html += `<h2>${major}</h2>`;
-		var iterator = array.keys();
-		for (let key of iterator){
-			// console.log(key + " " + array[key]);
-		}
-		/*.forEach(function(index){
-			console.log(index);
-			console.log(array[index]);
-			if(index.search(/_lc_start/) !== -1){
+		array.forEach(function(index){
+			// console.log(index);
+			if(index.type == "lc_start_A" || index.type == "lc_end_B"){
 				program_html += `	<ul>`;
 			}
-			if(index.search(/_lc_end/) !== -1){
+			if(index.type == "lc_end_A" || index.type == "lc_end_B"){
 				program_html += `	</ul>`;
 			}
-			if(array[index]['type'] == "list1" || array[index]['type'] == "list1"){
-				program_html += `		<li>${array[i]['text']}</li>`;
+			if(index.type == "list1" || index.type == "list1"){
+				program_html += `		<li>${index.text}</li>`;
 			}
-			if(array[index]['type'] == "heading"){
-				program_html += `<h3>${array[i]['text']}</h3>`;
+			if(index.type == "heading"){
+				program_html += `<h3>${index.text}</h3>`;
 			}
-			if(array[index]['type'] == "paragraph"){
-				program_html += `<p>${array[i]['text']}</p>`;
+			if(index.type == "paragraph"){
+				program_html += `<p>${index.text}</p>`;
 			}
 		});// end of array.forEach
-		*/
+		
 	}); // end Object.keys().forEach loop
 
-	outputAll += program_html;		
+	outputAll += program_html;
 
 	if(button){
    	  document.getElementById("output").innerHTML = outputAll;
