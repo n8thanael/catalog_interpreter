@@ -13,14 +13,21 @@ toggle_course_program.addEventListener( 'change', function() {
     	document.catalogObj.mode = 'programs';
     	courseButton.classList.add("disabled");
     	programButton.classList.remove("disabled");
+    	toggle_ags_trad_switch.classList.add("disabled");
+    	ags_trad_button.classList.add("disabled");
+    	toggle_ags_trad.classList.add("disabled");
     } else {
      	document.catalogObj.mode = 'courses';
     	courseButton.classList.remove("disabled");
     	programButton.classList.add("disabled");
+    	toggle_ags_trad_switch.classList.remove("disabled");
+    	ags_trad_button.classList.remove("disabled");
+    	toggle_ags_trad.classList.remove("disabled");
     }
    	console.log('mode:' + document.catalogObj.mode);
 });
 
+var toggle_ags_trad_switch = document.querySelector(".switch.toggle_ags_trad");
 var toggle_ags_trad = document.querySelector("input[name=toggle_ags_trad]");
 var ags_trad_button = document.querySelector("#ags_trad");
 

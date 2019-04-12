@@ -44,12 +44,16 @@ function interpretPaste(){
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
 	var regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
-	var regex_a2 = /^[ ]{0,3}([A-Z\t: ]{6,}(?=[\r\n]))/gm; // looking for MAJORS / Program Names
+	// var regex_a2 = /^[ ]{0,3}([A-Z\t: ]{6,}(?=[\r\n]))/gm; // looking for MAJORS / Program Names -- AGS ONLY
+	// var regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1})[a-zA-Z&() ]{6,}|[A-Z\t: ]{6,}|[A-Z]{2} in [a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names
+	var regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 	var regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
-	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective([\r\n]))/gm; // looking for headings
+	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|Required [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective|[ ]*Objectives[ ]*([\r\n]))/gm; // looking for headings
 	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 	var regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
-	var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[CREDITScredits]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
+	// var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[CREDITScredits]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
+	var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
+	var regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
 	var regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
 	var regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
 
@@ -65,6 +69,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
 		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217) = Sub List Item
 		string = string.replace(regex_a7,'╪╪$2<span class="right_just">$3</span>');  // adds (ALT+216) - Sub Heading with Right Justify)
+		string = string.replace(regex_a7b,'╫╫$2<span class="right_just">$3</span>');  // adds (ALT+215) - Sub Heading Total with Right Justify)
 		string = string.replace(regex_a8,'┌┌$2<span class="right_just">$3</span>');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
@@ -102,7 +107,8 @@ function interpretPaste_b(paste){
 
 // sets up all the concentration arrays and raw text within
 function interpretProgramArray_c(){
-	var regex_pa_c1 = /^(^[ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2
+	// var regex_pa_c1 = /^([ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2 ----> AGS ONLY
+	var regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z\t: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names as group 1 (including a /r/n), extracts everything else as group 2
 	var regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z: ]{5,}[\r\n])([\s\S]*)/gm; // separeates the major's title from the rest of the raw text
 	var regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
 	document.catalogObj.programs = [];
@@ -110,7 +116,7 @@ function interpretProgramArray_c(){
 		let rawProgram = document.catalogObj.rawPrograms[i];
 		let matchGroups = rawProgram.match(regex_pa_c1);
 		let major = '';
-		// console.log(matchGroups);
+		console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
 			// else ignore the line
 			var thisMajor = {};
@@ -118,7 +124,8 @@ function interpretProgramArray_c(){
 			thisMajor['conRef'] = [];
 			thisMajor.courses = [];
 			major = matchGroups[1] ? matchGroups[1].trim() : undefined;
-			thisMajor.rawText = matchGroups[2] ? matchGroups[2].trim() : undefined;
+			major = major.replace(/\r\n/,"");  // need to remove any return characters that exist in some Trad Course Majors
+ 			thisMajor.rawText = matchGroups[3] ? matchGroups[3].trim() : undefined;
 			// split out the concentration if they exist
 			var conPosition = thisMajor.rawText.search(/▄▄/gm);// start of a concentration
 			if(conPosition !== -1){
@@ -205,6 +212,20 @@ function interpretProgramTemplateArray_e(rawArray){
 				// Sub Heading
 				text = rawArray[i].substr(2);
 				type = "subheading";
+				//  - this necessitates the end of both prior list layers
+				if(lc_layerA + lc_layerB > 0){
+					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
+					  // reset counters
+					lc_layerA = 0;
+					lc_layerB = 0;
+				}
+				count_paragraph = 0;
+				break;
+			case '╫╫':
+				// Sub Heading
+				text = rawArray[i].substr(2);
+				type = "subheadingtotal";
 				//  - this necessitates the end of both prior list layers
 				if(lc_layerA + lc_layerB > 0){
 					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
@@ -740,6 +761,7 @@ TRAD CATALOG:
 
 2.) WL425 Worship Leader Internship	1-6
 	Needs to be: (1-6)
+3.)  Course Hours SubHeadings need to have a (TAB)0 Hours so they don't trigger as Majors since they are capitalized
 
 AGS PROGRAMS:
 1.)  Organizational Leadership Concentration --- does not have a return character afterwards
