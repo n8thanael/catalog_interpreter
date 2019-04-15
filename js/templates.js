@@ -1,13 +1,5 @@
-function convert(){
-	console.log('convert:' + document.catalogObj.mode);
-	if(document.catalogObj.mode == 'courses'){
-		convertCatalogObj2HTML(true);
-	} else if(document.catalogObj.mode == 'programs'){
-		convertPrograms2HTML(true);
-	}
-}
-
-function convertCatalogObj2HTML(button){
+function convertCatalogObj2HTML(){
+	console.log('converCatalogObj2HTML');
 	var outputAll = '';
 	var agsTrad = document.querySelector("#ags_trad").innerHTML;
 	for(i=0; i < document.catalogObj.courseRef.length; i++){
@@ -67,11 +59,7 @@ function convertCatalogObj2HTML(button){
 
 	outputAll += course_html;		
 	}
-	if(button){
-   	  document.getElementById("output").innerHTML = outputAll;
-	} else {
-	  return outputAll
-	}
+    return outputAll
 }
 
 

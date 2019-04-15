@@ -20,7 +20,8 @@ document.catalogObj = {};
 
 function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
-	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
+	console.log(objDump);
+	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2);
 	document.getElementById("output").innerHTML = convertCatalogObj2HTML();
 	document.getElementById("status").innerHTML = reportCourses();
 }
@@ -28,7 +29,8 @@ function interpretCourses(){
 function interpretPrograms(){
 	interpretPaste_b(interpretPaste_a());
 	var objDump = interpretProgramArray_c();
-	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
+	console.log(JSON.stringify(objDump, null, 2));
+	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("output").innerHTML = convertPrograms2HTML();
 }
 
@@ -76,11 +78,7 @@ function interpretPaste_a(){
 	}
 	var result = string;
 
-	if(document.catalogObj.debug){
-	    document.getElementById("dump").innerHTML = result;
-	} else {
-	    return result;
-	}
+    return result;
 }
 
 /*
@@ -88,11 +86,7 @@ function interpretPaste_a(){
  */
 function interpretPaste_b(paste){
 	var array = [];
-	if(document.catalogObj.debug){
-		var string = document.getElementById("paste").value;
-	} else {
-	    string = paste;		
-	}
+    string = paste;		
     
 	if(document.catalogObj.mode == "courses"){
 		var array = string.split('▐▐');
@@ -103,6 +97,9 @@ function interpretPaste_b(paste){
 	} else if (document.catalogObj.mode == "programs"){
 		var array = string.split('▌▌');
 		document.catalogObj.rawPrograms = array;
+		if(document.catalogObj.debug){
+			document.getElementById("dump").innerHTML = array;
+		}
 	}
 }
 
@@ -160,7 +157,9 @@ function interpretProgramArray_c(){
 			thisMajor.cleanArray = interpretProgramTemplateArray_e(thisMajor.rawArray);
 			document.catalogObj.programs[major] = thisMajor;
 		}
-	} 
+	}
+
+	return document.catalogObj.programs;
 }
 
 // simply creates a rawArray of Lines and eliminates 100% junk strings
