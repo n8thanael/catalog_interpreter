@@ -2,9 +2,9 @@
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
- *  Currently working on Templtes.js - establishing well-formed output.
- 
- *   -- wasn't caught here: pg 59 Adult and Graduate Studies Program | 2018-2019 Academic Catalog
+need to "intercept" the current lists and create two "outputs"
+1.)  No Merge Button (prints to screen w/out dropdown courses"
+2.)  Merge Button prints to screen with dropdown courses (and writes final programs & final Concentrations to OBJ Array)
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -31,8 +31,8 @@ function interpretPrograms(){
 	var objDump = interpretProgramArray_c();
 	console.log(JSON.stringify(objDump, null, 2));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
-	document.getElementById("output").innerHTML = convertPrograms2HTML();
 	document.getElementById("status").innerHTML = reportPrograms();
+	document.getElementById("output").innerHTML = convertPrograms2HTML();
 }
 
 function output(){
@@ -777,14 +777,13 @@ function reportPrograms(){
 	let report = '';
 	let string = '';	
 	let programs = document.catalogObj.programs;
-	document.catalogObj.programs.missingCourses = [];
+	document.catalogObj.missingCourses = [];
 	// let courses = document.catalogObj.courses.length;
 
 	// very similar code as found in templates.js --> function convertPrograms2HTML(){
 	// refactor?
 	Object.keys(programs).forEach(function(major){
 		let thisMajor = document.catalogObj.programs[major];
-		console.log(thisMajor);
 		thisMajor.courseRender = {};
 		let found = 0;
 		let missing = 0;
@@ -802,7 +801,6 @@ function reportPrograms(){
 					let courseDescription = thisCourseObj.description;
 					let courseTitle = thisCourseObj.titleText;
 					thisMajor.courseRender[thisCourse] = courseTitle + '<br>' + courseDescription;
-					// console.log(`		` + course + `: ` + courseTitle);
 					found++;
 					confirmed = true;
 					break;
@@ -812,12 +810,11 @@ function reportPrograms(){
 			}
 			if(!confirmed){
 				missing++;
-				document.catalogObj.programs.missingCourses.push(course);
+				document.catalogObj.missingCourses.push(course);
 				missingCourseString += course + ', ';
 			}
 		}); // end of: Object.keys(typeof thisMajor.courses == "object" && thisMajor.courses).forEach(function(course){
-	
-		// console.log(major);
+
 		string += `<h3>${major}</h3>`;
 
 		if(found > 0){
@@ -850,7 +847,6 @@ function reportPrograms(){
 							let courseDescription = thisCourseObj.description;
 							let courseTitle = thisCourseObj.titleText;
 							thisConcentration.courseRender[thisCourse] = courseTitle + '<br>' + courseDescription;
-							// console.log(`		` + course + `: ` + courseTitle);
 							found++;
 							confirmed = true;
 							break;

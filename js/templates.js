@@ -64,13 +64,13 @@ function convertCatalogObj2HTML(){
 
 function convertPrograms2HTML(){
 	const progObj = document.catalogObj.programs;
-	var outputAll = '';
+	let outputAll = '';
 	// didn't need this after all
 	// var agsTrad = document.querySelector("#ags_trad").innerHTML
 
 	Object.keys(progObj).forEach(function(major){
 		outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
-		var concObj = progObj[major]['Concentrations'];
+		let concObj = progObj[major]['Concentrations'];
 		Object.keys(concObj).forEach(function(concentration){
 			outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
 		});
@@ -82,6 +82,7 @@ function convertPrograms2HTML(){
 function majorAndConcentrationOutput(array, major){
 	output_html = '';
 	output_html += `<h2>${major}</h2>`;
+	// console.log(array);
 	array.forEach(function(index){
 		switch(index.type){
 			case 'lc_start_A':
