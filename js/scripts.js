@@ -20,7 +20,7 @@ document.catalogObj = {};
 
 function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
-	console.log(objDump);
+	// console.log(objDump);
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2);
 	document.getElementById("output").innerHTML = convertCatalogObj2HTML();
 	document.getElementById("status").innerHTML = reportCourses();
@@ -32,7 +32,7 @@ function interpretPrograms(){
 	console.log(JSON.stringify(objDump, null, 2));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("output").innerHTML = convertPrograms2HTML();
-	reportPrograms();
+	document.getElementById("status").innerHTML = reportPrograms();
 }
 
 function output(){
@@ -763,76 +763,120 @@ function reportCourses(){
 	return string;
 }
 
+// should recieve strings that designate boostrap classes: "success", "warning" or "danger"
+// https://getbootstrap.com/docs/4.0/components/alerts/
+function reportAlert(text,type){
+	return `<div class="alert alert-${type}" role="alert">${text}</div>`;
+}
 
-
+// inspects the reports after running 
 function reportPrograms(){
-	let report = ''
-	let warning = [];
-	let success = [];
+	if(typeof document.catalogObj.courseRef !== "object"){
+		return reportAlert('NO CLASSES LOADED<br>COMPARISON REPORT FAILED<br><br>• First paste courses for the system to interpret and then push the <i>"Interpret Courses"</i> button.','danger'); 
+	} else {
+	let report = '';
 	let string = '';	
 	let programs = document.catalogObj.programs;
+	document.catalogObj.programs.missingCourses = [];
 	// let courses = document.catalogObj.courses.length;
 
 	// very similar code as found in templates.js --> function convertPrograms2HTML(){
 	// refactor?
 	Object.keys(programs).forEach(function(major){
 		let thisMajor = document.catalogObj.programs[major];
-		console.log(major);
+		console.log(thisMajor);
+		thisMajor.courseRender = {};
+		let found = 0;
+		let missing = 0;
+		let missingCourseString = '';
+		// refactor this at some time...many portions are duplicated in Concentration-level inspection
+		Object.keys(typeof thisMajor.courses == "object" && thisMajor.courses).forEach(function(course){
+			let confirmed = false;
+			// The Interpreted Courses Should already exist - if so check the refernce to search for the specific course
+			for(i = 0; i < document.catalogObj.courseRef.length; i++){
+				if(document.catalogObj.courseRef[i].class == course ){
+					// prepare to output title, descriptions etc.
+				    let thisCourse = document.catalogObj.courseRef[i].class;
+				    let thisCourseRef = document.catalogObj.courseRef[i].ref;
+					let thisCourseObj = document.catalogObj.courses[thisCourseRef][course];
+					let courseDescription = thisCourseObj.description;
+					let courseTitle = thisCourseObj.titleText;
+					thisMajor.courseRender[thisCourse] = courseTitle + '<br>' + courseDescription;
+					// console.log(`		` + course + `: ` + courseTitle);
+					found++;
+					confirmed = true;
+					break;
+				} else {
+					thisMajor.courseRender[course] = '';
+				}
+			}
+			if(!confirmed){
+				missing++;
+				document.catalogObj.programs.missingCourses.push(course);
+				missingCourseString += course + ', ';
+			}
+		}); // end of: Object.keys(typeof thisMajor.courses == "object" && thisMajor.courses).forEach(function(course){
+	
+		// console.log(major);
+		string += `<h3>${major}</h3>`;
+
+		if(found > 0){
+			string += reportAlert(`<b>${major}</b> <i>Major</i>; found: ${found}/`+ Object.keys(thisMajor.courses).length + ` courses`,'success');					
+		}
+		if(missing > 0){
+			string += reportAlert(`<b>${major}</b> <i>Major</i>; missing: ${missingCourseString}`,'warning');					
+		}		
 		
 		// inspect the concentration level
-		if(Object.keys(thisMajor.Concentrations).length > 0){
+		if(typeof thisMajor.Concentrations == "object" && Object.keys(thisMajor.Concentrations).length > 0){
 			Object.keys(thisMajor.Concentrations).forEach(function(concentration){
 				let thisConcentration = thisMajor.Concentrations[concentration];
-				console.log(`	` + concentration + `, courses: ` + Object.keys(thisConcentration.courses).length);
-					let found = 0;
-					let missing = 0;				
-				// inspect the courses level
+				thisConcentration.courseRender = {};
+				// problematic - much of this is duplicated from the Major Level...
+				found = 0;
+				missing = 0;
+				missingCourseString = '';
+				
+				// inspect concentrations at the courses level
 				Object.keys(thisConcentration.courses).forEach(function(course){
-					let confirmed = false;
+					confirmed = false;
+					// The Interpreted Courses Should already exist - if so check the refernce to search for the specific course
 					for(i = 0; i < document.catalogObj.courseRef.length; i++){
 						if(document.catalogObj.courseRef[i].class == course ){
+							// prepare to output title, descriptions etc.
 	  					    let thisCourse = document.catalogObj.courseRef[i].class;
 	  					    let thisCourseRef = document.catalogObj.courseRef[i].ref;
 	  						let thisCourseObj = document.catalogObj.courses[thisCourseRef][course];
 							let courseDescription = thisCourseObj.description;
 							let courseTitle = thisCourseObj.titleText;
-							console.log(`		` + course + `: ` + courseTitle);
+							thisConcentration.courseRender[thisCourse] = courseTitle + '<br>' + courseDescription;
+							// console.log(`		` + course + `: ` + courseTitle);
 							found++;
 							confirmed = true;
 							break;
+						} else {
+							thisConcentration.courseRender[course] = '';
 						}
 					}
 					if(!confirmed){
 						missing++;
+						document.catalogObj.programs.missingCourses.push(course);
+						missingCourseString += course + ', ';
 					}
 				});
-				console.log(`		found: ${found} | missing: ${missing}`);
+				if(found > 0){
+					string += reportAlert(`<b>${concentration}</b>; found: ${found}/`+ Object.keys(thisConcentration.courses).length + ` courses`,'success');					
+				}
+				if(missing > 0){
+					string += reportAlert(`<b>${concentration}</b>; missing: ${missingCourseString}`,'warning');					
+				}
 			});
-		}
-		/*
-		outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
-		var concObj = progObj[major]['Concentrations'];
-		Object.keys(concObj).forEach(function(concentration){
-			outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
-		});
-				*/
-	}); // end Object.keys().forEach loop
-	/*
-		if(courses > 0){
-			if(programs > 0){
-				string += '<div class="alert alert-success" role="alert">' + programs + ' Have been Found</div>'		
-			} else {
-				string += '<div class="alert alert-warning" role="alert">' + programs + ' Have been Found</div>'			
-			}
+		} // end of : if(typeof thisMajor.Concentrations == "object" && Object.keys(thisMajor.Concentrations).length > 0){
+	}); // end of: Object.keys(programs).forEach(function(major){
 
-			string += '<div class="alert alert-success" role="alert">' + courses + ' Have been Found</div>'
-
-		} else {
-			string += '<div class="alert alert-warning" role="alert">No Courses Have been Found</div>';
-		
-		}
-	*/
 	return string;
+
+	} // end of:  if(typeof document.catalogObj.courseRef !== "object"){
 }
 
 
