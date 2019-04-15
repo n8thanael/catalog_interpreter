@@ -1,0 +1,77 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Interpreter</title>
+  <link rel="stylesheet" href="css/styles.css?v=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+ </head>
+<body>
+	<script type="text/javascript" src="js/ags_1920_courses.json"></script>
+ 	<script src="js/scripts.js"></script>
+ 	<div class="container">
+ 		<h1>| Catalog Interpreter ·•» v.1.2</h1>
+	    <div class="row">
+	    	<div class="col in">
+			  <div class="form-group">
+			  	<Br>
+			  	<!-- 
+			    <label>Catalog Information</label>
+			    <input type="text" class="form-control form-control-sm" id="dept" placeholder="department: AGS/TRAD">
+			    <input type="text" class="form-control form-control-sm" id="date" placeholder="date: 2019-2020">
+			    <input type="text" class="form-control form-control-sm" id="approvaldate" placeholder="approval date: 040119">
+			  	<Br>
+			    -->
+			    <label>Paste Here <span>.in</span></label>
+			    <textarea class="form-control" id="paste" rows="3"></textarea>
+			    <hr>
+			    <div id="status"><p># of AGS / TRAD Courses Loaded</p></div>
+			    <hr>
+			    <label class="switch">
+				  <input type="checkbox" name="toggle_course_program">
+				  <span class="slider round course_program"></span>
+				</label>
+			    <button class="btn btn-primary" id="interpret_courses" onclick="interpretCourses()">Interpret Courses</button>
+			    <button class="btn btn-primary disabled" id="interpret_programs" onclick="interpretPrograms()">Interpret Programs</button>
+			    <!-- <button class="btn btn-primary" id="convert" onclick="convert()">Convert</button> -->
+			    <hr>
+   			    <label class="switch toggle_ags_trad">
+				  <input type="checkbox" name="toggle_ags_trad">
+				  <span class="slider round ags_trad"></span>
+				</label>
+				<button class="btn btn-success" id="ags_trad">AGS</button>
+			  </div>
+	    	</div>
+	    	<div class="col out">
+			    <label>Check Here <span>.out</span></label>
+			    <div id="output"></div>
+	    	</div>
+	    </div>
+	    <div class="row">
+			<div class="col-12">
+		    <label class="switch">
+			  <input type="checkbox" name="toggle_debug">
+			  <span class="slider round debug"></span>
+			</label>
+			<button class="btn btn-secondary" id="debug">debug</button>
+			</div>
+			<div id="debug_content" class="d-none">
+			    <button class="btn btn-primary" onclick="output()">JSON Output Classes</button>
+			    <button class="btn btn-primary" onclick="loadClasses(courseCatalog)">Load JSON Classes to DOM</button>
+			    <button class="btn btn-primary" onclick="interpretPaste_a()">Interepret A</button>
+			    <button class="btn btn-primary" onclick="interpretPaste_b()">Interepret B</button>
+			    <button class="btn btn-primary" onclick="interpretArray_c()">Array C</button>
+			    <button class="btn btn-primary" onclick="convertCatalogObj2HTML(true)">Convert Catalog Object 2 HTML </button>
+			    <pre id="dump">
+			    </pre>
+			</div>
+		</div>
+	</div>
+ 	<script src="js/interface.js"></script>
+ 	<script src="js/templates.js"></script>
+</body>
+</html>

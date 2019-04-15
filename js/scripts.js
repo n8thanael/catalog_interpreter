@@ -22,6 +22,7 @@ function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
 	document.getElementById("output").innerHTML = convertCatalogObj2HTML();
+	document.getElementById("status").innerHTML = reportCourses();
 }
 
 function interpretPrograms(){
@@ -751,6 +752,17 @@ function fixDoubleSpacesBetweenWords(string){
 	}
 	return string;
 }
+
+function reportCourses(){
+	let string = '';
+	if(document.catalogObj.courses.length > 0){
+		string += document.catalogObj.courses.length + " " + document.querySelector("#ags_trad").innerHTML + " Courses Loaded";
+		string += "<br>" + Object.keys(document.catalogObj.courseErr).length + " " + document.querySelector("#ags_trad").innerHTML + " Errors Discovered";
+	}
+	return string;
+}
+
+
 
 /*
 

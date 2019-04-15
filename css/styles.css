@@ -3,9 +3,9 @@
 }
 
 /*
- *    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ 
- *    █ SWITCH STYLES █ 
- *    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 
+ *    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ 
+ *    █ INTERFACE STYLES █ 
+ *    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 
  */
 
 .switch {
@@ -87,6 +87,10 @@ input:focus + .slider.debug {
 
 .slider.ags_trad:before {
   background-color: white;
+}
+
+#paste{
+   height:20vw;
 }
 
 #ags_trad{
