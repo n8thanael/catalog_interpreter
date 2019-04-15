@@ -76,10 +76,11 @@ function convertCatalogObj2HTML(button){
 
 
 
-function convertPrograms2HTML(button){
+function convertPrograms2HTML(){
 	const progObj = document.catalogObj.programs;
 	var outputAll = '';
-	var agsTrad = document.querySelector("#ags_trad").innerHTML
+	// didn't need this after all
+	// var agsTrad = document.querySelector("#ags_trad").innerHTML
 
 	Object.keys(progObj).forEach(function(major){
 		outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
@@ -89,11 +90,7 @@ function convertPrograms2HTML(button){
 		});
 	}); // end Object.keys().forEach loop
 
-	if(button){
-   	  document.getElementById("output").innerHTML = outputAll;
-	} else {
-	  return outputAll
-	}
+  return outputAll
 }
 
 function majorAndConcentrationOutput(array, major){
@@ -136,3 +133,4 @@ function majorAndConcentrationOutput(array, major){
 	});// end of array.forEach
 	return output_html
 }
+

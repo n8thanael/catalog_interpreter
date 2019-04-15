@@ -29,6 +29,7 @@ function interpretPrograms(){
 	interpretPaste_b(interpretPaste_a());
 	var objDump = interpretProgramArray_c();
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2)
+	document.getElementById("output").innerHTML = convertPrograms2HTML();
 }
 
 function output(){
@@ -64,7 +65,6 @@ function interpretPaste_a(){
 	} else if (document.catalogObj.mode == "programs"){
 		string = fixDoubleSpacesBetweenWords(string);
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
-		console.log(string);
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
@@ -117,7 +117,7 @@ function interpretProgramArray_c(){
 		let rawProgram = document.catalogObj.rawPrograms[i];
 		let matchGroups = rawProgram.match(regex_pa_c1);
 		let major = '';
-		console.log(matchGroups);
+		// console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
 			// else ignore the line
 			var thisMajor = {};
@@ -754,10 +754,33 @@ function fixDoubleSpacesBetweenWords(string){
 }
 
 function reportCourses(){
-	let string = '';
+	let string = '<div class="alert alert-success" role="alert">';
 	if(document.catalogObj.courses.length > 0){
 		string += document.catalogObj.courses.length + " " + document.querySelector("#ags_trad").innerHTML + " Courses Loaded";
 		string += "<br>" + Object.keys(document.catalogObj.courseErr).length + " " + document.querySelector("#ags_trad").innerHTML + " Errors Discovered";
+	}
+	string += '</div>';
+	return string;
+}
+
+
+
+function reportPrograms(){
+	let string = '';
+	let programs = Object.keys(document.catalogObj.programs).length;
+	let courses = document.catalogObj.courses.length;
+	if(courses > 0){
+		if(programs > 0){
+			string += '<div class="alert alert-success" role="alert">' + programs + ' Have been Found</div>'		
+		} else {
+			string += '<div class="alert alert-warning" role="alert">' + programs + ' Have been Found</div>'			
+		}
+
+		string += '<div class="alert alert-success" role="alert">' + courses + ' Have been Found</div>'
+
+	} else {
+		string += '<div class="alert alert-warning" role="alert">No Courses Have been Found</div>';
+	
 	}
 	return string;
 }
