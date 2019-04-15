@@ -32,6 +32,7 @@ function interpretPrograms(){
 	console.log(JSON.stringify(objDump, null, 2));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("output").innerHTML = convertPrograms2HTML();
+	reportPrograms();
 }
 
 function output(){
@@ -765,22 +766,72 @@ function reportCourses(){
 
 
 function reportPrograms(){
-	let string = '';
-	let programs = Object.keys(document.catalogObj.programs).length;
-	let courses = document.catalogObj.courses.length;
-	if(courses > 0){
-		if(programs > 0){
-			string += '<div class="alert alert-success" role="alert">' + programs + ' Have been Found</div>'		
-		} else {
-			string += '<div class="alert alert-warning" role="alert">' + programs + ' Have been Found</div>'			
+	let report = ''
+	let warning = [];
+	let success = [];
+	let string = '';	
+	let programs = document.catalogObj.programs;
+	// let courses = document.catalogObj.courses.length;
+
+	// very similar code as found in templates.js --> function convertPrograms2HTML(){
+	// refactor?
+	Object.keys(programs).forEach(function(major){
+		let thisMajor = document.catalogObj.programs[major];
+		console.log(major);
+		
+		// inspect the concentration level
+		if(Object.keys(thisMajor.Concentrations).length > 0){
+			Object.keys(thisMajor.Concentrations).forEach(function(concentration){
+				let thisConcentration = thisMajor.Concentrations[concentration];
+				console.log(`	` + concentration + `, courses: ` + Object.keys(thisConcentration.courses).length);
+					let found = 0;
+					let missing = 0;				
+				// inspect the courses level
+				Object.keys(thisConcentration.courses).forEach(function(course){
+					let confirmed = false;
+					for(i = 0; i < document.catalogObj.courseRef.length; i++){
+						if(document.catalogObj.courseRef[i].class == course ){
+	  					    let thisCourse = document.catalogObj.courseRef[i].class;
+	  					    let thisCourseRef = document.catalogObj.courseRef[i].ref;
+	  						let thisCourseObj = document.catalogObj.courses[thisCourseRef][course];
+							let courseDescription = thisCourseObj.description;
+							let courseTitle = thisCourseObj.titleText;
+							console.log(`		` + course + `: ` + courseTitle);
+							found++;
+							confirmed = true;
+							break;
+						}
+					}
+					if(!confirmed){
+						missing++;
+					}
+				});
+				console.log(`		found: ${found} | missing: ${missing}`);
+			});
 		}
+		/*
+		outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
+		var concObj = progObj[major]['Concentrations'];
+		Object.keys(concObj).forEach(function(concentration){
+			outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
+		});
+				*/
+	}); // end Object.keys().forEach loop
+	/*
+		if(courses > 0){
+			if(programs > 0){
+				string += '<div class="alert alert-success" role="alert">' + programs + ' Have been Found</div>'		
+			} else {
+				string += '<div class="alert alert-warning" role="alert">' + programs + ' Have been Found</div>'			
+			}
 
-		string += '<div class="alert alert-success" role="alert">' + courses + ' Have been Found</div>'
+			string += '<div class="alert alert-success" role="alert">' + courses + ' Have been Found</div>'
 
-	} else {
-		string += '<div class="alert alert-warning" role="alert">No Courses Have been Found</div>';
-	
-	}
+		} else {
+			string += '<div class="alert alert-warning" role="alert">No Courses Have been Found</div>';
+		
+		}
+	*/
 	return string;
 }
 

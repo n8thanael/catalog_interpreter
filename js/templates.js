@@ -62,8 +62,6 @@ function convertCatalogObj2HTML(){
     return outputAll
 }
 
-
-
 function convertPrograms2HTML(){
 	const progObj = document.catalogObj.programs;
 	var outputAll = '';
