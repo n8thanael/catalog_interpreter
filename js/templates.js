@@ -21,8 +21,7 @@ function convertCatalogObj2HTML(){
     return outputAll
 }
 
-function renderCourseDescription(courseIds,objRef = false,firstLine = ''){
-	let agsTrad = document.querySelector("#ags_trad").innerHTML;
+function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
 	let flagMultipleCourseIds = false;
 	let courseId = '';
 	let objRefLookupAttemptFailed = false;
@@ -56,42 +55,113 @@ function renderCourseDescription(courseIds,objRef = false,firstLine = ''){
 		}
  	}
 
-	if(flagMultipleCourseIds){
-
+	if(flagMultipleCourseIds && document.catalogObj.merge){
+		for(let i = 0; i < courseIds.length; i++){
+			// check for courseIds if they have a reference...if not record the error - else process...
+			let thisObjRef = getCourseReference(courseIds[i]);
+			if (!thisObjRef){
+				// don't record the failure unless there are programs being built
+		     	if(document.catalogObj.missingCoursesForMerge.indexOf(courseId) === -1 && document.catalogObj.mode === 'programs') {
+			      document.catalogObj.missingCoursesForMerge.push(courseId);
+			    }
+			// there is a refernce found one of the courses on this line being rendered
+			} else {
+				console.log("write a function to process multiples: " + courseIds[i]);
+			}
+		}
 	} else if(!objRefLookupAttemptFailed) {
 		// console.log(objRef);
 		// console.log(courseId);
-		var course = document.catalogObj.courses[objRef][courseId];
-
- 	    let courseTitleText = typeof course.titleText == 'string' ?  course.titleText : "";
-		let courseTitleFull = typeof course.titleFull == 'string' ?  course.titleFull : "";
-		let courseWeeksText = typeof course.weeksText == 'string' ? course.weeksText : "";
-		let courseWeeksValue = typeof course.weeksValue == 'string' ? course.weeksValue : "";
-		let courseCreditsText = typeof course.creditsText == 'string' ? course.creditsText : "";
-		let courseCreditsValue = typeof course.creditsValue == 'string' ? course.creditsValue : "";
-		let courseDescPre = typeof course.descPre == 'string' ? course.descPre : "";
-		let courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
-
-		if (agsTrad == 'AGS'){
-			course_html = `
-			<div class="course" id="course_${courseId}">
-				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText}&nbsp;${courseCreditsText}&nbsp;${courseWeeksText}</a></div>
-				<div id="course_desc_${courseId}" class="collapse">
-					<div class="course_preDesc">${courseDescPre}</div>
-					<div class="course_postDesc">${courseDescPost}</div>
-				</div>
-			</div>`;
-		} else if(agsTrad == 'TRAD'){
-			course_html = `
-			<div class="course" id="course_${courseId}">
-				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
-				<div id="course_desc_${courseId}" class="collapse">
-					<div class="course_preDesc">${courseDescPre}</div>
-					<div class="course_postDesc">${courseDescPost}</div>
-				</div>
-			</div>`;
+		if(document.catalogObj.merge){
+			course_html += renderMergedClasses(objRef,courseId,mergeText);			
+		} else {
+			course_html += renderClasses(objRef,courseId);
 		}
 	}
+
+	return course_html;
+}
+
+// renders classes without 'MERGING' them into the program description line items
+function renderClasses(objRef,courseId){
+	let course_html = '';
+	let agsTrad = document.querySelector("#ags_trad").innerHTML;
+	let course = document.catalogObj.courses[objRef][courseId];
+	let courseTitleText = typeof course.titleText == 'string' ?  course.titleText : "";
+	let courseTitleFull = typeof course.titleFull == 'string' ?  course.titleFull : "";
+	let courseWeeksText = typeof course.weeksText == 'string' ? course.weeksText : "";
+	let courseWeeksValue = typeof course.weeksValue == 'string' ? course.weeksValue : "";
+	let courseCreditsText = typeof course.creditsText == 'string' ? course.creditsText : "";
+	let courseCreditsValue = typeof course.creditsValue == 'string' ? course.creditsValue : "";
+	let courseDescPre = typeof course.descPre == 'string' ? course.descPre : "";
+	let courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
+
+	if (agsTrad == 'AGS'){
+		course_html = `
+		<div class="course" id="course_${courseId}">
+			<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText}&nbsp;${courseCreditsText}&nbsp;${courseWeeksText}</a></div>
+			<div id="course_desc_${courseId}" class="collapse">
+				<div class="course_preDesc">${courseDescPre}</div>
+				<div class="course_postDesc">${courseDescPost}</div>
+			</div>
+		</div>`;
+	} else if(agsTrad == 'TRAD'){
+		course_html = `
+		<div class="course" id="course_${courseId}">
+			<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
+			<div id="course_desc_${courseId}" class="collapse">
+				<div class="course_preDesc">${courseDescPre}</div>
+				<div class="course_postDesc">${courseDescPost}</div>
+			</div>
+		</div>`;
+	}
+
+	return course_html;
+}
+
+// renders classes by 'MERGING' them into the program description line items
+function renderMergedClasses(objRef,courseId,mergeText){
+	let course_html = '';
+	let agsTrad = document.querySelector("#ags_trad").innerHTML;
+	let course = document.catalogObj.courses[objRef][courseId];
+	let courseTitleText = typeof course.titleText == 'string' ?  course.titleText : "";
+	let courseTitleFull = typeof course.titleFull == 'string' ?  course.titleFull : "";
+	let courseWeeksText = typeof course.weeksText == 'string' ? course.weeksText : "";
+	let courseWeeksValue = typeof course.weeksValue == 'string' ? course.weeksValue : "";
+	let courseCreditsText = typeof course.creditsText == 'string' ? course.creditsText : "";
+	let courseCreditsValue = typeof course.creditsValue == 'string' ? course.creditsValue : "";
+	let courseDescPre = typeof course.descPre == 'string' ? course.descPre : "";
+	let courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
+
+	course_html = `
+	<li class="course collapseable" id="course_${courseId}">
+		<div class="bullet"></div><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
+		<div id="course_desc_${courseId}" class="collapse">
+			<div class="course_preDesc">${courseDescPre}</div>
+			<div class="course_postDesc">${courseDescPost}</div>
+		</div>
+	</li>`;
+	/*
+	if (agsTrad == 'AGS'){
+		course_html = `
+		<li class="course collapseable" id="course_${courseId}">
+			<a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</a>
+			<div id="course_desc_${courseId}" class="collapse">
+				<div class="course_preDesc">${courseDescPre}</div>
+				<div class="course_postDesc">${courseDescPost}</div>
+			</div>
+		</li>`;
+	} else if(agsTrad == 'TRAD'){
+		course_html = `
+		<li class="course collapseable" id="course_${courseId}">
+			<a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
+			<div id="course_desc_${courseId}" class="collapse">
+				<div class="course_preDesc">${courseDescPre}</div>
+				<div class="course_postDesc">${courseDescPost}</div>
+			</div>
+		</li>`;
+	}
+	*/
 
 	return course_html;
 }
@@ -126,6 +196,7 @@ function convertPrograms2HTML(){
   return outputAll
 }
 
+// here the flat rendering array is run through and the "type of line" determines how the line will be rendered 
 function majorAndConcentrationOutput(array, major){
 	output_html = '';
 	output_html += `<h2>${major}</h2>`;
@@ -133,10 +204,10 @@ function majorAndConcentrationOutput(array, major){
 	array.forEach(function(index){
 		switch(index.type){
 			case 'lc_start_A':
-				output_html += `<ul>`;
+				document.catalogObj.merge ? output_html += `<ul class="courses">` : output_html += `<ul>`;
 				break;
 			case 'lc_start_B':
-				output_html += `	<ul>`;
+				document.catalogObj.merge ? output_html += `	<ul class="courses">` : output_html += `	<ul>`;
 				break;
 			case 'lc_end_A':
 				output_html += `</ul>`;
@@ -145,10 +216,10 @@ function majorAndConcentrationOutput(array, major){
 				output_html += `	</ul>`;
 				break;
 			case 'list1':
-				output_html += `	<li>${index.text}</li>`;
+				document.catalogObj.merge ? output_html += `	<li><div class="bullet"></div>${index.text}</li>` : output_html += `	<li>${index.text}</li>`;
 				break;
 			case 'list2':
-				output_html += `		<li>${index.text}</li>`;
+				document.catalogObj.merge ? output_html += `		<li><div class="bullet"></div>${index.text}</li>` : output_html += `		<li>${index.text}</li>`;
 				break;
 			case 'list1_class':
 				output_html += `	` + renderCourseDescription(index.courseIds,false,index.text);

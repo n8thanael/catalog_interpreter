@@ -2,9 +2,8 @@
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
-need to "intercept" the current lists and create two "outputs"
-1.)  No Merge Button (prints to screen w/out dropdown courses"
-2.)  Merge Button prints to screen with dropdown courses (and writes final programs & final Concentrations to OBJ Array)
+ *  Interpreter is working really well... need to experiment in use-case and solve errors that show up....
+ *  Need to get "exportation"
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
@@ -30,7 +29,7 @@ function interpretCourses(){
 function interpretPrograms(){
 	interpretPaste_b(interpretPaste_a());
 	var objDump = interpretProgramArray_c();
-	// console.log(dump(objDump,'none'));
+	//console.log(dump(objDump,'none'));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("status").innerHTML = reportPrograms();
 	document.getElementById("output").innerHTML = convertPrograms2HTML();

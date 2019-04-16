@@ -155,9 +155,40 @@ input:checked + .slider:before {
  *    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 
  */
 
+ul.courses{
+  list-style: none;
+  padding: 0px;
+}
+
+ul.courses li{
+  padding: 0px 0px 0px 2.5em;
+}
+
+ul.courses div.bullet{
+  width: .6em;
+  height: .6em;
+  background-color: black;
+  margin-left: -1.25em;
+  margin-top: .5em;
+  position: absolute;
+  border-radius: .6em;
+  transition-duration: 1s;
+}
+
+ul.courses div.bullet.open{
+  width: 1em;
+  height: .2em;
+  background-color: black;
+  margin-left: -1.5em;
+  margin-top: .75em;
+  position: absolute;
+  border-radius: .2em;
+}
+
 .course {
 	padding: .5em 0em;
 }
+
 .course_title{
 	font-weight:400;
 	font-size:1.3em;
