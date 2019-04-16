@@ -17,6 +17,7 @@ if (typeof courseCatalog != "undefined") {
 }*/
 
 document.catalogObj = {};
+document.catalogObj.missingCoursesForMerge = [];
 
 function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
@@ -29,7 +30,7 @@ function interpretCourses(){
 function interpretPrograms(){
 	interpretPaste_b(interpretPaste_a());
 	var objDump = interpretProgramArray_c();
-	console.log(dump(objDump,'none'));
+	// console.log(dump(objDump,'none'));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("status").innerHTML = reportPrograms();
 	document.getElementById("output").innerHTML = convertPrograms2HTML();
@@ -189,6 +190,7 @@ function interpretProgramTemplateArray_e(rawArray){
 		// allows the renderer to issue errors and cautions
 		let error = false;
 		let caution = false;
+		let courseIds = [];
 
 		// fix any hyphen- ated words that occur
 		// fix any double  spaces between words
@@ -240,13 +242,19 @@ function interpretProgramTemplateArray_e(rawArray){
 			case '┌┌':
 				// list1
 				text = rawArray[i].substr(2);
-				type = "list1";
-				// Issue the start of 1st layer list it did not previously appear 
+				// does this line item have course numbers within?  How many?  Return the array
+				courseIds = processCourseIdsFromLineItem(text);
+				// need the merge button pushed to activate
+				if(Array.isArray(courseIds) && document.catalogObj.merge){
+					type = "list1_class";
+				} else {
+					type = "list1";
+				}
 				if(lc_layerA == 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_start_A"});}
 				// detect and reset the 2nd layer list since it was nested and another layer 1 line item apeared
 				if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
 				lc_layerA++;  // increase list counter
-				  // reset counters
+				  // reset counters		
 				lc_layerB = 0;
 				count_paragraph = 0;
 				break;
@@ -255,6 +263,13 @@ function interpretProgramTemplateArray_e(rawArray){
 				text = rawArray[i].substr(2);
 				type = "list2";
 				// Issue the start of 2nd layer list it did not previously appear 
+				courseIds = processCourseIdsFromLineItem(text);
+				// need the merge button pushed to activate
+				if(Array.isArray(courseIds) && document.catalogObj.merge){
+					type = "list2_class";
+				} else {
+					type = "lis2";
+				}
 				if(lc_layerB == 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_start_B"});}
 				lc_layerB++;  // increase list counter
 				count_paragraph = 0;
@@ -330,7 +345,12 @@ function interpretProgramTemplateArray_e(rawArray){
 		if (error || caution) {
 			cleanArray.push({'text': text,'type':type});
 		} else {
-			cleanArray.push({'text': text,'type':type});
+			if((typeof courseIds) !== "string"){
+				cleanArray.push({'text': text,'type':type,'courseIds':courseIds});
+			} else {
+				cleanArray.push({'text': text,'type':type});
+			}
+
 			lastGoodIndex = cleanArray.length;
 		}
 
@@ -732,42 +752,21 @@ function collectCourseCodesFromPrograms(string){
 }
 
 
-/* need to keep working on this...
-   If the line is TRAD or AGS list item with just a course -- great, capture that...but lookup the description etc. and format correclty
-   Do I need to use the template for this?  I think so...
-   function renderCourseDescription(courseId,objRef = false){}
-   -- Should look up template - ID the line, if it's "true" it's going to KEEP that line if found just as it is... but allow a drop-down to form that looks like it should...
-   Bullet Points at this point will change from • to + or - depending on if it's capable of "accordian" results.
-
-   If this result is loaded... it needs to send a notice to interpretProgramTemplateArray_e() that a CourseCode has been found...
-   When found, the interpretProgramTemplateArray_e( needs to output a different list type -- instead of type: list1 or list2 it's list1_class or list2_class
- */
-function identifyCourseCodeFromText(string){
+// returns an array for array.length detection if course codes have been found in the text - but there are no return characters in the text that is being inspected.
+function processCourseIdsFromLineItem(string){
 	let array = [];
+	let match = null;
 	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
-	const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;
-	let primeMatchArray = string.match(regex_z4);
-	if(Array.isArray(primeMatchArray)){
-		// iterate through each match to get to the group values  
-		for(let i = 0; i < primeMatchArray.length; i++){
-			let subMatchArray = [];
-			// iterate throught every sub match and extract each group value
-			while ((subMatchArray = regex_z4.exec(primeMatchArray[i])) !== null) {
-			    // This is necessary to avoid infinite loops with zero-width matches
-			    if (subMatchArray.index === regex_z4.lastIndex) {
-			        regex_z4.lastIndex++;
-			    }
-			    // pulls out the Code and Name of each Course into an array - it may actually be "text instructions" instead of an actual course name
-			    subMatchArray.forEach(() => {
-			    	thisCourseCode = subMatchArray[1] ? subMatchArray[1].trim() : "";
-					thisCourseName = subMatchArray[3] ? subMatchArray[3].trim() : "";
-					array[thisCourseCode] = thisCourseName;
-			    });
-			}
-		}
-
+	const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm;
+	match = string.match(regex_z4);
+	if(((typeof match) == 'object') && (match !== null)){
+	    match.forEach((thisMatch, groupIndex) => {
+	        array[groupIndex] = thisMatch;
+	    });
+		return array;
+	} else {
+		return string;
 	}
-	return array;
 }
 
 function fixHyphenatedWords(string){
@@ -895,7 +894,7 @@ function reportPrograms(){
 					}
 					if(!confirmed){
 						missing++;
-						document.catalogObj.programs.missingCourses.push(course);
+						document.catalogObj.missingCourses.push(course);
 						missingCourseString += course + ', ';
 					}
 				});
