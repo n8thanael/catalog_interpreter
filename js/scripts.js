@@ -29,7 +29,7 @@ function interpretCourses(){
 function interpretPrograms(){
 	interpretPaste_b(interpretPaste_a());
 	var objDump = interpretProgramArray_c();
-	console.log(JSON.stringify(objDump, null, 2));
+	console.log(dump(objDump,'none'));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("status").innerHTML = reportPrograms();
 	document.getElementById("output").innerHTML = convertPrograms2HTML();
@@ -731,6 +731,45 @@ function collectCourseCodesFromPrograms(string){
 	return array;
 }
 
+
+/* need to keep working on this...
+   If the line is TRAD or AGS list item with just a course -- great, capture that...but lookup the description etc. and format correclty
+   Do I need to use the template for this?  I think so...
+   function renderCourseDescription(courseId,objRef = false){}
+   -- Should look up template - ID the line, if it's "true" it's going to KEEP that line if found just as it is... but allow a drop-down to form that looks like it should...
+   Bullet Points at this point will change from • to + or - depending on if it's capable of "accordian" results.
+
+   If this result is loaded... it needs to send a notice to interpretProgramTemplateArray_e() that a CourseCode has been found...
+   When found, the interpretProgramTemplateArray_e( needs to output a different list type -- instead of type: list1 or list2 it's list1_class or list2_class
+ */
+function IdentifyCourseCodeFromText(string){
+	let array = [];
+	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+	const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;
+	let primeMatchArray = string.match(regex_z4);
+	if(Array.isArray(primeMatchArray)){
+		// iterate through each match to get to the group values  
+		for(let i = 0; i < primeMatchArray.length; i++){
+			let subMatchArray = [];
+			// iterate throught every sub match and extract each group value
+			while ((subMatchArray = regex_z4.exec(primeMatchArray[i])) !== null) {
+			    // This is necessary to avoid infinite loops with zero-width matches
+			    if (subMatchArray.index === regex_z4.lastIndex) {
+			        regex_z4.lastIndex++;
+			    }
+			    // pulls out the Code and Name of each Course into an array - it may actually be "text instructions" instead of an actual course name
+			    subMatchArray.forEach(() => {
+			    	thisCourseCode = subMatchArray[1] ? subMatchArray[1].trim() : "";
+					thisCourseName = subMatchArray[3] ? subMatchArray[3].trim() : "";
+					array[thisCourseCode] = thisCourseName;
+			    });
+			}
+		}
+
+	}
+	return array;
+}
+
 function fixHyphenatedWords(string){
 	const regex_z4 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
 	matchGroups = string.match(regex_z4);
@@ -841,12 +880,12 @@ function reportPrograms(){
 					for(i = 0; i < document.catalogObj.courseRef.length; i++){
 						if(document.catalogObj.courseRef[i].class == course ){
 							// prepare to output title, descriptions etc.
-	  					    let thisCourse = document.catalogObj.courseRef[i].class;
+	  					    let thisCourseId = document.catalogObj.courseRef[i].class;
 	  					    let thisCourseRef = document.catalogObj.courseRef[i].ref;
 	  						let thisCourseObj = document.catalogObj.courses[thisCourseRef][course];
 							let courseDescription = thisCourseObj.description;
 							let courseTitle = thisCourseObj.titleText;
-							thisConcentration.courseRender[thisCourse] = courseTitle + '<br>' + courseDescription;
+							thisConcentration.courseRender[thisCourseId] = renderCourseDescription(thisCourseId);
 							found++;
 							confirmed = true;
 							break;
@@ -860,6 +899,7 @@ function reportPrograms(){
 						missingCourseString += course + ', ';
 					}
 				});
+
 				if(found > 0){
 					string += reportAlert(`<b>${concentration}</b>; found: ${found}/`+ Object.keys(thisConcentration.courses).length + ` courses`,'success');					
 				}

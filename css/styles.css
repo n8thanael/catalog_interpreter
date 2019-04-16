@@ -21,7 +21,7 @@
   height: 0;
 }
 
-.slider {
+.slider{
   position: absolute;
   cursor: pointer;
   top: 0;
@@ -48,7 +48,16 @@ input:checked + .slider.course_program {
   background-color: orange;
 }
 
-input:focus + .slider.course_program {
+
+input:checked + .slider.merge  {
+  background-color: teal;
+}
+
+input:focus + .slider.merge {
+  box-shadow: 0 0 1px teal;  
+}
+
+input:focus + .slider.course_program{
   box-shadow: 0 0 1px orange;
 }
 
@@ -72,12 +81,15 @@ input:focus + .slider.debug {
   box-shadow: 0 0 1px black;
 }
 
+.slider.merge {
+  background-color: orange;
+}
 
 .slider.course_program {
   background-color: magenta;
 }
 
-.slider.course_program:before {
+.slider.course_program:before, .slider.merge:before {
   background-color: white;
 }
 
@@ -124,6 +136,11 @@ input:checked + .slider:before {
 #interpret_programs {
 	background-color: orange;
 	border:none;
+}
+
+#interpret_programs.and_merge{
+  background-color: teal;
+  border:none;
 }
 
 .disabled {

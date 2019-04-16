@@ -3,7 +3,9 @@ var courseButton = document.querySelector("#interpret_courses");
 var programButton = document.querySelector("#interpret_programs");
 var debug_toggle = document.querySelector("input[name=toggle_debug]");
 var debug_content = document.querySelector("#debug_content");
-
+var merge_toggle = document.querySelector("input[name=toggle_merge]");
+var merge_toggle_switch = document.querySelector("label.switch.toggle_merge");
+document.catalogObj.merge = false;
 
 // default settings:
 document.catalogObj.mode = 'courses';
@@ -13,6 +15,7 @@ toggle_course_program.addEventListener( 'change', function() {
     	document.catalogObj.mode = 'programs';
     	courseButton.classList.add("disabled");
     	programButton.classList.remove("disabled");
+    	merge_toggle_switch.classList.remove("disabled");
     	toggle_ags_trad_switch.classList.add("disabled");
     	ags_trad_button.classList.add("disabled");
     	toggle_ags_trad.classList.add("disabled");
@@ -20,6 +23,7 @@ toggle_course_program.addEventListener( 'change', function() {
      	document.catalogObj.mode = 'courses';
     	courseButton.classList.remove("disabled");
     	programButton.classList.add("disabled");
+    	merge_toggle_switch.classList.add("disabled");
     	toggle_ags_trad_switch.classList.remove("disabled");
     	ags_trad_button.classList.remove("disabled");
     	toggle_ags_trad.classList.remove("disabled");
@@ -52,4 +56,18 @@ debug_toggle.addEventListener( 'change', function() {
     	console.log('debug off');
     	debug_content.classList.add("d-none");
     }
+});
+
+
+merge_toggle.addEventListener( 'change', function() {
+    if(this.checked) {
+    	document.catalogObj.merge = true;
+    	programButton.classList.add("and_merge");
+	   	programButton.innerHTML = "Interpret Programs & Merge";
+    } else {
+	   	document.catalogObj.merge = false;
+	   	programButton.classList.remove("and_merge");
+	   	programButton.innerHTML = "Interpret Programs";
+    }
+   	console.log('merge:' + document.catalogObj.merge);
 });
