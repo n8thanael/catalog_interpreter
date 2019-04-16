@@ -742,7 +742,7 @@ function collectCourseCodesFromPrograms(string){
    If this result is loaded... it needs to send a notice to interpretProgramTemplateArray_e() that a CourseCode has been found...
    When found, the interpretProgramTemplateArray_e( needs to output a different list type -- instead of type: list1 or list2 it's list1_class or list2_class
  */
-function IdentifyCourseCodeFromText(string){
+function identifyCourseCodeFromText(string){
 	let array = [];
 	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 	const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;
