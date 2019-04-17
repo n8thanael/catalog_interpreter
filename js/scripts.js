@@ -916,15 +916,53 @@ function reportPrograms(){
 
 
 /*
+ERRORS:
+1.)  Won't display the first Course for some reason on Interpret Courses -- it captures it however
+
+Improvements:
+1.)  Need to make a "copy HTML" button to get a single program out
+2.)  What do I do about concentrations in Trad? -- they are simplistic - will probobly manually deal with them
+3.)  Interface needs an "Expand-All Courses" button
+4.)  "Pre-Counseling Concentration" -- need to recognize "hyphen" within word groups for concetrations
+5.)  Subheadings caught need better formatting: 
 
 Incompatibilities:
 TRAD CATALOG:
-1.)	Junior Recital MU385 & MU485 to have a [TAB] instead of spaces
+1.)	MU485 & MU385 - Junior Recital MU385 & MU485 to have a [TAB] instead of spaces
 	Also if they don't end in a number, I need it in perenthasis: (0 or 1) please
 
 2.) WL425 Worship Leader Internship	1-6
 	Needs to be: (1-6)
-3.)  Course Hours SubHeadings need to have a (TAB)0 Hours so they don't trigger as Majors since they are capitalized
+3.) Course Hours SubHeadings need to have a (TAB)0 Hours so they don't trigger as Majors since they are capitalized
+4.) SF100 Course -- need to manually remove the table prior to "insertion"
+5.) PS207 Statistics for the Social Sciences - the (ECE213) blow up the interpreter
+    --- can list as :PS213 Child Development (ECE213)	3
+6.) HS430 Human Services Capstone -- seems messed up
+7.) BA in Human Services -- the HS410 Ethics in Human Services 
+or HS430 Human Services Capstone 
+or PS 495 Psych Practicum (students in Psych minor)	3
+ -- is probobly going to explode
+8.) LA097/LA099 Basic Writing Lab -- explodes ... two courses in 1 description is going to choke-it ... can't write around this...
+	Manually adjust with:
+
+	LA097 Or LA099 Basic Writing Lab 	(1 or 3) 
+	Collaboration with a trained writing consultant during the writing process, including prewriting, drafting, revising, and editing. Assists students in producing focused, expository prose and refining fundamental writing skills needed for success at the University level. Credit earned does not count toward graduation. 
+	Offered in conjunction with English Composition I and II. 
+	<div>•	LA097: Required corequisite for English Composition I students with an English ACT score of 15-16 (or equivalent). Required corequisite for English Composition II unless the student earned a B- or higher in English Composition I.</div>
+	<div>•	LA099: Required corequisite for English Composition I students with an English ACT score of 14 or less (or equivalent). Required corequisite for English Composition II unless the student earned a B- or higher in English Composition I.</div>
+	Offered: Every semester	Prerequisite: None
+	Pass/Fail, Repeatable
+
+
+9.)  100-level Applied Instrumental Study -- unsure how to do this .... need to experiment
+10.)  Individual Sport -- ALSO POP
+11.)  I499 Portfolio/Service Learning Capstone ---- 
+		- Can't capture single letter course codes ... will have to manually adjust
+12.)  Note: MI100 is a prerequisite for all 300- and 400-level MI courses.  -- not is gone...
+13.)  Write something to EJECT Headings: "PC | PASTORAL COUNSELING"
+
+
+
 
 AGS PROGRAMS:
 1.)  Organizational Leadership Concentration --- does not have a return character afterwards
