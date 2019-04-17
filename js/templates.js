@@ -28,7 +28,7 @@ function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
 	let courseValue = "";
 	let course_html = "";
 
-	// an array canbe passed into this function as a 'trigger' to make a more complex output. 
+	// an array can be passed into this function as a 'trigger' to make a more complex output. 
 	// flagMultipleCourseIds is set to true to enable this functionality
 	if(Array.isArray(courseIds)){
 		if(courseIds.length > 1){
@@ -44,7 +44,7 @@ function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
 	// this function is used sometimes without the objRef, in which case it needs looked up
 	// if the objRef can't be found, the flag: objRefLookupAttemptFailed returns true
 	// this is important so we don't try and replace the "no-working" listing with something worse: blank 
-	if(objRef == false && courseId !== ''){
+	if(courseId !== '' && objRef === false){
 		objRef = getCourseReference(courseId);
      	if (!objRef){
 			objRefLookupAttemptFailed = true;
@@ -70,8 +70,6 @@ function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
 			}
 		}
 	} else if(!objRefLookupAttemptFailed) {
-		// console.log(objRef);
-		// console.log(courseId);
 		if(document.catalogObj.merge){
 			course_html += renderMergedClasses(objRef,courseId,mergeText);			
 		} else {
