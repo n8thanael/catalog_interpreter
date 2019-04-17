@@ -20,8 +20,15 @@ function convertCatalogObj2HTML(){
 	}
     return outputAll
 }
-
+/*
+ * The Course ID (string) or IDS (array) are sent to this function and an objRef if it exists
+ * Either String or Array will modify the function to output differently formatted HTML
+ * mergeText is the original line and when there are not objRef matches then the mergeText will be default inserted
+ * this allows for content to not "look" messed up in an error, but functionality is lost since the merge
+ * request failed
+ */
 function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
+	//console.log(courseId + " | " + objRef + " | " + mergeText); 
 	let flagMultipleCourseIds = false;
 	let courseId = '';
 	let objRefLookupAttemptFailed = false;
@@ -45,13 +52,16 @@ function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
 	// if the objRef can't be found, the flag: objRefLookupAttemptFailed returns true
 	// this is important so we don't try and replace the "no-working" listing with something worse: blank 
 	if(courseId !== '' && objRef === false){
+		// reterns boolean false if not found - or typeof 'number' if does 
 		objRef = getCourseReference(courseId);
-     	if (!objRef){
+     	if (objRef === false){
 			objRefLookupAttemptFailed = true;
 			// don't record the failure unless there are programs being built
 	     	if(document.catalogObj.missingCoursesForMerge.indexOf(courseId) === -1 && document.catalogObj.mode === 'programs') {
 		      document.catalogObj.missingCoursesForMerge.push(courseId);
 		    }
+		    // failure to find the course - push the line item anyway, but not with dynamic drop-down
+			course_html += renderMergedFailedClasses(courseId,mergeText);
 		}
  	}
 
@@ -117,6 +127,12 @@ function renderClasses(objRef,courseId){
 	return course_html;
 }
 
+// renders "MERGING" classes when looking up the objRef has failed and there is nothing to merge, but we still need to show a class
+function renderMergedFailedClasses(courseId,mergeText){
+	mergeText = mergeText.trim();
+	return `<li class="course" id="course_${courseId}"><div class="bullet"></div>${mergeText}</li>`;
+}
+
 // renders classes by 'MERGING' them into the program description line items
 function renderMergedClasses(objRef,courseId,mergeText){
 	let course_html = '';
@@ -139,27 +155,6 @@ function renderMergedClasses(objRef,courseId,mergeText){
 			<div class="course_postDesc">${courseDescPost}</div>
 		</div>
 	</li>`;
-	/*
-	if (agsTrad == 'AGS'){
-		course_html = `
-		<li class="course collapseable" id="course_${courseId}">
-			<a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</a>
-			<div id="course_desc_${courseId}" class="collapse">
-				<div class="course_preDesc">${courseDescPre}</div>
-				<div class="course_postDesc">${courseDescPost}</div>
-			</div>
-		</li>`;
-	} else if(agsTrad == 'TRAD'){
-		course_html = `
-		<li class="course collapseable" id="course_${courseId}">
-			<a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
-			<div id="course_desc_${courseId}" class="collapse">
-				<div class="course_preDesc">${courseDescPre}</div>
-				<div class="course_postDesc">${courseDescPost}</div>
-			</div>
-		</li>`;
-	}
-	*/
 
 	return course_html;
 }

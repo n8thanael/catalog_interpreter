@@ -919,7 +919,6 @@ function reportPrograms(){
 
 /*
 ERRORS:
-1.)  Won't display the first Course for some reason on Interpret Courses -- it captures it however
 2.)  BUSINESS MAJOR from AGS -- won't MERGE some courses at the bottom .. missing 2: 
      -->  Something looks wrong in the renderer
 3.)  Not Picking up AGS "TOTAL CREDITS" - last line... has various forms  
@@ -991,6 +990,12 @@ TREMENDOUSLY CLEAN!
 4.)  LFC1500 Introduction to Life Calling (3 credits)
   * Missing weeks #
 
+
+PROGRAMS:
+1.)  BIBLICAL STUDIES, BIBLICAL STUDIES MAJOR (15 CREDITS AT THE 3000-LEVEL OR ABOVE) REQUIRED BIBLICAL STUDIES COURSES	42 CREDITS
+  * Different formatting - not sure what is going on here...
+  * Maybe spaces instead of return character -- then [TAB] "42 CREDITS" at the end? 
+2.)  
 
 
 
