@@ -10,7 +10,7 @@
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
  */
- 
+
 
 /* do I need to check if it's an object? https://stackoverflow.com/questions/4186906/check-if-object-exists-in-javascript  
 if (typeof courseCatalog != "undefined") {
@@ -642,7 +642,7 @@ function setDescriptionPieces(obj){
  */  
 function checkAgainstArray(value){
 	value = value.toLowerCase();
-	var array = ['prerequisite:','prerequisites:','corequisites:','corequisite:','offered:','fee:','pass/fail','repeatable'];
+	var array = ['prerequisite:','prerequisites:','corequisites:','corequisite:','offered:','fee:','pass/fail','repeatable','(prerequisite:','(prerequisites:','(corequisites:','(corequisite:','(offered:','(fee:','(pass/fail','(repeatable'];
 	var result = false;
 	for(var i = 0; i < array.length; i++ ){
 		result = (value == array[i]) ? true : false;
@@ -974,6 +974,22 @@ AGS PROGRAMS:
      --> Can't be text-box
      --> everything else is fine...
 4.)  can't have bulleted lists split by return characters... as in: "24 credits at the 3000-level or above*" on pg 56
+
+
+++++++ NEW ++++++
+COURSES:
+TREMENDOUSLY CLEAN!
+1.)  COM5000 Communication Theory and Practice (3 credits 6 weeks
+  * Needs a closing paranthesis
+2.)  HIS3100 Gilded Age America, 1876-1915
+  * Needs Credits and Weeks
+3.)  After course: "IST3500"
+  * Missing Course ID, Title, Credits, Weeks
+4.)  LFC1500 Introduction to Life Calling (3 credits)
+  * Missing weeks #
+
+
+
 
 
 */
