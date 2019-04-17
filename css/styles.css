@@ -236,10 +236,17 @@ ul.courses div.bullet.open{
 }
 
 #output h4{
-  font-size:1.1em;
-  font-weight:400;
+  font-size:1.2em;
+  font-weight:600;
   padding:0.5em .5em 0em 0em;
   border-bottom: 2px solid #ddd;
+}
+
+
+#output h5{
+  font-size:1.1em;
+  font-weight:600;
+  padding:0.2em .2em 0em 0em;
 }
 
 #output h4.subheadingtotal{

@@ -229,6 +229,9 @@ function majorAndConcentrationOutput(array, major){
 			case 'subheadingtotal':
 				output_html += `<h4 class="subheadingtotal">${index.text}</h4>`;
 				break;
+			case 'subSUBheading':
+				output_html += `<h5 class="subSUBheadingtotal">${index.text}</h5>`;
+				break;				
 			case 'paragraph':
 				output_html += `<p>${index.text}</p>`;
 				break;
