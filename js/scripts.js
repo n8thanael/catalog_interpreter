@@ -920,6 +920,9 @@ function reportPrograms(){
 /*
 ERRORS:
 1.)  Won't display the first Course for some reason on Interpret Courses -- it captures it however
+2.)  BUSINESS MAJOR from AGS -- won't MERGE some courses at the bottom .. missing 2: 
+     -->  Something looks wrong in the renderer
+3.)  Not Picking up AGS "TOTAL CREDITS" - last line... has various forms  
 
 Improvements:
 1.)  Need to make a "copy HTML" button to get a single program out
