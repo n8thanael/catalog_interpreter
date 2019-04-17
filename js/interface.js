@@ -71,3 +71,17 @@ merge_toggle.addEventListener( 'change', function() {
     }
    	console.log('merge:' + document.catalogObj.merge);
 });
+
+function htmlToClipboard(){
+	let updateStatus = document.getElementById("status").textContent; 
+	let outputHTML = document.getElementById("output").outerHTML;
+	let temp = document.createElement("input");
+	document.body.appendChild(temp);
+	temp.style.opacity = 0;
+	temp.setAttribute('value',outputHTML);
+	temp.select();
+	console.log(outputHTML);
+	document.execCommand("copy");
+	updateStatus = "HTML has been Copied.<br>" + updateStatus;
+	document.getElementById("status").innerHTML = updateStatus;
+}

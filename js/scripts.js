@@ -4,11 +4,13 @@
  *
  *  Interpreter is working really well... need to experiment in use-case and solve errors that show up....
  *  Need to get "exportation"
+ *   -> Setup a button that will dump current HTML (One/By/One Course-Level Dump & Paste to Website)
+ *   -> Setup a txt. mapping file that lists [1000NID][TAB][Unique Title of Major] 
  *
  *  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
  *
  */
-
+ 
 
 /* do I need to check if it's an object? https://stackoverflow.com/questions/4186906/check-if-object-exists-in-javascript  
 if (typeof courseCatalog != "undefined") {
