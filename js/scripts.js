@@ -75,11 +75,11 @@ function interpretPaste_a(){
 		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
 		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217) = Sub List Item
-		string = string.replace(regex_a7,'╪╪<span class="right_left">$2</span><span class="right_just">$3</span>');  // adds (ALT+216) - Sub Heading with Right Justify)
-		string = string.replace(regex_a7b,'╫╫<span class="right_left">$2</span><span class="right_just">$3</span>');  // adds (ALT+215) - Sub Heading Total with Right Justify)
+		string = string.replace(regex_a7,'╪╪<span class="left_just">$2</span><span class="right_just">$3</span>');  // adds (ALT+216) - Sub Heading with Right Justify)
+		string = string.replace(regex_a7b,'╫╫<span class="left_just">$2</span><span class="right_just">$3</span>');  // adds (ALT+215) - Sub Heading Total with Right Justify)
 		// string = string.replace(regex_a7c,'╓╓$1'); // adds (ALT+214) - SubHeading - Sub Heading With Left Justify, but no <SPAN> -- 
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
-		string = string.replace(regex_a8,'┌┌$2<span class="right_just">$3</span>');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
+		string = string.replace(regex_a8,'┌┌<span class="left_just">$2</span><span class="right_just">$3</span>');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
 	var result = string;

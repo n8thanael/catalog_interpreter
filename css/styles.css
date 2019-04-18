@@ -240,6 +240,7 @@ ul.courses div.bullet.open{
   font-weight:600;
   padding:0.5em .5em 0em 0em;
   border-bottom: 2px solid #ddd;
+  display:flex;
 }
 
 
@@ -247,6 +248,7 @@ ul.courses div.bullet.open{
   font-size:1.1em;
   font-weight:600;
   padding:0.2em .2em 0em 0em;
+  display:flex;
 }
 
 #output h4.subheadingtotal{
@@ -254,8 +256,22 @@ ul.courses div.bullet.open{
   font-weight:700;
 }
 
-span.right_just {
-    display: inline-block;
-    float: right;
+#output li{
+  display:flex;
+  margin-right:2em;
+}
+
+h3 span.right_just, h4 span.right_just, li span.right_just {
+    text-align: right;
+    min-width: 130px;
+}
+
+li span.right_just {
+  min-width: 90px;  
+}
+
+h4 span.left_just, h3 span.left_just,
+li span.left_just {
+    flex-grow:5;
 }
 
