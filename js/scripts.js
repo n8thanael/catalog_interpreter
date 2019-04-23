@@ -176,15 +176,72 @@ function createProgramRawArray_d(string){
 
 // runs through the rawArray from document.catalogObj.programs.[PROGRAM].rawArray
 // attempts to discover potential places where a return character has incorrectly separated what was a line-item within a well-formed list
-function repairPossibleReturnCharacterErrors(array){
+
+/*
+ * this Concentration still fails ... need to detect :  Healthcare Management Concentration
+
+ */
+function repairPossibleReturnCharacterErrors(rawArray){
+	outputArray = [];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘'];
+	let thisLine = '';
+	let previousLine = '';
+	let nextLine = '';
+	let newLine = '';
 	// from interpretPaste_a()
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘']
+	// inspection begins if the current line doesn't have a lineDesignationCode
+	// Q.1)  Does this line begin with a course number, but NOT end in a Credit amount? && Does the next line NOT begin with a course number, but ends with a credit amount?  JOIN this to NEXT, delete this.  
+	// does this line end in a comma? -- join with the next line.
+	for(let i = 0; i < rawArray.length; i++){
+		if(rawArray[i].length > 3){
+			// the string simply has to be over a certain size or it's redacted...
+			thisLine = rawArray[i] ? rawArray[i].trim() : "";
+			previousLine = rawArray[i-1] ? rawArray[i-1].trim() : "";
+			nextLine = rawArray[i+1] ? rawArray[i+1].trim() : "";
+			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because they are a well-formatted paragraph.
+			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
+				console.log('Triggered: ' + thisLine);
+				if(thisLine.includes('\t')){
+					// contains a tab - maybe a credit list
+					if(previousLine[1] === '┌'){
+						newLine = '┌┌' + thisLine; // continue the list
+						outputArray.push(newLine);
+						console.log('newLine: ' + newLine);
+					}
+				} else if(thisLine[thisLine.length -1] === ':'){
+					// last character is a : -- designates a subheading..
+						newLine = '╒╒' + thisLine; // continue the list
+						outputArray.push(newLine);
+						console.log('newLine: ' + newLine);
+				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 49) && nextLine.includes('\t') && !thisLine.includes('\t')){
+					// last character is a comma
+					// or the line is less than 49
+					// AND the next line includes a tab
+					// AND this line does NOT include a tab already
+					newLine = thisLine + " " + nextLine;
+					newLine = newLine.replace(/[╪╪╫╫┌┌]/gm, '');
+					newLine = newLine.replace(regex_a7_single,'╪╪$2\t$3');
+					newLine = newLine.replace(regex_a7b_single,'╫╫$2\t$3');
+					newLine = newLine.replace(regex_a8_single,'┌┌$2\t$3');
+					outputArray.push(newLine);
+					console.log('newLine: ' + newLine);
+					i++;
+				}
+			} else {
+				outputArray.push(rawArray[i]);				
+			}
+
+		}
+	}
+	return outputArray;
 }
 
 // receives an array of a program or concentration's slingle lines and formats it into a renderable array of "flatened" outputs
 // this programs a linear array which the templtes will simply "play" like actions that set HTML in order
 // kind of a complex switch/if/else headache -- sorry :-(
 function interpretProgramTemplateArray_e(rawArray){
+	rawArray = repairPossibleReturnCharacterErrors(rawArray);
+	console.log(rawArray);
 	const cleanArray = [];
 	// enable comblex list-counters and  syste,
 	var lc_layerA = 0;
@@ -276,7 +333,7 @@ function interpretProgramTemplateArray_e(rawArray){
 					type = "list1";
 				}
 				if(lc_layerA == 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_start_A"});}
-				// detect and reset the 2nd layer list since it was nested and another layer 1 line item apeared
+				// detect and reset the 2nd layer list since it was nested and another layer 1 line item appeared
 				if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
 				lc_layerA++;  // increase list counter
 				  // reset counters		
