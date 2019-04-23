@@ -46,7 +46,7 @@ function interpretPaste(){
 	// prettyPrintJson(courseCatalog);
 }
 
-// this portion of the code breaks down the text and adds special characters which make it easier to parse out pieces for futher development
+// this portion of the code breaks down the text and adds special characters as line-item designations which make it easier to parse out pieces for further development
 function interpretPaste_a(){
 	var string = "▐▐\r\n" + document.getElementById("paste").value + "\r\n▐▐";
 	var regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
@@ -172,6 +172,13 @@ function interpretProgramArray_c(){
 function createProgramRawArray_d(string){
 	const rawArray = string.split(/\n/gm);
 	return rawArray
+}
+
+// runs through the rawArray from document.catalogObj.programs.[PROGRAM].rawArray
+// attempts to discover potential places where a return character has incorrectly separated what was a line-item within a well-formed list
+function repairPossibleReturnCharacterErrors(array){
+	// from interpretPaste_a()
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘']
 }
 
 // receives an array of a program or concentration's slingle lines and formats it into a renderable array of "flatened" outputs
