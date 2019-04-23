@@ -191,12 +191,39 @@ function convertPrograms2HTML(){
   return outputAll
 }
 
+function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
+	let replace_2 = '';
+	let replace_3 = '';
+	switch(type){
+		// regex_a7: ╪╪
+		case 'subheading':
+			replace_2 = string.replace(regex_a7_single,'$2');
+			replace_3 = string.replace(regex_a7_single,'$3');
+		break;
+		// regex_a7b: ╫╫
+		case 'subheadingtotal':
+			replace_2 = string.replace(regex_a7b_single,'$2');
+			replace_3 = string.replace(regex_a7b_single,'$3');
+		break;
+		// regex_a8: ┌┌
+		case 'list1_class':
+			replace_2 = string.replace(regex_a8_single,'$2');
+			replace_3 = string.replace(regex_a8_single,'$3');
+		break;
+	}
+	if(replace_2 !== '' && replace_3 !== ''){
+		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
+	}
+	return string;
+}
+
 // here the flat rendering array is run through and the "type of line" determines how the line will be rendered 
 function majorAndConcentrationOutput(array, major){
 	output_html = '';
 	output_html += `<h2>${major}</h2>`;
 	// console.log(array);
 	array.forEach(function(index){
+	let text = insertHTMLIntoTabSepartedListsAndHeadings(index.type,index.text)	
 		switch(index.type){
 			case 'lc_start_A':
 				document.catalogObj.merge ? output_html += `<ul class="courses">` : output_html += `<ul>`;
@@ -211,31 +238,31 @@ function majorAndConcentrationOutput(array, major){
 				output_html += `	</ul>`;
 				break;
 			case 'list1':
-				document.catalogObj.merge ? output_html += `	<li><div class="bullet"></div>${index.text}</li>` : output_html += `	<li>${index.text}</li>`;
+				document.catalogObj.merge ? output_html += `	<li><div class="bullet"></div>${text}</li>` : output_html += `	<li>${text}</li>`;
 				break;
 			case 'list2':
-				document.catalogObj.merge ? output_html += `		<li><div class="bullet"></div>${index.text}</li>` : output_html += `		<li>${index.text}</li>`;
+				document.catalogObj.merge ? output_html += `		<li><div class="bullet"></div>${text}</li>` : output_html += `		<li>${text}</li>`;
 				break;
 			case 'list1_class':
-				output_html += `	` + renderCourseDescription(index.courseIds,false,index.text);
+				output_html += `	` + renderCourseDescription(index.courseIds,false,text);
 				break;
 			case 'list2_class':
-				output_html += `		` + renderCourseDescription(index.courseIds,false,index.text);
+				output_html += `		` + renderCourseDescription(index.courseIds,false,text);
 				break;
 			case 'heading':
-				output_html += `<h3>${index.text}</h3>`;
+				output_html += `<h3>${text}</h3>`;
 				break;
 			case 'subheading':
-				output_html += `<h4>${index.text}</h4>`;
+				output_html += `<h4>${text}</h4>`;
 				break;
 			case 'subheadingtotal':
-				output_html += `<h4 class="subheadingtotal">${index.text}</h4>`;
+				output_html += `<h4 class="subheadingtotal">${text}</h4>`;
 				break;
 			case 'subSUBheading':
-				output_html += `<h5 class="subSUBheadingtotal">${index.text}</h5>`;
+				output_html += `<h5 class="subSUBheadingtotal">${text}</h5>`;
 				break;				
 			case 'paragraph':
-				output_html += `<p>${index.text}</p>`;
+				output_html += `<p>${text}</p>`;
 				break;
 			// console.log(index);
 		}
