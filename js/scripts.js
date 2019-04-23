@@ -54,11 +54,11 @@ function interpretPaste_a(){
 	// var regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1})[a-zA-Z&() ]{6,}|[A-Z\t: ]{6,}|[A-Z]{2} in [a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names
 	var regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 	var regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
-	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective|[ ]*Objectives[ ]*([\r\n]))/gm; // looking for headings
+	var regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective|[ ]*Objectives[ ]*|[ ]*Completion[ ]*|[ ]*Cost[ ]*|[ ]*Admission Requirements[ ]*([\r\n]))/gm; // looking for headings
 	var regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 	var regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
 	// var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[CREDITScredits]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
-	var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
+	var regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
 	var regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
 	// var regex_a7c = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
 	var regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
@@ -991,6 +991,86 @@ AGS PROGRAMS:
      --> Can't be text-box
      --> everything else is fine...
 4.)  can't have bulleted lists split by return characters... as in: "24 credits at the 3000-level or above*" on pg 56
+5.)  Need to interpret this kind of stuff...
+MIN3200 Spiritual Formation in
+the Evangelical Church	3 Credits
+
+and:
+
+24 additional credits in Biblical Studies, 
+15 at the 3000-level or above	24 Credits
+
+Remaining credit hours chosen by 
+student and may include a concentration.	18 Credits
+
+Remaining General Education Requirements 
+(see p. 32).	36 Credits
+
+EMT3000 Introduction to Disaster 
+Response and Recovery	3 Credits
+
+EMT4100 Trauma: Understanding 
+and Intervention	3 Credits
+
+HCM4020 Healthcare Finance 
+and Reimbursement	3 Credits
+
+Somehow find things that end a list that have ## Credits and make them a single list item...
+
+
+6.)  In Business -- need to Identify this heading properly:  Concentration Courses	12 Credit Hours
+7.)  Criminal Justice: - This heading pukes: Research and Professional Development Skills Required
+ENG3000 Research and Professional 
+Development Skills	3 Credits
+8.)  Catch and add Tabs etc. to single-line items that have failed all other formatting:
+	Introduction to Literature	3 Credits
+	American Literature	6 Credits
+	British Literature	6 Credits
+	24 credits must be at the 3000-level or above*:
+	Historiography3 Credits
+	U.S. History6 Credits
+	Western Civilization*3 Credits
+	European History3 Credits
+	Non-Western History3 Credits
+	Colloquium3 Credits
+9.)  Create a rule for headings that end in ":"
+    24 credits must be at the 3000-level or above:
+
+    --- this looks great: GENERAL ELECTIVES	30 CREDITS
+Prerequisites must be completed before starting the major:
+THE2100 Investigating Christian Theology I	3 Credits
+MIN2020 Evangelism and Discipleship	3 Credits
+
+
+10.) notes begining in "*" seem to explode:  *Credits for history courses taken as part of the General Education requirement do not count toward the major requirements.
+
+11.) - Unsure about formatting here... may need to fix..
+INTERDISCIPLINARY STUDIES COURSES	63 CREDITS
+Requirements
+» 30 credits must be completed at the 3000 or higher level
+» 30 credits must be completed at OCU
+» 3 credits must be in Leadership.
+Major Requirements
+INT4800 Interdisciplinary Studies Capstone	3 Credits
+
+12.) - Numbered list is getting choked on:
+LEADERSHIP AND MINISTRY
+The Leadership and Ministry major is for adults who want to increase their effectiveness to lead as Christians in their arenas of influence, be they secular, religious, professional, or personal. There are five concentrations from which a student can choose: 
+1.	Biblical Studies
+2.	Church Planting
+3.	Intercultural Ministries
+4.	Organizational Leadership
+5.	Pastoral Ministry
+
+14.)  Includes courses in Communication, English Composition, Literature with Composition, and Oral Communication.
+Oral Communication 	0-3 credits
+English Composition 	3-6 credits
+-- variance of credits needs to be capable 
+
+15.)  Sport, Recreation, and Fitness Ministries Concentration -- need to add "," to the Concentration / Major Interpretation
+16.)  MASTER OF BUSINESS ADMINISTRATION (WITH CONCENTRATION) -- () need to be part of Major Interpretation
+13.)  BACHELOR OF SCIENCE IN NURSING (RN-BSN) explodes degree title
+
 
 
 ++++++ NEW ++++++

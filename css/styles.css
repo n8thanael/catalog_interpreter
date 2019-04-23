@@ -171,18 +171,45 @@ ul.courses div.bullet{
   margin-left: -1.25em;
   margin-top: .5em;
   position: absolute;
-  border-radius: .6em;
   transition-duration: 1s;
 }
 
-ul.courses div.bullet.open{
+ul.courses div.h{
+  width: .8em;
+  height: .2em;
+  background-color: blue;
+  margin-left: -1.5em;
+  margin-top: .75em;
+  position: absolute;
+  transition-duration: 1s;
+}
+
+ul.courses div.v{
+  width: .2em;
+  height: .9em;
+  background-color: blue;
+  margin-left: -1.15em;
+  margin-top: .4em;
+  position: absolute;
+  transition-duration: 1s;
+}
+
+ul.courses div.h.open{
   width: 1em;
   height: .2em;
   background-color: black;
   margin-left: -1.5em;
   margin-top: .75em;
   position: absolute;
-  border-radius: .2em;
+}
+
+ul.courses div.v.open{
+  width: 1em;
+  height: .2em;
+  background-color: green;
+  margin-left: -1.5em;
+  margin-top: .75em;
+  position: absolute;
 }
 
 .course {
@@ -257,21 +284,33 @@ ul.courses div.bullet.open{
 }
 
 #output li{
-  display:flex;
   margin-right:2em;
 }
 
-h3 span.right_just, h4 span.right_just, li span.right_just {
+#output li.course, #output li.course a{
+  display:flex;
+}
+
+#output ul.courses li.course.collapseable{
+  display:block;
+}
+
+#output li.course a{
+  flex-wrap: wrap;
+  flex-grow: 1;
+}
+
+h3 span.right_just, h4 span.right_just, li.course span.right_just {
     text-align: right;
     min-width: 130px;
 }
 
-li span.right_just {
+li.course span.right_just {
   min-width: 90px;  
 }
 
 h4 span.left_just, h3 span.left_just,
-li span.left_just {
+li.course span.left_just {
     flex-grow:5;
 }
 

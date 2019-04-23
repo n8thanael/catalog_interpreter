@@ -147,6 +147,8 @@ function renderMergedClasses(objRef,courseId,mergeText){
 	let courseDescPre = typeof course.descPre == 'string' ? course.descPre : "";
 	let courseDescPost = typeof course.descPost == 'string' ? course.descPost : "";
 
+	// Would be cool to have a plus sign for the expandables...
+	//<div class="h"></div><div class="v"></div>
 	course_html = `
 	<li class="course collapseable" id="course_${courseId}">
 		<div class="bullet"></div><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
