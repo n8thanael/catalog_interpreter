@@ -195,6 +195,7 @@ function convertPrograms2HTML(){
 // this used to occure "further up" in the process...but HTML inject that early became a confusing process ... it was deemed it would make 
 // more sense to simply re-run the regex here to prep for HTML injection to retain the HTML templating function in templates.js
 function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
+	let replace_1 = '';
 	let replace_2 = '';
 	let replace_3 = '';
 	switch(type){
@@ -216,8 +217,12 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 	}
 	if(replace_2 !== '' && replace_3 !== ''){
 		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
-	} else {
-		if(string.includes('\t')){console.log('includes tab:' + string);};
+	// it is possible after all of these a line may have a tab still that needs properly templated...
+	} else if (string.includes('\t') && (type !== "list1" || type !== "list2" || type !== "list1_class" || type !== "list2_class")){
+ 		console.log('includes tab:' + string);
+ 		replace_1 = string.replace(regex_t1,'$1');
+ 		replace_2 = string.replace(regex_t1,'$2');
+		string = `<span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span>`;
 	}
 	return string;
 }

@@ -303,15 +303,15 @@ ul.courses div.v.open{
 h3 span.right_just, h4 span.right_just, li.course span.right_just {
     text-align: right;
     min-width: 130px;
-
 }
 
-li.course span.right_just {
+li.course span.right_just, .subSUBheadingtotal span.right_just {
   min-width: 20%;  
 }
 
 h4 span.left_just, h3 span.left_just,
-li.course span.left_just {
+li.course span.left_just,
+.subSUBheadingtotal span.left_just {
     flex-grow:1;
     max-width:79%;
 }

@@ -80,7 +80,7 @@ const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a
 const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
 const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
-
+const regex_t1 = /([\S ]*)[\t]([\S ]*)/; // discovers anything before and behind a tab (group1)[TAB](group2)
 
 // this portion of the code breaks down the text and adds special characters as line-item designations which make it easier to parse out pieces for further development
 function interpretPaste_a(){
@@ -271,6 +271,7 @@ function repairAnomalies(rawArray){
 					}
 				}
 			}
+
 			if(newLine !== ''){
 				console.log('repairAnomalies() Triggered: ');
 				console.log('oldLine: ' + thisLine);
@@ -909,7 +910,6 @@ function processCourseIdsFromLineItem(string){
 	}
 }
 
-
 // returns a boolean if the string contains a courseCode.
 function foundCourseId(string){
 	console.log("Ran foundCourseId(): " + string);
@@ -1143,12 +1143,11 @@ Response and Recovery	3 Credits
 HCM4020 Healthcare Finance 
 and Reimbursement	3 Credits
 
-Somehow find things that end a list that have ## Credits and make them a single list item...
--- Catch anything that has [TAB]X Credits
 
 7.)  Criminal Justice: - This heading pukes: Research and Professional Development Skills Required
 ENG3000 Research and Professional 
 Development Skills	3 Credits
+
 8.)  Catch and add Tabs etc. to single-line items that have failed all other formatting:
 	Introduction to Literature	3 Credits
 	American Literature	6 Credits
