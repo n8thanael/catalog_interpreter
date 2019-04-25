@@ -1151,12 +1151,6 @@ or PS 495 Psych Practicum (students in Psych minor)	3
 13.)  Write something to EJECT Headings: "PC | PASTORAL COUNSELING"
 
 
-15.)  Sport, Recreation, and Fitness Ministries Concentration -- need to add "," to the Concentration / Major Interpretation
-16.)  MASTER OF BUSINESS ADMINISTRATION (WITH CONCENTRATION) -- () need to be part of Major Interpretation
-13.)  BACHELOR OF SCIENCE IN NURSING (RN-BSN) explodes degree title
-
-
-
 ++++++ NEW ++++++
 COURSES:
 TREMENDOUSLY CLEAN!
@@ -1168,15 +1162,5 @@ TREMENDOUSLY CLEAN!
   * Missing Course ID, Title, Credits, Weeks
 4.)  LFC1500 Introduction to Life Calling (3 credits)
   * Missing weeks #
-
-
-PROGRAMS:
-1.)  BIBLICAL STUDIES, BIBLICAL STUDIES MAJOR (15 CREDITS AT THE 3000-LEVEL OR ABOVE) REQUIRED BIBLICAL STUDIES COURSES	42 CREDITS
-  * Different formatting - not sure what is going on here...
-  * Maybe spaces instead of return character -- then [TAB] "42 CREDITS" at the end? 
-2.)  
-
-
-
 
 */
