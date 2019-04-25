@@ -160,10 +160,6 @@ ul.courses{
   padding: 0px;
 }
 
-li{
-  padding: 0px 0px 0px 2.5em;
-}
-
 div.bullet{
   width: .6em;
   height: .6em;
@@ -281,6 +277,10 @@ div.course {
 #output h4.subheadingtotal{
   background-color:#ddd;
   font-weight:700;
+}
+
+#output li.collapseable, #output li.non_collapseable{
+  padding: 0px 0px 0px 2.5em;
 }
 
 #output li.course, #output li.course a, div.contains_spans{

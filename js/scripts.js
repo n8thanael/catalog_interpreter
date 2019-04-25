@@ -76,10 +76,13 @@ const regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)
 const regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
 const regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
 const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
-const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;	
 const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
-const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;	
 const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+const regex_z4 = /[ \t]*[\r\n]/gm; // find an unlimited amount of tabs or spaces prior to the return or newline characters
+const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} )([ ]{0,2}[\s\S]*)/;
+const regex_z6 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
+const regex_z7 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_t1 = /([\S ]*)[\t]([\S ]*)/; // discovers anything before and behind a tab (group1)[TAB](group2)
 
 // this portion of the code breaks down the text and adds special characters as line-item designations which make it easier to parse out pieces for further development
@@ -91,6 +94,7 @@ function interpretPaste_a(){
 		var string = string.replace(regex_a1,'▐▐$1');  // adds (ALT+222)
 	} else if (document.catalogObj.mode == "programs"){
 		string = fixDoubleSpacesBetweenWords(string);
+		string = trimSpacesBeforeReturnCharacters(string);
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a3_specific,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
@@ -198,11 +202,6 @@ function createProgramRawArray_d(string){
 // Launched from interpretPaste_a()
 // Consider wrapping all anomaly checking here...
 function repairAnomalies(rawArray){
-
-	string = string.toUpperCase();
-	// all sub-headings should be capitalized....
-	// a specific sub heading :"Concentration Courses 12 Credit Hours" - is tagged early with: "regex_a3_specific" in interpretPaste_a()
-	// but it is sent here and fails because it is not in caps... fix that, force all subheadings to be capitalized
 	/*
 	 *	"██" = "heading";
 	 *	"╪╪" = "subheading";
@@ -230,16 +229,25 @@ function repairAnomalies(rawArray){
 			// they are probably a well-formatted paragraph.
 			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
 				if(thisLine.includes('\t')){
-					// contains a tab - it maybe  a credit list item
+					// contains a tab - it maybe a credit list item
 					if(previousLine[1] === '┌'){
 						newLine = '┌┌' + thisLine; // continue the list
 						pushOriginalLine = false;
 					}
 				} else if(thisLine[thisLine.length -1] === ':'){
+					// wait, maybe the prior line actually needs united to this one...
+					// is the previous line relatively short?  Does the previous line also NOT have a tab?
+					if(previousLine.length < 100 && !previousLine.includes('\t')){
+						// make it a subSubheading ... and add this line to the previous one...
+						outputArray[outputArray.length -1] = '╒╒' + previousLine + " " + thisLine;
+						// nowLine should be "" which means it will simply not record this entry since it was appended to the last one... 
+						pushOriginalLine = false;
+					} else { 
 					// last character is a : -- designates a subheading most likely
 						newLine = '╒╒' + thisLine; // code this string for subheading processing
 						pushOriginalLine = false;
-				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t')){
+					}
+				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t') && !nextLine.includes('█')  && !nextLine.includes('╪')){
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
@@ -257,11 +265,11 @@ function repairAnomalies(rawArray){
 				// If this line is here, it must not have a lineDesignationCode yet
 				// Also, it potentially may also end in a ":" and it doesn't contain a [TAB] character
 				// which builds the case that we need this line to be a subSubHeading
-				if(thisLine[thisLine.length -1] === ':' && !thisLine.includes('\t') && thisLine.length < 100){
+				if(thisLine[thisLine.length -1] === ':' && !thisLine.includes('\t') && !thisLine.includes('╒') && thisLine.length < 100){
 					newLine = '╒╒' + thisLine; // code this string for subheading processing
 					pushOriginalLine = false;
 				// IF ... it DOES contain a [TAB] character does this line have a Course Code? - if not, then let's grant it [TAB] processing as a heading...
-				} else if(thisLine[thisLine.length -1] === ':' && thisLine.length < 100){
+				} else if(thisLine[thisLine.length -1] === ':' && thisLine.length < 100 && !thisLine.includes('╒')){
 					// if it doesn't contain the course code... set the line as a subSUBheading to process it
 					if(!foundCourseId(thisLine)){
 						newLine = '╒╒' + thisLine; // code this string for subheading processing with a tab
@@ -893,23 +901,6 @@ function collectCourseCodesFromPrograms(string){
 }
 
 
-// returns an array for array.length detection if course codes have been found in the text - but there are no return characters in the text that is being inspected.
-function processCourseIdsFromLineItem(string){
-	let array = [];
-	let match = null;
-	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
-	const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm;
-	match = string.match(regex_z4);
-	if(((typeof match) == 'object') && (match !== null)){
-	    match.forEach((thisMatch, groupIndex) => {
-	        array[groupIndex] = thisMatch;
-	    });
-		return array;
-	} else {
-		return string;
-	}
-}
-
 // returns a boolean if the string contains a courseCode.
 function foundCourseId(string){
 	console.log("Ran foundCourseId(): " + string);
@@ -922,9 +913,24 @@ function foundCourseId(string){
 	}
 }
 
+function trimSpacesBeforeReturnCharacters(string){
+	string = string.replace(regex_z4, '\n');
+	return string;
+}
+
+function fixDoubleSpacesBetweenWords(string){
+	matchGroups = string.match(regex_z5);
+	//console.log(matchGroups);
+	if(Array.isArray(matchGroups)) {
+		var fixedWord = matchGroups[2].replace(" ","");
+		string = matchGroups[1].trim() + " " + fixedWord + " " + matchGroups[3].trim();
+	}
+	return string;
+}
+
+
 function fixHyphenatedWords(string){
-	const regex_z4 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
-	matchGroups = string.match(regex_z4);
+	matchGroups = string.match(regex_z6);
 	//console.log(matchGroups);
 	if(Array.isArray(matchGroups)) {
 		var fixedWord = matchGroups[2].replace("- ","");
@@ -933,15 +939,19 @@ function fixHyphenatedWords(string){
 	return string;
 }
 
-function fixDoubleSpacesBetweenWords(string){
-	const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} )([ ]{0,2}[\s\S]*)/;
-	matchGroups = string.match(regex_z5);
-	//console.log(matchGroups);
-	if(Array.isArray(matchGroups)) {
-		var fixedWord = matchGroups[2].replace(" ","");
-		string = matchGroups[1].trim() + " " + fixedWord + " " + matchGroups[3].trim();
+// returns an array for array.length detection if course codes have been found in the text - but there are no return characters in the text that is being inspected.
+function processCourseIdsFromLineItem(string){
+	let array = [];
+	let match = null;
+	match = string.match(regex_z7);
+	if(((typeof match) == 'object') && (match !== null)){
+	    match.forEach((thisMatch, groupIndex) => {
+	        array[groupIndex] = thisMatch;
+	    });
+		return array;
+	} else {
+		return string;
 	}
-	return string;
 }
 
 function reportCourses(){
