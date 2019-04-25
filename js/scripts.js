@@ -49,6 +49,7 @@ function interpretPaste(){
 const regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
 const regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 const regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
+const regex_a3_specific = /^([ ]{0,3})(Concentration Courses)[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
 const regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective|[ ]*Objectives[ ]*|[ ]*Completion[ ]*|[ ]*Cost[ ]*|[ ]*Admission Requirements[ ]*([\r\n]))/gm; // looking for headings
 const regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 const regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
@@ -72,6 +73,7 @@ function interpretPaste_a(){
 		string = fixDoubleSpacesBetweenWords(string);
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
+		string = string.replace(regex_a3_specific,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
 		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217) = Sub List Item
@@ -179,7 +181,6 @@ function createProgramRawArray_d(string){
 
 /*
  * this Concentration still fails ... need to detect :  Healthcare Management Concentration
-
  */
 function repairPossibleReturnCharacterErrors(rawArray){
 	outputArray = [];
@@ -189,27 +190,26 @@ function repairPossibleReturnCharacterErrors(rawArray){
 	let nextLine = '';
 	let newLine = '';
 	// from interpretPaste_a()
-	// inspection begins if the current line doesn't have a lineDesignationCode
-	// Q.1)  Does this line begin with a course number, but NOT end in a Credit amount? && Does the next line NOT begin with a course number, but ends with a credit amount?  JOIN this to NEXT, delete this.  
-	// does this line end in a comma? -- join with the next line.
+	// this loop is designed to inspect each line of the array looking for clues that lines broken with a return character should be fixed
 	for(let i = 0; i < rawArray.length; i++){
+		// the string simply has to be over a certain size or it's redacted...
 		if(rawArray[i].length > 3){
-			// the string simply has to be over a certain size or it's redacted...
+			// load the this,previous,next lines for manipulation
 			thisLine = rawArray[i] ? rawArray[i].trim() : "";
 			previousLine = rawArray[i-1] ? rawArray[i-1].trim() : "";
 			nextLine = rawArray[i+1] ? rawArray[i+1].trim() : "";
-			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because they are a well-formatted paragraph.
+			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because they are probably a well-formatted paragraph.
 			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
 				console.log('Triggered: ' + thisLine);
 				if(thisLine.includes('\t')){
-					// contains a tab - maybe a credit list
+					// contains a tab - it maybe  a credit list item
 					if(previousLine[1] === '┌'){
 						newLine = '┌┌' + thisLine; // continue the list
 						outputArray.push(newLine);
 						console.log('newLine: ' + newLine);
 					}
 				} else if(thisLine[thisLine.length -1] === ':'){
-					// last character is a : -- designates a subheading..
+					// last character is a : -- designates a subheading most likely
 						newLine = '╒╒' + thisLine; // continue the list
 						outputArray.push(newLine);
 						console.log('newLine: ' + newLine);
@@ -218,6 +218,7 @@ function repairPossibleReturnCharacterErrors(rawArray){
 					// or the line is less than 49
 					// AND the next line includes a tab
 					// AND this line does NOT include a tab already
+					// very good indiction it needs fixed
 					newLine = thisLine + " " + nextLine;
 					newLine = newLine.replace(/[╪╪╫╫┌┌]/gm, '');
 					newLine = newLine.replace(regex_a7_single,'╪╪$2\t$3');
@@ -1081,6 +1082,7 @@ and Reimbursement	3 Credits
 
 Somehow find things that end a list that have ## Credits and make them a single list item...
 
+-- Catch anything that has [TAB]X Credits
 
 6.)  In Business -- need to Identify this heading properly:  Concentration Courses	12 Credit Hours
 7.)  Criminal Justice: - This heading pukes: Research and Professional Development Skills Required

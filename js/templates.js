@@ -192,11 +192,15 @@ function convertPrograms2HTML(){
 }
 
 function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
+
 	let replace_2 = '';
 	let replace_3 = '';
 	switch(type){
-		// regex_a7: ╪╪
 		case 'subheading':
+			string = string.toUpperCase();
+			// all sub-headings should be capitalized....
+			// a specific sub heading :"Concentration Courses 12 Credit Hours" - is tagged early with: "regex_a3_specific" in interpretPaste_a()
+			// but it is sent here and fails because it is not in caps... fix that, force all subheadings to be capitalized
 			replace_2 = string.replace(regex_a7_single,'$2');
 			replace_3 = string.replace(regex_a7_single,'$3');
 		break;
@@ -212,7 +216,13 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 		break;
 	}
 	if(replace_2 !== '' && replace_3 !== ''){
+		console.log('-------' +type+ '------');
+		console.log('▓▓IN: ' + string);
+		console.log('▓▓r2:' + replace_2);
+		console.log('▓▓r3:' + replace_3);
 		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
+		console.log('▓▓out: ' + string);
+		console.log('-------------------');
 	}
 	return string;
 }
