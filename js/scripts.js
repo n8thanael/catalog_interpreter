@@ -58,16 +58,16 @@ const regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks
 const regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
 const regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 const regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
-const regex_a3_specific = /^([ ]{0,3})(Concentration Courses)[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
+const regex_a3_specific = /^([ ]{0,3})(Concentration Courses)[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
 const regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*Objective|[ ]*Objectives[ ]*|[ ]*Completion[ ]*|[ ]*Cost[ ]*|[ ]*Admission Requirements[ ]*([\r\n]))/gm; // looking for headings
 const regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 const regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
-const regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
-const regex_a7_single = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)[ \t]{0,3}$/;  // Single-line version of above
-const regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
-const regex_a7b_single = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/;  // Single-line version of above
-const regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
-const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[Ccredits]*)[ \t]{0,3}$/;  // Single-line version of above
+const regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
+const regex_a7_single = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)[ \t]{0,3}$/;  // Single-line version of above
+const regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
+const regex_a7b_single = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/;  // Single-line version of above
+const regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
+const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a9 = /^[ ]{0,3}((Required|Remaining)[a-zA-Z\d *’'`.,&:\-\–\/() ]*(Requirements|Courses)[: ]*(?!\t))(?=[\r\n])/gm; // looking for headings
 const regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
 const regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z\t: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names as group 1 (including a /r/n), extracts everything else as group 2
@@ -1152,17 +1152,6 @@ or PS 495 Psych Practicum (students in Psych minor)	3
 
 
 
-
-AGS PROGRAMS:
-
-11.) - Cindi Needs to fix this... 
-INTERDISCIPLINARY STUDIES COURSES	63 CREDITS
-Requirements
-» 30 credits must be completed at the 3000 or higher level
-» 30 credits must be completed at OCU
-» 3 credits must be in Leadership.
-Major Requirements
-INT4800 Interdisciplinary Studies Capstone	3 Credits
 
 14.)  Includes courses in Communication, English Composition, Literature with Composition, and Oral Communication.
 Oral Communication 	0-3 credits
