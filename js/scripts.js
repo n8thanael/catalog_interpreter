@@ -18,6 +18,7 @@ if (typeof courseCatalog != "undefined") {
 
 document.catalogObj = {};
 document.catalogObj.missingCoursesForMerge = [];
+var rawArray = [];
 
 function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
@@ -75,8 +76,9 @@ const regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)
 const regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
 const regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
 const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
-const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/;
-const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;
+const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;	
+const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
+const regex_z4 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 
 
@@ -186,7 +188,7 @@ function interpretProgramArray_c(){
 
 // simply creates a rawArray of Lines and eliminates 100% junk strings
 function createProgramRawArray_d(string){
-	const rawArray = string.split(/\n/gm);
+	rawArray = string.split(/\n/gm);
 	return rawArray
 }
 
@@ -196,17 +198,28 @@ function createProgramRawArray_d(string){
 // Launched from interpretPaste_a()
 // Consider wrapping all anomaly checking here...
 function repairAnomalies(rawArray){
+
+	string = string.toUpperCase();
+	// all sub-headings should be capitalized....
+	// a specific sub heading :"Concentration Courses 12 Credit Hours" - is tagged early with: "regex_a3_specific" in interpretPaste_a()
+	// but it is sent here and fails because it is not in caps... fix that, force all subheadings to be capitalized
+	/*
+	 *	"██" = "heading";
+	 *	"╪╪" = "subheading";
+	 *	"╫╫" = "subheadingtotal";
+	 *	"╒╒" = "subSUBheading";
+	 */
 	outputArray = [];
 	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘'];
 	let thisLine = '';
 	let previousLine = '';
 	let nextLine = '';
-	let newLine = '';
 
 	// this loop is designed to inspect each line of the array looking for clues that lines broken with a return character should be fixed
 	for(let i = 0; i < rawArray.length; i++){
 		 // default in the loop is simply just to push whatever non-"catches" - this flag is "false" when outputArray.push(newLine) is ran within the if detections when a catch is made
 		let pushOriginalLine = true;
+		let newLine = '';
 		// the string simply has to be over a certain size or its is redacted... there is no reason for "blanks" to travel through still 
 		if(rawArray[i].length > 3){
 			// load the this,previous,next lines for manipulation
@@ -216,23 +229,17 @@ function repairAnomalies(rawArray){
 			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because
 			// they are probably a well-formatted paragraph.
 			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
-				console.log('repairAnomalies() Triggered: ');
-				console.log('oldLine: ' + thisLine);
 				if(thisLine.includes('\t')){
 					// contains a tab - it maybe  a credit list item
 					if(previousLine[1] === '┌'){
 						newLine = '┌┌' + thisLine; // continue the list
-						outputArray.push(newLine);
 						pushOriginalLine = false;
-						console.log('newLine: ' + newLine);
 					}
 				} else if(thisLine[thisLine.length -1] === ':'){
 					// last character is a : -- designates a subheading most likely
 						newLine = '╒╒' + thisLine; // code this string for subheading processing
-						outputArray.push(newLine);
 						pushOriginalLine = false;
-						console.log('newLine: ' + newLine);
-				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 49) && nextLine.includes('\t') && !thisLine.includes('\t')){
+				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t')){
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
@@ -243,30 +250,50 @@ function repairAnomalies(rawArray){
 					newLine = newLine.replace(regex_a7_single,'╪╪$2\t$3');
 					newLine = newLine.replace(regex_a7b_single,'╫╫$2\t$3');
 					newLine = newLine.replace(regex_a8_single,'┌┌$2\t$3');
-					outputArray.push(newLine);
 					pushOriginalLine = false;
-					console.log('newLine: ' + newLine);
 					i++;
 				}
 			} else {
 				// If this line is here, it must not have a lineDesignationCode yet
 				// Also, it potentially may also end in a ":" and it doesn't contain a [TAB] character
 				// which builds the case that we need this line to be a subSubHeading
-				if(thisLine[thisLine.length -1] === ':' && !thisLine.includes('\t')){
-					console.log('repairAnomalies() Triggered: ');
-					console.log('oldLine: ' + thisLine);
+				if(thisLine[thisLine.length -1] === ':' && !thisLine.includes('\t') && thisLine.length < 100){
 					newLine = '╒╒' + thisLine; // code this string for subheading processing
-					outputArray.push(newLine);
 					pushOriginalLine = false;
-					console.log('newLine: ' + newLine);
 				// IF ... it DOES contain a [TAB] character does this line have a Course Code? - if not, then let's grant it [TAB] processing as a heading...
-				} else if(thisLine[thisLine.length -1] === ':' && thisLine.includes('\t')){
-
+				} else if(thisLine[thisLine.length -1] === ':' && thisLine.length < 100){
+					// if it doesn't contain the course code... set the line as a subSUBheading to process it
+					if(!foundCourseId(thisLine)){
+						newLine = '╒╒' + thisLine; // code this string for subheading processing with a tab
+						pushOriginalLine = false;
+					} else {
+						// it contains a course code...leave it as a paragraph.
+					}
 				}
 			}
-			// did we make it this far with the flag still being true?  Great - no anomalies, push the original line
+			if(newLine !== ''){
+				console.log('repairAnomalies() Triggered: ');
+				console.log('oldLine: ' + thisLine);
+				if(newLine[1] === '╪'){
+					newLine = newLine.toUpperCase();  // simply all subheadings should be capitalized
+				}
+				outputArray.push(newLine);
+				console.log('newLine: ' + newLine);
+			}
+			// did we make it this far with the flag still being true?  Great - no anomalies so far...push the original line
 			if(pushOriginalLine){
-				outputArray.push(rawArray[i]);
+				/*
+				 *	"██" = "heading";
+				 *	"╪╪" = "subheading";
+				 *	"╫╫" = "subheadingtotal";
+				 *	"╒╒" = "subSUBheading";
+				 */
+				if(rawArray[i][1] === '╪'){
+					outputArray.push(rawArray[i].toUpperCase());  // simply all subheadings should be capitalized
+				} else {
+					outputArray.push(rawArray[i]);					
+				}
+
 			}
 
 		}
@@ -281,15 +308,16 @@ function repairAnomalies(rawArray){
 // this function separate allows for easier line-by-line checking in the rawArray prior vs. the cleanArray which is contained in the document.catalogObj by Program -> Concentration
 function interpretProgramTemplateArray_e(rawArray){
 	rawArray = repairAnomalies(rawArray);
+	console.log(rawArray);
 	const cleanArray = [];
-	// enable comblex list-counters and  syste,
+	// enable complex list-counters
 	var lc_layerA = 0;
 	var lc_layerB = 0;
 	// the Last Good Index variable will 'keep' whatever paragraphs or list items were last entered, so that array.splice() can insert items within this.
 	var lastGoodIndex = 0;
-	// we need count paragraph incase we've indicated there is one we want to join together with the previous paragraph which isn't interupted by a title or list item
+	// we need count paragraph in case we've indicated there is one we want to join together with the previous paragraph which isn't interupted by a title or list item
 	var count_paragraph = 0;
-	// loops across the arrays and sets various "counters" inorder to intigrate data "forward" into the flat clean-array
+	// loops across the arrays and sets various "counters" in order to integrate data "forward" into the flat clean-array
 	for(let i = 0; i < rawArray.length; i++){
 		let text = '';
 		let type = '';
@@ -350,6 +378,7 @@ function interpretProgramTemplateArray_e(rawArray){
 				// Sub>SUB Heading
 				text = rawArray[i].substr(2);
 				type = "subSUBheading";
+				// console.log("subSUBheading:" + text);
 				//  - this necessitates the end of both prior list layers
 				if(lc_layerA + lc_layerB > 0){
 					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
@@ -768,7 +797,6 @@ function checkAgainstArray(value){
 }
 
 
-
 /*
  * loads the Catalog's classes into document.CLASSNAME such as
  * document.POL3100 and provides ease-of-access to show it.  This
@@ -878,6 +906,19 @@ function processCourseIdsFromLineItem(string){
 		return array;
 	} else {
 		return string;
+	}
+}
+
+
+// returns a boolean if the string contains a courseCode.
+function foundCourseId(string){
+	console.log("Ran foundCourseId(): " + string);
+	let match = string.match(regex_z1);
+	console.log(match);
+	if(Array.isArray(match) && typeof match[0] == 'string' && match[0] !== string) {
+		return true;
+	} else {
+		return false;
 	}
 }
 

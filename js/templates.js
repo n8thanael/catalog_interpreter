@@ -198,11 +198,8 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 	let replace_2 = '';
 	let replace_3 = '';
 	switch(type){
+		// "╪╪";
 		case 'subheading':
-			string = string.toUpperCase();
-			// all sub-headings should be capitalized....
-			// a specific sub heading :"Concentration Courses 12 Credit Hours" - is tagged early with: "regex_a3_specific" in interpretPaste_a()
-			// but it is sent here and fails because it is not in caps... fix that, force all subheadings to be capitalized
 			replace_2 = string.replace(regex_a7_single,'$2');
 			replace_3 = string.replace(regex_a7_single,'$3');
 		break;
@@ -219,6 +216,8 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 	}
 	if(replace_2 !== '' && replace_3 !== ''){
 		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
+	} else {
+		if(string.includes('\t')){console.log('includes tab:' + string);};
 	}
 	return string;
 }
@@ -229,6 +228,12 @@ function majorAndConcentrationOutput(array, major){
 	output_html = '';
 	output_html += `<h2>${major}</h2>`;
 	// console.log(array);
+/*
+ *	"██" = "heading";
+ *	"╪╪" = "subheading";
+ *	"╫╫" = "subheadingtotal";
+ *	"╒╒" = "subSUBheading";
+ */
 	array.forEach(function(index){
 	let text = insertHTMLIntoTabSepartedListsAndHeadings(index.type,index.text)	
 		switch(index.type){
