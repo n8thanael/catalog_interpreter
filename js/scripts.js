@@ -233,6 +233,10 @@ function repairAnomalies(rawArray){
 					if(previousLine[1] === '┌'){
 						newLine = '┌┌' + thisLine; // continue the list
 						pushOriginalLine = false;
+					} else if(thisLine.length < 50 && thisLine.includes('\t') && (nextLine.includes('┌') || nextLine.includes('╒'))){
+						// this line contains a tab, is short and comes before either a list or a subSubheading... it's probobly a heading of sometype...
+						newLine = '╪╪' + thisLine; // Make this a Subheading.
+						pushOriginalLine = false;
 					}
 				} else if(thisLine[thisLine.length -1] === ':'){
 					// wait, maybe the prior line actually needs united to this one...
@@ -317,7 +321,7 @@ function repairAnomalies(rawArray){
 // this function separate allows for easier line-by-line checking in the rawArray prior vs. the cleanArray which is contained in the document.catalogObj by Program -> Concentration
 function interpretProgramTemplateArray_e(rawArray){
 	rawArray = repairAnomalies(rawArray);
-	console.log(rawArray);
+	// console.log(rawArray);
 	const cleanArray = [];
 	// enable complex list-counters
 	var lc_layerA = 0;
