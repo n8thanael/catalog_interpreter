@@ -46,6 +46,14 @@ function interpretPaste(){
 	// prettyPrintJson(courseCatalog);
 }
 
+/*
+ * Massive regex library to detect lines etc... should provide more use case / notes  
+ */
+
+
+// regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
+const regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
+// var regex_pa_c1 = /^([ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2 ----> AGS ONLY
 const regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
 const regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 const regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
@@ -61,6 +69,16 @@ const regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]
 const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,2}[ ]{0,2}[Ccredits]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a9 = /^[ ]{0,3}((Required|Remaining)[a-zA-Z\d *’'`.,&:\-\–\/() ]*(Requirements|Courses)[: ]*(?!\t))(?=[\r\n])/gm; // looking for headings
 const regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
+const regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z\t: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names as group 1 (including a /r/n), extracts everything else as group 2
+const regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z: ]{5,}[\r\n])([\s\S]*)/gm; // separates the major's title from the rest of the raw text
+const regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
+const regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
+const regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
+const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
+const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/;
+const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;
+const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+
 
 // this portion of the code breaks down the text and adds special characters as line-item designations which make it easier to parse out pieces for further development
 function interpretPaste_a(){
@@ -113,10 +131,6 @@ function interpretPaste_b(paste){
 
 // sets up all the concentration arrays and raw text within
 function interpretProgramArray_c(){
-	// var regex_pa_c1 = /^([ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2 ----> AGS ONLY
-	var regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&() ]{6,40}(?=\n)|[A-Z\t: ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names as group 1 (including a /r/n), extracts everything else as group 2
-	var regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z: ]{5,}[\r\n])([\s\S]*)/gm; // separates the major's title from the rest of the raw text
-	var regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
 	document.catalogObj.programs = [];
 	for(var i = 0; i < document.catalogObj.rawPrograms.length; i++){
 		let rawProgram = document.catalogObj.rawPrograms[i];
@@ -178,58 +192,81 @@ function createProgramRawArray_d(string){
 
 // runs through the rawArray from document.catalogObj.programs.[PROGRAM].rawArray
 // attempts to discover potential places where a return character has incorrectly separated what was a line-item within a well-formed list
-
-/*
- * this Concentration still fails ... need to detect :  Healthcare Management Concentration
- */
-function repairPossibleReturnCharacterErrors(rawArray){
+// attempts to find places where a lineDesignationCode has not been assigned but the string ends in ":" - which would designate a subSubHeading should occur
+// Launched from interpretPaste_a()
+// Consider wrapping all anomaly checking here...
+function repairAnomalies(rawArray){
 	outputArray = [];
 	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘'];
 	let thisLine = '';
 	let previousLine = '';
 	let nextLine = '';
 	let newLine = '';
-	// from interpretPaste_a()
+
 	// this loop is designed to inspect each line of the array looking for clues that lines broken with a return character should be fixed
 	for(let i = 0; i < rawArray.length; i++){
-		// the string simply has to be over a certain size or it's redacted...
+		 // default in the loop is simply just to push whatever non-"catches" - this flag is "false" when outputArray.push(newLine) is ran within the if detections when a catch is made
+		let pushOriginalLine = true;
+		// the string simply has to be over a certain size or its is redacted... there is no reason for "blanks" to travel through still 
 		if(rawArray[i].length > 3){
 			// load the this,previous,next lines for manipulation
 			thisLine = rawArray[i] ? rawArray[i].trim() : "";
 			previousLine = rawArray[i-1] ? rawArray[i-1].trim() : "";
 			nextLine = rawArray[i+1] ? rawArray[i+1].trim() : "";
-			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because they are probably a well-formatted paragraph.
+			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because
+			// they are probably a well-formatted paragraph.
 			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
-				console.log('Triggered: ' + thisLine);
+				console.log('repairAnomalies() Triggered: ');
+				console.log('oldLine: ' + thisLine);
 				if(thisLine.includes('\t')){
 					// contains a tab - it maybe  a credit list item
 					if(previousLine[1] === '┌'){
 						newLine = '┌┌' + thisLine; // continue the list
 						outputArray.push(newLine);
+						pushOriginalLine = false;
 						console.log('newLine: ' + newLine);
 					}
 				} else if(thisLine[thisLine.length -1] === ':'){
 					// last character is a : -- designates a subheading most likely
-						newLine = '╒╒' + thisLine; // continue the list
+						newLine = '╒╒' + thisLine; // code this string for subheading processing
 						outputArray.push(newLine);
+						pushOriginalLine = false;
 						console.log('newLine: ' + newLine);
 				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 49) && nextLine.includes('\t') && !thisLine.includes('\t')){
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
 					// AND this line does NOT include a tab already
-					// very good indiction it needs fixed
+					// very good indication it needs fixed
 					newLine = thisLine + " " + nextLine;
 					newLine = newLine.replace(/[╪╪╫╫┌┌]/gm, '');
 					newLine = newLine.replace(regex_a7_single,'╪╪$2\t$3');
 					newLine = newLine.replace(regex_a7b_single,'╫╫$2\t$3');
 					newLine = newLine.replace(regex_a8_single,'┌┌$2\t$3');
 					outputArray.push(newLine);
+					pushOriginalLine = false;
 					console.log('newLine: ' + newLine);
 					i++;
 				}
 			} else {
-				outputArray.push(rawArray[i]);				
+				// If this line is here, it must not have a lineDesignationCode yet
+				// Also, it potentially may also end in a ":" and it doesn't contain a [TAB] character
+				// which builds the case that we need this line to be a subSubHeading
+				if(thisLine[thisLine.length -1] === ':' && !thisLine.includes('\t')){
+					console.log('repairAnomalies() Triggered: ');
+					console.log('oldLine: ' + thisLine);
+					newLine = '╒╒' + thisLine; // code this string for subheading processing
+					outputArray.push(newLine);
+					pushOriginalLine = false;
+					console.log('newLine: ' + newLine);
+				// IF ... it DOES contain a [TAB] character does this line have a Course Code? - if not, then let's grant it [TAB] processing as a heading...
+				} else if(thisLine[thisLine.length -1] === ':' && thisLine.includes('\t')){
+
+				}
+			}
+			// did we make it this far with the flag still being true?  Great - no anomalies, push the original line
+			if(pushOriginalLine){
+				outputArray.push(rawArray[i]);
 			}
 
 		}
@@ -240,9 +277,10 @@ function repairPossibleReturnCharacterErrors(rawArray){
 // receives an array of a program or concentration's slingle lines and formats it into a renderable array of "flatened" outputs
 // this programs a linear array which the templtes will simply "play" like actions that set HTML in order
 // kind of a complex switch/if/else headache -- sorry :-(
+// the basis for the switch operations is in the function: interpretPaste_a()
+// this function separate allows for easier line-by-line checking in the rawArray prior vs. the cleanArray which is contained in the document.catalogObj by Program -> Concentration
 function interpretProgramTemplateArray_e(rawArray){
-	rawArray = repairPossibleReturnCharacterErrors(rawArray);
-	console.log(rawArray);
+	rawArray = repairAnomalies(rawArray);
 	const cleanArray = [];
 	// enable comblex list-counters and  syste,
 	var lc_layerA = 0;
@@ -532,7 +570,6 @@ function interpretArray_c(){
  *	$									-- End of line reached
  */ 
 function interpretObject_d(obj){
-	var regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
 	var matchGroups = [];
 	var pos;
 	obj.titleText = "";
@@ -572,9 +609,6 @@ function interpretObject_d(obj){
  *  ([\s\S]*)							-- <Group#5> matches any remaining charcter of anytype an unlimited amount of times
  */
 function interpretObject_e(obj){
-	var regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
-	var regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
-	var regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 	var matchGroups = [];
 	obj.description = "";
 	obj.description = obj.value.replace(obj.id,'');
@@ -635,7 +669,6 @@ function interpretObject_e(obj){
  */
 function setDescriptionPieces(obj){
 	// elminated all return characters and other problematic spacing
-	regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/;
 	var desc = obj.description.replace(/\v|\r|\n|\t|[a-z] :|[ ]{2,}/gm,' ');
 	// create an array of all single words separated by (space)
 	descArray = desc.split(" ");
@@ -790,9 +823,7 @@ function prettyPrintJson(obj){
  * recieves a string, checks for error and returns either a newly formatted outputString, or the original string 
  */
 function repairMissingCharacters(string){
-	outputString = '';
-	// regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
-	regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;
+	let outputString = '';
 	if(string.length > 0){
 		var matchGroups = string.match(regex_z2);
 		if(Array.isArray(matchGroups)){
@@ -808,8 +839,6 @@ function repairMissingCharacters(string){
 // interprets a string and returns an array of program codes and their matching descriptions
 function collectCourseCodesFromPrograms(string){
 	let array = [];
-	// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
-	const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;
 	let primeMatchArray = string.match(regex_z3);
 	if(Array.isArray(primeMatchArray)){
 		// iterate through each match to get to the group values  
@@ -1062,11 +1091,6 @@ the Evangelical Church	3 Credits
 
 and:
 
-24 additional credits in Biblical Studies, 
-15 at the 3000-level or above	24 Credits
-
-Remaining credit hours chosen by 
-student and may include a concentration.	18 Credits
 
 Remaining General Education Requirements 
 (see p. 32).	36 Credits
@@ -1074,17 +1098,13 @@ Remaining General Education Requirements
 EMT3000 Introduction to Disaster 
 Response and Recovery	3 Credits
 
-EMT4100 Trauma: Understanding 
-and Intervention	3 Credits
 
 HCM4020 Healthcare Finance 
 and Reimbursement	3 Credits
 
 Somehow find things that end a list that have ## Credits and make them a single list item...
-
 -- Catch anything that has [TAB]X Credits
 
-6.)  In Business -- need to Identify this heading properly:  Concentration Courses	12 Credit Hours
 7.)  Criminal Justice: - This heading pukes: Research and Professional Development Skills Required
 ENG3000 Research and Professional 
 Development Skills	3 Credits

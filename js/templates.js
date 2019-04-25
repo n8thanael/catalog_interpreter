@@ -191,8 +191,10 @@ function convertPrograms2HTML(){
   return outputAll
 }
 
+// This function receives all the lists and runs them back through various regex items so it can detect and inject HTML into the line item
+// this used to occure "further up" in the process...but HTML inject that early became a confusing process ... it was deemed it would make 
+// more sense to simply re-run the regex here to prep for HTML injection to retain the HTML templating function in templates.js
 function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
-
 	let replace_2 = '';
 	let replace_3 = '';
 	switch(type){
@@ -216,18 +218,13 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 		break;
 	}
 	if(replace_2 !== '' && replace_3 !== ''){
-		console.log('-------' +type+ '------');
-		console.log('▓▓IN: ' + string);
-		console.log('▓▓r2:' + replace_2);
-		console.log('▓▓r3:' + replace_3);
 		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
-		console.log('▓▓out: ' + string);
-		console.log('-------------------');
 	}
 	return string;
 }
 
-// here the flat rendering array is run through and the "type of line" determines how the line will be rendered 
+// here the flat rendering array is run through and the "type of line" determines how the line will be rendered
+// this is pretty much the final step prior to output as it simply is compiling a massive HTML string to send to the DOM
 function majorAndConcentrationOutput(array, major){
 	output_html = '';
 	output_html += `<h2>${major}</h2>`;
