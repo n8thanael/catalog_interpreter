@@ -74,6 +74,7 @@ const regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&() ]{6,}[\r\n]{1}(and |[A-Z]{
 const regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z: ]{5,}[\r\n])([\s\S]*)/gm; // separates the major's title from the rest of the raw text
 const regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
 const regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits
+const regex_e2 = /^[\*]{0,1}[a-zA-Z\d]{1,2}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`.,&:\-\–\/() ]*/;
 const regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]{0,3}[\r\n])([\s\S]*)/;
 const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
@@ -467,8 +468,7 @@ function interpretProgramTemplateArray_e(rawArray){
 					// identifies a capital letter followed by multiple words seaparted by spaces - indicates sentence-formatted text
 					// if found it could indicate that this is part of a multi-break paragraph that needs united.
 					// We need to count paragraphs then and ensure the paragraph joins back with prior text.
-					const regex_e1 = /^[a-zA-Z\d]{1,2}[a-zA-Z\d *’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`,&:\-\–\/()]{1,20} [a-zA-Z\d*’'`.,&:\-\–\/() ]*/;
-					if(rawArray[i].search(regex_e1) !== -1){
+					if(rawArray[i].search(regex_e2) !== -1){
 						// this is the first detected "paragraph" proceed as normal.
 						// console.log(i +" | " + count_paragraph + " |: " + rawArray[i]);
 						if(count_paragraph == 0){
@@ -1145,54 +1145,6 @@ or PS 495 Psych Practicum (students in Psych minor)	3
 
 
 AGS PROGRAMS:
-1.)  Organizational Leadership Concentration --- does not have a return character afterwards
-2.)  Need to make sure concentrations have return characters after them - I'm not programing in prediction/detection for those
-3.)  REQUIRED HUMAN SERVICES COURSES	21 CREDITS - and other text-boxes simply don't work
-     --> Can't be ALL_CAPS
-     --> Can't be text-box
-     --> everything else is fine...
-4.)  can't have bulleted lists split by return characters... as in: "24 credits at the 3000-level or above*" on pg 56
-5.)  Need to interpret this kind of stuff...
-MIN3200 Spiritual Formation in
-the Evangelical Church	3 Credits
-
-and:
-
-
-Remaining General Education Requirements 
-(see p. 32).	36 Credits
-
-EMT3000 Introduction to Disaster 
-Response and Recovery	3 Credits
-
-
-HCM4020 Healthcare Finance 
-and Reimbursement	3 Credits
-
-
-7.)  Criminal Justice: - This heading pukes: Research and Professional Development Skills Required
-ENG3000 Research and Professional 
-Development Skills	3 Credits
-
-8.)  Catch and add Tabs etc. to single-line items that have failed all other formatting:
-	Introduction to Literature	3 Credits
-	American Literature	6 Credits
-	British Literature	6 Credits
-	24 credits must be at the 3000-level or above*:
-	Historiography3 Credits
-	U.S. History6 Credits
-	Western Civilization*3 Credits
-	European History3 Credits
-	Non-Western History3 Credits
-	Colloquium3 Credits
-9.)  Create a rule for headings that end in ":"
-    24 credits must be at the 3000-level or above:
-
-    --- this looks great: GENERAL ELECTIVES	30 CREDITS
-Prerequisites must be completed before starting the major:
-THE2100 Investigating Christian Theology I	3 Credits
-MIN2020 Evangelism and Discipleship	3 Credits
-
 
 10.) notes begining in "*" seem to explode:  *Credits for history courses taken as part of the General Education requirement do not count toward the major requirements.
 
@@ -1204,15 +1156,6 @@ Requirements
 » 3 credits must be in Leadership.
 Major Requirements
 INT4800 Interdisciplinary Studies Capstone	3 Credits
-
-12.) - Numbered list is getting choked on:
-LEADERSHIP AND MINISTRY
-The Leadership and Ministry major is for adults who want to increase their effectiveness to lead as Christians in their arenas of influence, be they secular, religious, professional, or personal. There are five concentrations from which a student can choose: 
-1.	Biblical Studies
-2.	Church Planting
-3.	Intercultural Ministries
-4.	Organizational Leadership
-5.	Pastoral Ministry
 
 14.)  Includes courses in Communication, English Composition, Literature with Composition, and Oral Communication.
 Oral Communication 	0-3 credits

@@ -285,6 +285,11 @@ function majorAndConcentrationOutput(array, major){
 			case 'paragraph':
 				output_html += `<p>${text}</p>`;
 				break;
+/*				
+			case 'unknown':
+				output_html += `<p>${text}</p>`;
+				break;
+*/
 			// console.log(index);
 		}
 	});// end of array.forEach
