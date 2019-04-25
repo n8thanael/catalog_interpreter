@@ -84,6 +84,7 @@ const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} 
 const regex_z6 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
 const regex_z7 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_t1 = /([\S ]*)[\t]([\S ]*)/; // discovers anything before and behind a tab (group1)[TAB](group2)
+const regex_ra1 = /^([\S ]*)(p. 32|p.32|p32)([\S])([\t\S ]*)/; // looks for any reference of page 32 in and groups the text as (group1)(pg32)(group3)(group4)end of line...
 
 // this portion of the code breaks down the text and adds special characters as line-item designations which make it easier to parse out pieces for further development
 function interpretPaste_a(){
@@ -283,12 +284,23 @@ function repairAnomalies(rawArray){
 					}
 				}
 			}
+			// enable recognition of lines that contain a page reference to the General Education Requirements like "p. 32" etc...
+			let regex_ra1_match = thisLine.match(regex_ra1);
+			if(Array.isArray(regex_ra1_match)){
+				// console.log(regex_ra1_match);
+				if(regex_ra1_match[4] == ""){
+					newLine = '┌┌<a href="#link_G.E.R.">Click for General Education Requirements</a>';
+				} else {
+					newLine = '┌┌<a href="#link_G.E.R.">Click for General Education Requirements</a>' + regex_ra1_match[4];
+				}
+				pushOriginalLine = false;
+			}
 
 			if(newLine !== ''){
 				console.log('repairAnomalies() Triggered: ');
 				console.log('oldLine: ' + thisLine);
 				if(newLine[1] === '╪'){
-					newLine = newLine.toUpperCase();  // simply all subheadings should be capitalized
+					newLine = newLine.toUpperCase();  // simply all subheadings should be capitalized - force this...
 				}
 				outputArray.push(newLine);
 				console.log('newLine: ' + newLine);
