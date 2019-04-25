@@ -160,11 +160,11 @@ ul.courses{
   padding: 0px;
 }
 
-ul.courses li{
+li{
   padding: 0px 0px 0px 2.5em;
 }
 
-ul.courses div.bullet{
+div.bullet{
   width: .6em;
   height: .6em;
   background-color: black;
@@ -174,7 +174,7 @@ ul.courses div.bullet{
   transition-duration: 1s;
 }
 
-ul.courses div.h{
+div.h{
   width: .8em;
   height: .2em;
   background-color: blue;
@@ -184,7 +184,7 @@ ul.courses div.h{
   transition-duration: 1s;
 }
 
-ul.courses div.v{
+div.v{
   width: .2em;
   height: .9em;
   background-color: blue;
@@ -194,7 +194,7 @@ ul.courses div.v{
   transition-duration: 1s;
 }
 
-ul.courses div.h.open{
+div.h.open{
   width: 1em;
   height: .2em;
   background-color: black;
@@ -203,7 +203,7 @@ ul.courses div.h.open{
   position: absolute;
 }
 
-ul.courses div.v.open{
+div.v.open{
   width: 1em;
   height: .2em;
   background-color: green;
@@ -212,7 +212,7 @@ ul.courses div.v.open{
   position: absolute;
 }
 
-.course {
+div.course {
 	padding: .5em 0em;
 }
 
@@ -283,15 +283,11 @@ ul.courses div.v.open{
   font-weight:700;
 }
 
-#output li{
-  margin-right:2em;
-}
-
-#output li.course, #output li.course a{
+#output li.course, #output li.course a, div.contains_spans{
   display:flex;
 }
 
-#output ul.courses li.course.collapseable{
+#output li.course.collapseable, #output li.non_collapseable{
   display:block;
 }
 
@@ -300,19 +296,20 @@ ul.courses div.v.open{
   flex-grow: 1;
 }
 
-h3 span.right_just, h4 span.right_just, li.course span.right_just {
+h3 span.right_just, h4 span.right_just{
     text-align: right;
     min-width: 130px;
 }
 
-li.course span.right_just, .subSUBheadingtotal span.right_just {
+li span.right_just, .subSUBheadingtotal span.right_just {
   min-width: 20%;  
 }
 
 h4 span.left_just, h3 span.left_just,
-li.course span.left_just,
+li span.left_just,
 .subSUBheadingtotal span.left_just {
     flex-grow:1;
-    max-width:79%;
+    max-width: 77%;
+    margin-right: 3%;
 }
 

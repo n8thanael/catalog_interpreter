@@ -218,8 +218,12 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 	if(replace_2 !== '' && replace_3 !== ''){
 		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
 	// it is possible after all of these a line may have a tab still that needs properly templated...
-	} else if (string.includes('\t') && (type !== "list1" || type !== "list2" || type !== "list1_class" || type !== "list2_class")){
- 		console.log('includes tab:' + string);
+	//} else if (string.includes('\t') ){
+	} else if (string.includes('\t') && (type == "list1" || type == "list2")){
+ 		replace_1 = string.replace(regex_t1,'$1');
+ 		replace_2 = string.replace(regex_t1,'$2');
+		string = `<div class="contains_spans"><span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span></div>`;
+	} else if (string.includes('\t')){
  		replace_1 = string.replace(regex_t1,'$1');
  		replace_2 = string.replace(regex_t1,'$2');
 		string = `<span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span>`;
@@ -255,10 +259,10 @@ function majorAndConcentrationOutput(array, major){
 				output_html += `	</ul>`;
 				break;
 			case 'list1':
-				document.catalogObj.merge ? output_html += `	<li><div class="bullet"></div>${text}</li>` : output_html += `	<li>${text}</li>`;
+				document.catalogObj.merge ? output_html += `	<li class="non_collapseable"><div class="bullet"></div>${text}</li>` : output_html += `	<li>${text}</li>`;
 				break;
 			case 'list2':
-				document.catalogObj.merge ? output_html += `		<li><div class="bullet"></div>${text}</li>` : output_html += `		<li>${text}</li>`;
+				document.catalogObj.merge ? output_html += `		<li class="non_collapseable"><div class="bullet"></div>${text}</li>` : output_html += `		<li>${text}</li>`;
 				break;
 			case 'list1_class':
 				output_html += `	` + renderCourseDescription(index.courseIds,false,text);
