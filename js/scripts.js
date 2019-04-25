@@ -986,6 +986,15 @@ function reportAlert(text,type){
 	return `<div class="alert alert-${type}" role="alert">${text}</div>`;
 }
 
+function cleanOutAnyLineDesignationCodesRemaining(string){
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘'];
+	for(let i = 0; lineDesignationCodes.length > i; i++){
+		string = string.replace(lineDesignationCodes[i],"");
+	}
+	return string;
+}
+
+
 // inspects the reports after running 
 function reportPrograms(){
 	if(typeof document.catalogObj.courseRef !== "object"){
@@ -1146,9 +1155,7 @@ or PS 495 Psych Practicum (students in Psych minor)	3
 
 AGS PROGRAMS:
 
-10.) notes begining in "*" seem to explode:  *Credits for history courses taken as part of the General Education requirement do not count toward the major requirements.
-
-11.) - Unsure about formatting here... may need to fix..
+11.) - Cindi Needs to fix this... 
 INTERDISCIPLINARY STUDIES COURSES	63 CREDITS
 Requirements
 » 30 credits must be completed at the 3000 or higher level

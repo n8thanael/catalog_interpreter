@@ -244,7 +244,9 @@ function majorAndConcentrationOutput(array, major){
  *	"╒╒" = "subSUBheading";
  */
 	array.forEach(function(index){
-	let text = insertHTMLIntoTabSepartedListsAndHeadings(index.type,index.text)	
+	let text = insertHTMLIntoTabSepartedListsAndHeadings(index.type,index.text);
+	text = cleanOutAnyLineDesignationCodesRemaining(text);
+
 		switch(index.type){
 			case 'lc_start_A':
 				document.catalogObj.merge ? output_html += `<ul class="courses">` : output_html += `<ul>`;
