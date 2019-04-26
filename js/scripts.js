@@ -504,14 +504,7 @@ function interpretProgramTemplateArray_e(rawArray){
 }
 
 /*
- *	Starts buliding the document.className array
- *	^												-- starts at a new line
- *		[ ]{0,3}									-- a "space" from none upto 3 times
- *		([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}-[A-Z]{1,3}	-- <Group#1> the character set: ABCD1234-ABC or CM426P
- *		|											-- or                                   
- *		[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1})    			-- the character set: AB123 or CM426P or ABCD1234 </Group#1>  
- *		(a-zA-Z ’'`.,&\-\/() ]*)					-- <Gropu#2> matches any Letter or Digit or characters: "*’'`'.,&:-/() " a greedy amount of times
- *		([\s])										-- <Gropu#3> any space-character tab or return character such as:  [\r\n\t\f\v ]		
+ *  Refactor this so the error-checking is pulled out into other functions instead of being set inside this giant one
  */
 function interpretArray_c(){
 	document.catalogObj.courses = [];
