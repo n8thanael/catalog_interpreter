@@ -24,7 +24,7 @@ function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
 	// console.log(objDump);
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2);
-	document.getElementById("output").innerHTML = convertCatalogObj2HTML();
+	document.getElementById("catalog_interpreter_output").innerHTML = convertCatalogObj2HTML();
 	document.getElementById("status").innerHTML = reportCourses();
 }
 
@@ -34,7 +34,7 @@ function interpretPrograms(){
 	//console.log(dump(objDump,'none'));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("status").innerHTML = reportPrograms();
-	document.getElementById("output").innerHTML = convertPrograms2HTML();
+	document.getElementById("catalog_interpreter_output").innerHTML = convertPrograms2HTML();
 }
 
 function output(){

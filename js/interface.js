@@ -74,7 +74,7 @@ merge_toggle.addEventListener( 'change', function() {
 
 function htmlToClipboard(){
 	let updateStatus = document.getElementById("status").textContent; 
-	let outputHTML = document.getElementById("output").outerHTML;
+	let outputHTML = document.getElementById("catalog_interpreter_output").outerHTML;
 	let temp = document.createElement("input");
 	document.body.appendChild(temp);
 	temp.style.opacity = 0;
