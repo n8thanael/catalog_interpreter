@@ -235,7 +235,10 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 // this is pretty much the final step prior to output as it simply is compiling a massive HTML string to send to the DOM
 function majorAndConcentrationOutput(array, major){
 	output_html = '';
-	output_html += `<h2>${major}</h2>`;
+	if(!document.catalogObj.title_output_toggle){
+		// restrict majors from output using toggle
+		output_html += `<h2>${major}</h2>`;
+	}
 	// console.log(array);
 /*
  *	"██" = "heading";

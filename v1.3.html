@@ -52,8 +52,16 @@
 			  </div>
 	    	</div>
 	    	<div class="col out">
-	    		<br>
-     			<button class="btn btn-success" id="copy_html" onclick="htmlToClipboard()">Copy HTML</button>
+	    	<div id="output_options">
+		    	<div class="output_option">
+				    <label class="small switch">
+					  <input type="checkbox" name="title_output_toggle">
+					  <span class="slider round title_output"></span>
+					</label>
+					<div id="title_output_toggle_label" class="">Title</div>
+				</div>
+			</div>
+    			<button class="btn btn-success" id="copy_html" onclick="htmlToClipboard()">Copy HTML</button>
      			<hr>
 			    <div id="catalog_interpreter_output"></div>
 			    <hr>

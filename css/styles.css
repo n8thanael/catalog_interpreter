@@ -15,6 +15,13 @@
   height: 34px;
 }
 
+.small.switch {
+  position: relative;
+  display: inline-block;
+  width: 43px;
+  height: 17px;
+}
+
 .switch input { 
   opacity: 0;
   width: 0;
@@ -44,6 +51,13 @@
   transition: .4s;
 }
 
+.small .slider:before {
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+}
+
 input:checked + .slider.course_program {
   background-color: orange;
 }
@@ -69,15 +83,15 @@ input:focus + .slider.ags_trad {
   box-shadow: 0 0 1px #007bff;
 }
 
-.slider.debug{
+.slider.debug, .slider.title_output{
   background-color: grey;
 }
 
-input:checked + .slider.debug {
+input:checked + .slider.debug, input:checked + .slider.title_output  {
   background-color: black;
 }
 
-input:focus + .slider.debug {
+input:focus + .slider.debug, input:focus + .slider.title_output {
   box-shadow: 0 0 1px black;
 }
 
@@ -154,6 +168,27 @@ input:checked + .slider:before {
  *    █ OUTPUT STYLES █ 
  *    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 
  */
+
+ .output_option{
+  max-width:24%;
+  float:left;
+  display:block;
+  padding:5px;
+  margin:2px;
+  background-color:#dfdfdf;
+  text-align:center;
+ }
+
+div#output_options {
+    width: 100%;
+    display: block;
+    float: left;
+}
+
+div#output_options .off{
+  text-decoration:line-through;
+  opacity:0.5;
+}
 
 ul.courses{
   list-style: none;
