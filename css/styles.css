@@ -162,14 +162,7 @@ input:checked + .slider:before {
    opacity:0.2 !important;
 }
 
-
-/*
- *    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ 
- *    █ OUTPUT STYLES █ 
- *    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 
- */
-
- .output_option{
+.output_option{
   max-width:24%;
   float:left;
   display:block;
@@ -189,6 +182,13 @@ div#output_options .off{
   text-decoration:line-through;
   opacity:0.5;
 }
+
+
+/*
+ *    ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ 
+ *    █ OUTPUT STYLES █ 
+ *    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ 
+ */
 
 ul.courses{
   list-style: none;
@@ -332,19 +332,20 @@ div.course {
 }
 
 h3 span.right_just, h4 span.right_just{
-    text-align: right;
-    min-width: 130px;
+  text-align: right;
+  min-width: 130px;
 }
 
 li span.right_just, .subSUBheadingtotal span.right_just {
   min-width: 20%;  
+  text-align: right;
 }
 
 h4 span.left_just, h3 span.left_just,
 li span.left_just,
 .subSUBheadingtotal span.left_just {
-    flex-grow:1;
-    max-width: 77%;
-    margin-right: 3%;
+  flex-grow:1;
+  max-width: 77%;
+  margin-right: 3%;
 }
 
