@@ -272,11 +272,12 @@ div.course {
 }
 
 .course_preDesc, .course_postDesc {
-	padding: 0em .5em;
+  padding: 0em .5em;
 }
 
 .course_postDesc {
-	font-style: italic;
+  font-style: italic;
+  margin-bottom: 0.5em;
 }
 
 #catalog_interpreter_output h2{

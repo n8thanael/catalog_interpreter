@@ -1062,13 +1062,35 @@ function reportPrograms(){
 /*
 ERRORS:
 4.)  <h4><span>Title</span><span>Number</span></h4> -- need to flow in flexbox left & right ... not working...
+5.)  Errors when classes occure with "or" statements such as:
+
+PH201 Introduction to Philosophy or PH202 Ethics	3
+
+Current fix is to do this:
+
+Choose one of the following:
+PH201 Introduction to Philosophy	3
+PH202 Ethics	3
+
+6.)  TRAD: Has problems working with this concentration: HEALTHCARE MANAGEMENT CONCENTRATION
+7.)  INformation Technology Concentration fails because there is no list beneath it...
+8.)  "Program Total 120 Hours" doesn't work on BA in Business Management
+     -> there is a space after hours 
+     There needs to be an extra return character after "Any credit-bearing course, 100-level or above"
+9.)  Currenlty have to manually fix:
+		Choose one of the following: 
+		PH201 Introduction to Philosophy	3
+		PH202 Ethics	3
+
 
 Improvements:
 1.)  Need to make a "copy HTML" button to get a single program out
 2.)  What do I do about concentrations in Trad? -- they are simplistic - will probobly manually deal with them
 3.)  Interface needs an "Expand-All Courses" button
 4.)  "Pre-Counseling Concentration" -- need to recognize "hyphen" within word groups for concetrations
-5.)  Subheadings caught need better formatting: 
+5.)  Would be GREAT if there was a copy html button for different portions recognized ...
+     --> so like "COPY OBJECTIVES HTML" and "COPY COURSES HTML" because these get split into different sections later on
+
 
 Incompatibilities:
 TRAD CATALOG:
