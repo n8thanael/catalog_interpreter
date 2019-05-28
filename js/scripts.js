@@ -1075,13 +1075,31 @@ PH202 Ethics	3
 6.)  TRAD: Has problems working with this concentration: HEALTHCARE MANAGEMENT CONCENTRATION
 7.)  INformation Technology Concentration fails because there is no list beneath it...
 8.)  "Program Total 120 Hours" doesn't work on BA in Business Management
-     -> there is a space after hours 
+     -> there is a space after hours
+     -> also doesn't work on BA in Music - it seems if there is a sentence fragment prior to this without an extra return character - it errors out.
      There needs to be an extra return character after "Any credit-bearing course, 100-level or above"
 9.)  Currenlty have to manually fix:
 		Choose one of the following: 
 		PH201 Introduction to Philosophy	3
 		PH202 Ethics	3
+10.)  Approved 1.29.2019 In BA in Sport Management and Business -- explodes the template
+11.)  Had to add the word "something" to BA in Music Something to make it work
 
+13.)  Program options failed to function in BA in Worship Leadership Degree
+14.)  GB401 Biblical Hermeneutics -- contains "GOV | GOVERNMENT" at the end
+15.)  When more than 1 course is on a page - it won't expand because the course ID is used twice... errors
+16.)  When "Choose one of the following:" has a return character separating it and the previous course, the course will get deleted... not sure why
+  --- "TH407 Holiness Literature 	2
+      
+      Choose one of the following:
+      NT401 Romans 	3
+      NT405 Galatians 	3"
+  --- in this example, TH407 Holiness Literature will get deleted
+17.)  Can't recognize this major: "BSEd in Early Childhood Education (Pre K-5)" or "BSEd in Middle Childhood Education (Grades 4-9)" or "BSEd in Adolescence to Young Adult Education (Grades 7-12)" or "BSEd in Mild to Moderate Intervention Specialist Education (Grades K-12)"
+18.)  Can't recognize this headline : "CONCENTRATIONS	 24-44 HOURS"
+19.)  Can't recognize this total: "Program Total *120-130 Hours"
+20.)  Can't recognize this: TE499 Clinical Experience 12  (splits 1 & 2)
+`
 
 Improvements:
 1.)  Need to make a "copy HTML" button to get a single program out
@@ -1139,5 +1157,7 @@ TREMENDOUSLY CLEAN!
   * Missing Course ID, Title, Credits, Weeks
 4.)  LFC1500 Introduction to Life Calling (3 credits)
   * Missing weeks #
+
+
 
 */
