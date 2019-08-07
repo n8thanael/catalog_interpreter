@@ -1060,6 +1060,10 @@ function reportPrograms(){
 
 
 /*
+
+Review this for additional required fixes:
+https://www.wrike.com/open.htm?id=359675750
+
 ERRORS:
 4.)  <h4><span>Title</span><span>Number</span></h4> -- need to flow in flexbox left & right ... not working...
 5.)  Errors when classes occure with "or" statements such as:
