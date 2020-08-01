@@ -9,7 +9,7 @@ function convertCatalogObj2HTML(){
 			var courseErrorValue = typeof document.catalogObj.courseErr[courseId].value == 'string' ?  document.catalogObj.courseErr[courseId].value : "";
 			course_html = `
 			<div class="course error" id="course_${courseId}">
-				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">ERROR: ${courseId}</a></div>
+				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description" aria-expanded="false" aria-controls="#course_desc_${courseId}">ERROR: ${courseId}</a></div>
 				<div id="course_desc_${courseId}" class="collapse">${ courseErrorValue}</div>
 			</div>`;
 		} else {
@@ -107,7 +107,7 @@ function renderClasses(objRef,courseId){
 	if (agsTrad == 'AGS'){
 		course_html = `
 		<div class="course" id="course_${courseId}">
-			<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText}&nbsp;${courseCreditsText}&nbsp;${courseWeeksText}</a></div>
+			<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleText}&nbsp;${courseCreditsText}&nbsp;${courseWeeksText}</a></div>
 			<div id="course_desc_${courseId}" class="collapse">
 				<div class="course_preDesc">${courseDescPre}</div>
 				<div class="course_postDesc">${courseDescPost}</div>
@@ -116,7 +116,7 @@ function renderClasses(objRef,courseId){
 	} else if(agsTrad == 'TRAD'){
 		course_html = `
 		<div class="course" id="course_${courseId}">
-			<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
+			<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description" aria-expanded="false" aria-controls="#course_desc_${courseId}">${courseId}&nbsp;${courseTitleFull} <span>${course.creditsValue ? course.creditsValue : course.creditsText}</span></a></div>
 			<div id="course_desc_${courseId}" class="collapse">
 				<div class="course_preDesc">${courseDescPre}</div>
 				<div class="course_postDesc">${courseDescPost}</div>
@@ -151,7 +151,7 @@ function renderMergedClasses(objRef,courseId,mergeText){
 	//<div class="h"></div><div class="v"></div>
 	course_html = `
 	<li class="course collapseable" id="course_${courseId}">
-		<div class="bullet"></div><a data-toggle="collapse" href="#course_desc_${courseId}" role="button" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
+		<div class="bullet"></div><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
 		<div id="course_desc_${courseId}" class="collapse">
 			<div class="course_preDesc">${courseDescPre}</div>
 			<div class="course_postDesc">${courseDescPost}</div>

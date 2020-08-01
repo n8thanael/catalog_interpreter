@@ -6,7 +6,7 @@
 // regex_z1 = /([\s\S]*\d weeks)([ ]*)(This[\s\S]*)/;
 const regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
 // var regex_pa_c1 = /^([ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2 ----> AGS ONLY
-const regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?= [A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?= [A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	
+const regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	// First-in line Code identification that looks ahead for tab or space
 const regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&-() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&-() ]{6,40}(?=\n)|[A-Z:\-() ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 const regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z, ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
 const regex_a3_specific = /^([ ]{0,3})(Concentration Courses)[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
@@ -30,10 +30,10 @@ const regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\(
 const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
 const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;	
-const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([ ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([  \t]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_z4 = /[ \t]*[\r\n]/gm; // find an unlimited amount of tabs or spaces prior to the return or newline characters
 const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} )([ ]{0,2}[\s\S]*)/;
 const regex_z6 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
-const regex_z7 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ ]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, ]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+const regex_z7 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, \t]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_t1 = /([\S ]*)[\t]([\S ]*)/; // discovers anything before and behind a tab (group1)[TAB](group2)
 const regex_ra1 = /^([\S ]*)(p. 32|p.32|p32)([\S])([\t\S ]*)/; // looks for any reference of page 32 in and groups the text as (group1)(pg32)(group3)(group4)end of line...
