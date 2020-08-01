@@ -21,6 +21,7 @@ const regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]
 const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a9 = /^[ ]{0,3}((Required|Remaining)[a-zA-Z\d *’'`.,&:\-\–\/() ]*(Requirements|Courses)[: ]*(?!\t))(?=[\r\n])/gm; // looking for headings
 const regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
+
 const regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&\-() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&\-() ]{6,40}(?=\n)|[A-Z\t:\-() ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&\-() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names Majors as group 1 (including a /r/n), extracts everything else as group 2
 const regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z()-: ]{5,}[\r\n])([\s\S]*)/gm; // separates the major's title from the rest of the raw text
 const regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z, ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
@@ -31,6 +32,8 @@ const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r
 const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
 const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;	
 const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([  \t]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+const regex_c2 = /^([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])[  \t]{1,3}([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120})(\s){0,1}/; // almost identical to above, but kinda needs differnt groups -- should be refactored at some point -- unsure why "/gm" needs to be removed at the end of the regex code - will need further inspection 
+
 const regex_z4 = /[ \t]*[\r\n]/gm; // find an unlimited amount of tabs or spaces prior to the return or newline characters
 const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} )([ ]{0,2}[\s\S]*)/;
 const regex_z6 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;

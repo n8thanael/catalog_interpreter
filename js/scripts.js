@@ -74,6 +74,8 @@ function interpretPaste_a(){
 	}
 	var result = string;
 
+	// console.log(result);
+
     return result;
 }
 
@@ -511,14 +513,13 @@ function interpretArray_c(){
 	document.catalogObj.courseErr = [];
 	document.catalogObj.courseRef = [];
 	var referenceLoader = 0;
-	var regex_c = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3})([a-zA-Z\d *’'`.,&:\-\–\/() ]*)([\s])/;
 	for(var i = 0; i < document.catalogObj.rawCourses.length; i++){ 
 		var error = false;
 		var thisCourse = {};
 		let title = "", className = "", matchGroups = [];
 		var value = repairMissingCharacters(document.catalogObj.rawCourses[i]);
-		//console.log(value);
-		matchGroups = value.match(regex_c);
+		matchGroups = value.match(regex_c2);
+		// console.log(matchGroups);
 		if(matchGroups && matchGroups.length > 0){
 			className = matchGroups[1] ? matchGroups[1] : undefined;
 			title = matchGroups[2] ? matchGroups[2] : undefined;
