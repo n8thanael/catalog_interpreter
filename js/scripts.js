@@ -73,6 +73,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a7d,'ßß$1\t$3');  // adds (ALT+225) - Sub Heading with Right Justify & Splits between Catalog Description and Catalog Required Courses )
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
+		string = string.replace(regex_a10,'ππ$1 $3\t$5');  // adds (ALT+227 - discovers if this is a "double-tabbed" [ABC1234\tTitle of Course\t#] course in the required courses and removes the first tab as well as spaces or something after the title)
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
 	var result = string;
@@ -179,7 +180,7 @@ function repairAnomalies(rawArray){
 	 *	"╒╒" = "subSUBheading";
 	 */
 	outputArray = [];
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','ππ'];
 	let thisLine = '';
 	let previousLine = '';
 	let nextLine = '';
@@ -398,6 +399,25 @@ function interpretProgramTemplateArray_e(rawArray){
 				}
 				count_paragraph = 0;
 				break;			
+			case 'ππ':
+				// COURSE LIST
+				text = rawArray[i].substr(2);
+				// does this line item have course numbers within?  How many?  Return the array
+				courseIds = processCourseIdsFromLineItem(text);
+				// need the merge button pushed to activate
+				if(Array.isArray(courseIds) && document.catalogObj.merge){
+					type = "list1_class";
+				} else {
+					type = "list1";
+				}
+				if(lc_layerA == 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_start_A"});}
+				// detect and reset the 2nd layer list since it was nested and another layer 1 line item appeared
+				if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+				lc_layerA++;  // increase list counter
+				  // reset counters		
+				lc_layerB = 0;
+				count_paragraph = 0;
+				break;
 			case '┌┌':
 				// list1
 				text = rawArray[i].substr(2);

@@ -180,25 +180,27 @@ function convertPrograms2HTML(string = ''){
 	let prep = '';
 	// didn't need this after all
 	// var agsTrad = document.querySelector("#ags_trad").innerHTML
-
-	Object.keys(progObj).forEach(function(major){
-		if(string == 'description'){
-			prep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
-			return prep;
-		} else if (string == 'course'){
-			prep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
-			return prep;
-		} else {
+    if(string == 'description'){
+   		Object.keys(progObj).forEach(function(major){
+			let descriptionPrep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
+			return descriptionPrep.substr(0, descriptionPrep.indexOf('<i split></i>'));
+		}); // end Object.keys().forEach loop
+	} else if (string == 'course'){
+   		Object.keys(progObj).forEach(function(major){
+			let coursePrep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
+			let pattern = '<i split></i>'; 
+			return coursePrep.substr(coursePrep.indexOf(pattern), pattern.length);
+		}); // end Object.keys().forEach loop
+    } else {
+   		Object.keys(progObj).forEach(function(major){
 			outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
 			let concObj = progObj[major]['Concentrations'];
 			Object.keys(concObj).forEach(function(concentration){
 				outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
 			});
-			// console.log(outputAll);
-    	}
-	}); // end Object.keys().forEach loop
-
-  return outputAll
+		}); // end Object.keys().forEach loop
+		return outputAll
+    }
 }
 
 
@@ -221,6 +223,7 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 			replace_2 = string.replace(regex_a7_single,'$2');
 			replace_3 = string.replace(regex_a7_single,'$3');
 		// regex_a7b: ╫╫
+		break;
 		case 'subheadingtotal':
 			replace_2 = string.replace(regex_a7b_single,'$2');
 			replace_3 = string.replace(regex_a7b_single,'$3');
@@ -240,12 +243,13 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
  		replace_2 = string.replace(regex_t1,'$2');
 		string = `<div class="contains_spans"><span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span></div>`;
 	} else if (string.includes('\t')){
+	    console.log(string);		
  		replace_1 = string.replace(regex_t1,'$1');
  		replace_2 = string.replace(regex_t1,'$2');
 		string = `<span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span>`;
 	}
 	// string is messed up here ... duplicating incorreclty
-	console.log(string);
+	// console.log(string);
 	return string;
 }
 

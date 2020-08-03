@@ -86,7 +86,7 @@ title_output_toggle.addEventListener( 'change', function() {
     }
 });
 
-function htmlToClipboard(){
+function HtmlToClipboard(){
     let updateStatus = document.getElementById("status").textContent; 
     let outputHTML = document.getElementById("catalog_interpreter_output").outerHTML;
     let temp = document.createElement("input");

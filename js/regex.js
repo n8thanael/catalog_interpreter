@@ -18,6 +18,7 @@ const regex_a7_single = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}
 const regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
 const regex_a7b_single = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a7d = /^(MAJOR)([\t]{0,2})([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/gm;  // Looking specifically for the word : ^MAJOR TAB and then some type of Number and Hours or Credits etc.
+const regex_a10 = /([A-Z]{3}[0-9]{4})([\t ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/()]*?)([\t ]*)([\d-\(\)]*)$/gm; // looks for the 2020 course numbers: ABC1234 and then for a [tab] - anytype of title then a [tab] and digit including a hypen if necessary
 
 const regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
 const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)[ \t]{0,3}$/;  // Single-line version of above
@@ -42,3 +43,5 @@ const regex_z6 = /([\s\S]*)( [a-zA-Z][a-z]{1,}- [a-z][a-z,]{1,} )([\s\S]*)/;
 const regex_z7 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[, \t]{1,4}[A-Z]))/gm; // this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
 const regex_t1 = /([\S ]*)[\t]([\S ]*)/; // discovers anything before and behind a tab (group1)[TAB](group2)
 const regex_ra1 = /^([\S ]*)(p. 32|p.32|p32)([\S])([\t\S ]*)/; // looks for any reference of page 32 in and groups the text as (group1)(pg32)(group3)(group4)end of line...
+
+const regex_t2 = /^(.*?)(<i split><\/i>)(.*)|(.*)/;  // discovers everthing before $1 <i split=""><\/i> and after $3 in order to separate the text by what regex_a7d tried to discover -- if it can't find the exact split ... it will still match ahd produce the entire string in group 4
