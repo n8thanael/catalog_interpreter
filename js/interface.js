@@ -87,8 +87,22 @@ title_output_toggle.addEventListener( 'change', function() {
 });
 
 function htmlToClipboard(){
+    let updateStatus = document.getElementById("status").textContent; 
+    let outputHTML = document.getElementById("catalog_interpreter_output").outerHTML;
+    let temp = document.createElement("input");
+    document.body.appendChild(temp);
+    temp.style.opacity = 0;
+    temp.setAttribute('value',outputHTML);
+    temp.select();
+    console.log(outputHTML);
+    document.execCommand("copy");
+    updateStatus = "HTML has been Copied.<br>" + updateStatus;
+    document.getElementById("status").innerHTML = updateStatus;
+}
+
+function descHtmlToClipboard(){
 	let updateStatus = document.getElementById("status").textContent; 
-	let outputHTML = document.getElementById("catalog_interpreter_output").outerHTML;
+	let outputHTML = document.getElementById("catalog_interpreter_output_description").outerHTML;
 	let temp = document.createElement("input");
 	document.body.appendChild(temp);
 	temp.style.opacity = 0;
@@ -98,4 +112,18 @@ function htmlToClipboard(){
 	document.execCommand("copy");
 	updateStatus = "HTML has been Copied.<br>" + updateStatus;
 	document.getElementById("status").innerHTML = updateStatus;
+}
+
+function courHtmlToClipboard(){
+    let updateStatus = document.getElementById("status").textContent; 
+    let outputHTML = document.getElementById("catalog_interpreter_output_course").outerHTML;
+    let temp = document.createElement("input");
+    document.body.appendChild(temp);
+    temp.style.opacity = 0;
+    temp.setAttribute('value',outputHTML);
+    temp.select();
+    console.log(outputHTML);
+    document.execCommand("copy");
+    updateStatus = "HTML has been Copied.<br>" + updateStatus;
+    document.getElementById("status").innerHTML = updateStatus;
 }

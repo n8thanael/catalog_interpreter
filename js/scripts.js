@@ -35,6 +35,8 @@ function interpretPrograms(){
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("status").innerHTML = reportPrograms();
 	document.getElementById("catalog_interpreter_output").innerHTML = convertPrograms2HTML();
+	document.getElementById("catalog_interpreter_output_description").innerHTML = convertPrograms2HTML('description');
+	document.getElementById("catalog_interpreter_output_course").innerHTML = convertPrograms2HTML('course');
 }
 
 function output(){
@@ -68,13 +70,14 @@ function interpretPaste_a(){
 		string = string.replace(regex_a7,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a7b,'╫╫$2\t$3');  // adds (ALT+215) - Sub Heading Total with Right Justify)
 		// string = string.replace(regex_a7c,'╓╓$1'); // adds (ALT+214) - SubHeading - Sub Heading With Left Justify, but no <SPAN> -- 
+		string = string.replace(regex_a7d,'ßß$1\t$3');  // adds (ALT+225) - Sub Heading with Right Justify & Splits between Catalog Description and Catalog Required Courses )
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
 	var result = string;
 
-	// console.log(result);
+	console.log(result);
 
     return result;
 }
@@ -170,12 +173,13 @@ function createProgramRawArray_d(string){
 function repairAnomalies(rawArray){
 	/*
 	 *	"██" = "heading";
+	 *	"ßß" = "subheading";
 	 *	"╪╪" = "subheading";
 	 *	"╫╫" = "subheadingtotal";
 	 *	"╒╒" = "subSUBheading";
 	 */
 	outputArray = [];
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß'];
 	let thisLine = '';
 	let previousLine = '';
 	let nextLine = '';
@@ -218,6 +222,7 @@ function repairAnomalies(rawArray){
 						pushOriginalLine = false;
 					}
 				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t') && !nextLine.includes('█')  && !nextLine.includes('╪')){
+					console.log(thisLine);
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
@@ -327,6 +332,20 @@ function interpretProgramTemplateArray_e(rawArray){
 				text = rawArray[i].substr(2);
 				type = "heading";
 				// a heading was discovered - this necessitates the end of both prior list layers
+				if(lc_layerA + lc_layerB > 0){
+					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
+					  // reset counters
+					lc_layerA = 0;
+					lc_layerB = 0;
+				}
+				count_paragraph = 0;
+				break;
+			case 'ßß':
+				// Sub Heading
+				text = rawArray[i].substr(2);
+				type = "subheading_split";
+				//  - this necessitates the end of both prior list layers
 				if(lc_layerA + lc_layerB > 0){
 					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
 					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
@@ -502,6 +521,8 @@ function interpretProgramTemplateArray_e(rawArray){
 			lc_layerB = 0;  // reset list counter
 		}
 	} // end of for loop
+
+	console.log(cleanArray);
 	return cleanArray
 }
 
@@ -943,7 +964,7 @@ function reportAlert(text,type){
 }
 
 function cleanOutAnyLineDesignationCodesRemaining(string){
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß'];
 	for(let i = 0; lineDesignationCodes.length > i; i++){
 		string = string.replace(lineDesignationCodes[i],"");
 	}

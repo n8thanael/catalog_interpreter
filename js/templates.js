@@ -174,22 +174,34 @@ function getCourseReference(courseId){
 	return reference;
 }
 
-function convertPrograms2HTML(){
+function convertPrograms2HTML(string = ''){
 	const progObj = document.catalogObj.programs;
 	let outputAll = '';
+	let prep = '';
 	// didn't need this after all
 	// var agsTrad = document.querySelector("#ags_trad").innerHTML
 
 	Object.keys(progObj).forEach(function(major){
-		outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
-		let concObj = progObj[major]['Concentrations'];
-		Object.keys(concObj).forEach(function(concentration){
-			outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
-		});
+		if(string == 'description'){
+			prep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
+			return prep;
+		} else if (string == 'course'){
+			prep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
+			return prep;
+		} else {
+			outputAll += majorAndConcentrationOutput(progObj[major]['cleanArray'], major)
+			let concObj = progObj[major]['Concentrations'];
+			Object.keys(concObj).forEach(function(concentration){
+				outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
+			});
+			// console.log(outputAll);
+    	}
 	}); // end Object.keys().forEach loop
 
   return outputAll
 }
+
+
 
 // This function receives all the lists and runs them back through various regex items so it can detect and inject HTML into the line item
 // this used to occure "further up" in the process...but HTML inject that early became a confusing process ... it was deemed it would make 
@@ -199,11 +211,15 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 	let replace_2 = '';
 	let replace_3 = '';
 	switch(type){
+		// "ßß";
+		case 'subheading_split':
+			replace_2 = string.replace(regex_a7d,'$1');
+			replace_3 = string.replace(regex_a7d,'$3');
+		break;
 		// "╪╪";
 		case 'subheading':
 			replace_2 = string.replace(regex_a7_single,'$2');
 			replace_3 = string.replace(regex_a7_single,'$3');
-		break;
 		// regex_a7b: ╫╫
 		case 'subheadingtotal':
 			replace_2 = string.replace(regex_a7b_single,'$2');
@@ -228,6 +244,8 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
  		replace_2 = string.replace(regex_t1,'$2');
 		string = `<span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span>`;
 	}
+	// string is messed up here ... duplicating incorreclty
+	console.log(string);
 	return string;
 }
 
@@ -242,6 +260,7 @@ function majorAndConcentrationOutput(array, major){
 	// console.log(array);
 /*
  *	"██" = "heading";
+ *	"ßß" = "subheading_split";
  *	"╪╪" = "subheading";
  *	"╫╫" = "subheadingtotal";
  *	"╒╒" = "subSUBheading";
@@ -277,6 +296,9 @@ function majorAndConcentrationOutput(array, major){
 				break;
 			case 'heading':
 				output_html += `<h3>${text}</h3>`;
+				break;
+			case 'subheading_split':
+				output_html += `<i split></i><h4>${text}</h4>`;
 				break;
 			case 'subheading':
 				output_html += `<h4>${text}</h4>`;
