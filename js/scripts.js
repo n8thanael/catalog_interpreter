@@ -17,6 +17,7 @@ if (typeof courseCatalog != "undefined") {
 }*/
 
 document.catalogObj = {};
+document.catalogObj.const = [];
 document.catalogObj.missingCoursesForMerge = [];
 var rawArray = [];
 
@@ -24,7 +25,7 @@ function interpretCourses(){
 	var objDump = interpretArray_c(interpretPaste_b(interpretPaste_a()));
 	// console.log(objDump);
 	document.getElementById("dump").innerHTML = JSON.stringify(objDump, null, 2);
-	document.getElementById("catalog_interpreter_output").innerHTML = convertCatalogObj2HTML();
+	document.getElementById("interpreter_all").innerHTML = convertCatalogObj2HTML();
 	document.getElementById("status").innerHTML = reportCourses();
 }
 
@@ -34,9 +35,9 @@ function interpretPrograms(){
 	//console.log(dump(objDump,'none'));
 	document.getElementById("dump").innerHTML = dump(objDump,'none');
 	document.getElementById("status").innerHTML = reportPrograms();
-	document.getElementById("catalog_interpreter_output").innerHTML = convertPrograms2HTML();
-	document.getElementById("catalog_interpreter_output_description").innerHTML = convertPrograms2HTML('description');
-	document.getElementById("catalog_interpreter_output_course").innerHTML = convertPrograms2HTML('course');
+	document.getElementById("interpreter_all").innerHTML = convertPrograms2HTML();
+	document.getElementById("interpreter_description").innerHTML = convertPrograms2HTML('description');
+	document.getElementById("interpreter_course").innerHTML = convertPrograms2HTML('course');
 }
 
 function output(){
@@ -77,9 +78,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
 	var result = string;
-
-	console.log(result);
-
+	// console.log(result);
     return result;
 }
 
@@ -223,7 +222,7 @@ function repairAnomalies(rawArray){
 						pushOriginalLine = false;
 					}
 				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t') && !nextLine.includes('█')  && !nextLine.includes('╪')){
-					console.log(thisLine);
+					// console.log(thisLine);
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
@@ -268,13 +267,13 @@ function repairAnomalies(rawArray){
 			}
 
 			if(newLine !== ''){
-				console.log('repairAnomalies() Triggered: ');
-				console.log('oldLine: ' + thisLine);
+				// console.log('repairAnomalies() Triggered: ');
+				// console.log('oldLine: ' + thisLine);
 				if(newLine[1] === '╪'){
 					newLine = newLine.toUpperCase();  // simply all subheadings should be capitalized - force this...
 				}
 				outputArray.push(newLine);
-				console.log('newLine: ' + newLine);
+				// console.log('newLine: ' + newLine);
 			}
 			// did we make it this far with the flag still being true?  Great - no anomalies so far...push the original line
 			if(pushOriginalLine){
@@ -541,8 +540,7 @@ function interpretProgramTemplateArray_e(rawArray){
 			lc_layerB = 0;  // reset list counter
 		}
 	} // end of for loop
-
-	console.log(cleanArray);
+	// console.log(cleanArray);
 	return cleanArray
 }
 

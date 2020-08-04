@@ -177,19 +177,15 @@ function getCourseReference(courseId){
 function convertPrograms2HTML(string = ''){
 	const progObj = document.catalogObj.programs;
 	let outputAll = '';
-	let prep = '';
-	// didn't need this after all
-	// var agsTrad = document.querySelector("#ags_trad").innerHTML
     if(string == 'description'){
    		Object.keys(progObj).forEach(function(major){
 			let descriptionPrep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
-			return descriptionPrep.substr(0, descriptionPrep.indexOf('<i split></i>'));
+			outputAll +=  descriptionPrep.replace(document.catalogObj.const.regex_t2, '$1');
 		}); // end Object.keys().forEach loop
 	} else if (string == 'course'){
    		Object.keys(progObj).forEach(function(major){
 			let coursePrep = majorAndConcentrationOutput(progObj[major]['cleanArray'], major);
-			let pattern = '<i split></i>'; 
-			return coursePrep.substr(coursePrep.indexOf(pattern), pattern.length);
+			outputAll += coursePrep.replace(document.catalogObj.const.regex_t2, '$2');
 		}); // end Object.keys().forEach loop
     } else {
    		Object.keys(progObj).forEach(function(major){
@@ -199,8 +195,8 @@ function convertPrograms2HTML(string = ''){
 				outputAll += majorAndConcentrationOutput(concObj[concentration]['cleanArray'], concentration)
 			});
 		}); // end Object.keys().forEach loop
-		return outputAll
     }
+    return outputAll;
 }
 
 
@@ -243,7 +239,7 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
  		replace_2 = string.replace(regex_t1,'$2');
 		string = `<div class="contains_spans"><span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span></div>`;
 	} else if (string.includes('\t')){
-	    console.log(string);		
+	    // console.log(string);		
  		replace_1 = string.replace(regex_t1,'$1');
  		replace_2 = string.replace(regex_t1,'$2');
 		string = `<span class="left_just">${replace_1}</span><span class="right_just">${replace_2}</span>`;

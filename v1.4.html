@@ -14,6 +14,7 @@
 	<script type="text/javascript" src="js/ags_1920_courses.json"></script>
 	<script type="text/javascript" src="js/courses.json"></script>
  	<script src="js/scripts.js"></script>
+ 	<script src="js/beautify-html.min.js"></script>
  	<div class="container">
  		<h1>| Catalog Interpreter ·•» v.1.4</h1>
 	    <div class="row">
@@ -54,25 +55,36 @@
 	    	<div class="col out">
 	    	<div id="output_options">
 		    	<div class="output_option">
-					    <label class="small switch">
+				    <label class="small switch">
 						  <input type="checkbox" name="title_output_toggle">
 					  <span class="slider round title_output"></span>
 					</label>
 					<div id="title_output_toggle_label" class="">Title</div>
 				</div>
+		    	<div class="output_option">
+				    <label class="small switch">
+						  <input type="checkbox" name="html_output_toggle">
+					  <span class="slider round html_output"></span>
+					</label>
+					<div id="html_output_toggle_label" class="">HTML</div>
+				</div>
 			</div>
-    			<button class="btn btn-success" id="copy_html" onclick="HtmlToClipboard()">Copy HTML</button>
-     			<hr>
-			    <div id="catalog_interpreter_output"></div>
-     			<hr>
-    			<button class="btn btn-success" id="copy_deschtml" onclick="descHtmlToClipboard()">Copy Description HTML</button>
-     			<hr>
-			    <div id="catalog_interpreter_output_description"></div>
-			    <hr>
-    			<button class="btn btn-success" id="copy_courhtml" onclick="courHtmlToClipboard()">Copy Courses HTML</button>
-     			<hr>
-			    <div id="catalog_interpreter_output_course"></div>
-     			<br>
+				<div id="all_html_controls" class="show">
+	    			<button class="btn btn-success" id="copy_html" onclick="htmlToClipboard('interpreter_all')">Copy HTML</button>
+	     			<hr>
+				    <div id="interpreter_all" class="catalog_interpreter_output"></div>
+	     			<hr>
+     			</div>
+				<div id="separate_html_controls" class="hide">
+	    			<button class="btn btn-success" id="copy_deschtml" onclick="htmlToClipboard('interpreter_description')">Copy Description HTML</button>
+	     			<hr>
+				    <div id="interpreter_description" class="catalog_interpreter_output"></div>
+				    <hr>
+	    			<button class="btn btn-success" id="copy_courhtml" onclick="htmlToClipboard('interpreter_course')">Copy Courses HTML</button>
+	     			<hr>
+				    <div id="interpreter_course" class="catalog_interpreter_output"></div>
+	     			<br>
+    			</div>
 	    	</div>
 	    </div>
 	    <div class="row">
