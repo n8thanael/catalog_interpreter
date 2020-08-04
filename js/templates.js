@@ -10,7 +10,7 @@ function convertCatalogObj2HTML(){
 			course_html = `
 			<div class="course error" id="course_${courseId}">
 				<div class="course_title"><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description" aria-expanded="false" aria-controls="#course_desc_${courseId}">ERROR: ${courseId}</a></div>
-				<div id="course_desc_${courseId}" class="collapse">${ courseErrorValue}</div>
+				<div id="course_desc_${courseId}" class="collapse">${courseErrorValue}</div>
 			</div>`;
 		} else {
 			course_html = renderCourseDescription(courseId,courseObjRef);
@@ -27,7 +27,7 @@ function convertCatalogObj2HTML(){
  * this allows for content to not "look" messed up in an error, but functionality is lost since the merge
  * request failed
  */
-function renderCourseDescription(courseIds,objRef = false,mergeText = ''){
+function renderCourseDescription(courseIds, objRef = false, mergeText = ''){
 	//console.log(courseId + " | " + objRef + " | " + mergeText); 
 	let flagMultipleCourseIds = false;
 	let courseId = '';
@@ -151,7 +151,7 @@ function renderMergedClasses(objRef,courseId,mergeText){
 	//<div class="h"></div><div class="v"></div>
 	course_html = `
 	<li class="course collapseable" id="course_${courseId}">
-		<div class="bullet"></div><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
+		<div class="bullet"></div><a data-toggle="collapse" href="#course_desc_${courseId}" aria-label="Expand course description for ${courseId}" onclick="return false;" aria-expanded="false" aria-controls="#course_desc_${courseId}">${mergeText}</span></a>
 		<div id="course_desc_${courseId}" class="collapse">
 			<div class="course_preDesc">${courseDescPre}</div>
 			<div class="course_postDesc">${courseDescPost}</div>
@@ -229,6 +229,11 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 			replace_2 = string.replace(regex_a8_single,'$2');
 			replace_3 = string.replace(regex_a8_single,'$3');
 		break;
+		// regex_ ?? ππ
+		case 'course':
+			replace_2 = string.replace(regex_a10,'$1 $3');
+			replace_3 = string.replace(regex_a10,'$5');
+		break;
 	}
 	if(replace_2 !== '' && replace_3 !== ''){
 		string = `<span class="left_just">${replace_2}</span><span class="right_just">${replace_3}</span>`;
@@ -264,6 +269,7 @@ function majorAndConcentrationOutput(array, major){
  *	"╪╪" = "subheading";
  *	"╫╫" = "subheadingtotal";
  *	"╒╒" = "subSUBheading";
+ *	"ππ" = "course";
  */
 	array.forEach(function(index){
 	let text = insertHTMLIntoTabSepartedListsAndHeadings(index.type,index.text);
@@ -288,10 +294,15 @@ function majorAndConcentrationOutput(array, major){
 			case 'list2':
 				document.catalogObj.merge ? output_html += `		<li class="non_collapseable"><div class="bullet"></div>${text}</li>` : output_html += `		<li>${text}</li>`;
 				break;
+			case 'course':
+				output_html += `	` + renderCourseDescription(index.courseIds,false,text);
+				break;
 			case 'list1_class':
+				console.log(text);
 				output_html += `	` + renderCourseDescription(index.courseIds,false,text);
 				break;
 			case 'list2_class':
+			    console.log(text);
 				output_html += `		` + renderCourseDescription(index.courseIds,false,text);
 				break;
 			case 'heading':

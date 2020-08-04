@@ -75,6 +75,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
 		string = string.replace(regex_a10,'ππ$1 $3\t$5');  // adds (ALT+227 - discovers if this is a "double-tabbed" [ABC1234\tTitle of Course\t#] course in the required courses and removes the first tab as well as spaces or something after the title)
+		// console.log(string);
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
 	var result = string;
@@ -400,12 +401,12 @@ function interpretProgramTemplateArray_e(rawArray){
 				break;			
 			case 'ππ':
 				// COURSE LIST
-				text = rawArray[i].substr(2);
+	   		    text = rawArray[i].substr(2);
 				// does this line item have course numbers within?  How many?  Return the array
 				courseIds = processCourseIdsFromLineItem(text);
 				// need the merge button pushed to activate
 				if(Array.isArray(courseIds) && document.catalogObj.merge){
-					type = "list1_class";
+					type = "course";
 				} else {
 					type = "list1";
 				}
@@ -416,6 +417,7 @@ function interpretProgramTemplateArray_e(rawArray){
 				  // reset counters		
 				lc_layerB = 0;
 				count_paragraph = 0;
+				console.log(text);
 				break;
 			case '┌┌':
 				// list1
