@@ -193,6 +193,7 @@ function repairAnomalies(rawArray){
 		let newLine = '';
 		// the string simply has to be over a certain size or its is redacted... there is no reason for "blanks" to travel through still 
 		if(rawArray[i].length > 3){
+			// console.log(rawArray[i]);
 			// load the this,previous,next lines for manipulation
 			thisLine = rawArray[i] ? rawArray[i].trim() : "";
 			previousLine = rawArray[i-1] ? rawArray[i-1].trim() : "";
@@ -211,20 +212,13 @@ function repairAnomalies(rawArray){
 						pushOriginalLine = false;
 					}
 				} else if(thisLine[thisLine.length -1] === ':'){
-					// wait, maybe the prior line actually needs united to this one...
-					// is the previous line relatively short?  Does the previous line also NOT have a tab?
-					if(previousLine.length < 100 && !previousLine.includes('\t')){
-						// make it a subSubheading ... and add this line to the previous one...
-						outputArray[outputArray.length -1] = '╒╒' + previousLine + " " + thisLine;
-						// nowLine should be "" which means it will simply not record this entry since it was appended to the last one... 
-						pushOriginalLine = false;
-					} else { 
-					// last character is a : -- designates a subheading most likely
-						newLine = '╒╒' + thisLine; // code this string for subheading processing
-						pushOriginalLine = false;
-					}
+					// finds insteances where ":" occures at the end of a string, but no line designations were found -- indidcating this is a heading of some type and needs upgraded as such
+					console.log('repairAnomalies() erased lines because line:::| ' + thisLine + ' |:::was flagged for repair');
+					// make it a subSubheading ... and add this line to the previous one...
+					let trimLine = previousLine + " " + thisLine;
+					newLine = '╒╒' + trimLine.trim();
+					pushOriginalLine = false;
 				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t') && !nextLine.includes('█')  && !nextLine.includes('╪')){
-					// console.log(thisLine);
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
@@ -290,9 +284,12 @@ function repairAnomalies(rawArray){
 				} else {
 					outputArray.push(rawArray[i]);					
 				}
-
+			} else{
+				console.log('repairAnomalies() changed:::| ' + rawArray[i] + ' |:::into:::| ' + newLine);
 			}
 
+		} else {
+			console.log('repairAnomalies() didn\'t touch line:::| ' + 'rawArray('+i+') ' + rawArray[i]);
 		}
 	}
 	return outputArray;
@@ -304,7 +301,9 @@ function repairAnomalies(rawArray){
 // the basis for the switch operations is in the function: interpretPaste_a()
 // this function separate allows for easier line-by-line checking in the rawArray prior vs. the cleanArray which is contained in the document.catalogObj by Program -> Concentration
 function interpretProgramTemplateArray_e(rawArray){
+	console.log(rawArray);
 	rawArray = repairAnomalies(rawArray);
+	console.log(rawArray);
 	// console.log(rawArray);
 	const cleanArray = [];
 	// enable complex list-counters
