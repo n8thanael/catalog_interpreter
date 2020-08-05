@@ -66,6 +66,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a3_specific,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
+		string = string.replace(regex_a10,'ππ$1 $3\t$5');  // adds (ALT+227 - discovers if this is a "double-tabbed" [ABC1234\tTitle of Course\t#] course in the required courses and removes the first tab as well as spaces or something after the title)
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
 		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217) = Sub List Item
 		string = string.replace(regex_a7,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
@@ -74,7 +75,6 @@ function interpretPaste_a(){
 		string = string.replace(regex_a7d,'ßß$1\t$3');  // adds (ALT+225) - Sub Heading with Right Justify & Splits between Catalog Description and Catalog Required Courses )
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
-		string = string.replace(regex_a10,'ππ$1 $3\t$5');  // adds (ALT+227 - discovers if this is a "double-tabbed" [ABC1234\tTitle of Course\t#] course in the required courses and removes the first tab as well as spaces or something after the title)
 		// console.log(string);
 		string = string.replace(regex_a_,"$1\n");  // wipes out bad artifacts between pages and includes a new line character
 	}
@@ -178,6 +178,7 @@ function repairAnomalies(rawArray){
 	 *	"╪╪" = "subheading";
 	 *	"╫╫" = "subheadingtotal";
 	 *	"╒╒" = "subSUBheading";
+	 *  'ππ' = 'course';
 	 */
 	outputArray = [];
 	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','ππ'];
