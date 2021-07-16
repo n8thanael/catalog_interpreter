@@ -18,11 +18,11 @@ const regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*
 const regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 const regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
 const regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
-const regex_a7_single = /^([ ~]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)[ \t]{0,3}$/;  // Single-line version of above
+const regex_a7_single = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
 const regex_a7b_single = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a7d = /^(MAJOR)([\t]{0,2})([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/gm;  // Looking specifically for the word : ^MAJOR TAB and then some type of Number and Hours or Credits etc.
-const regex_a10 = /([A-Z]{3}[0-9]{4})([\t ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/()]*?)([\t ]*)([\d-\(\)]*)$/gm; // looks for the 2020 course numbers: ABC1234 and then for a [tab] - anytype of title then a [tab] and digit including a hypen if necessary
+const regex_a10 = /([A-Z]{3}[0-9 ]{4})([\t ]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/()]*?)([\t ]*)([\d-\(\)]*)$/gm; // looks for the 2020 course numbers: ABC1234 and then for a [tab] - anytype of title then a [tab] and digit including a hypen if necessary
 
 const regex_a8 = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)(?=[\r\n])/gm;  // catches "Group Name[tab]99 Credits" simple line item
 const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[Ccredits]*)[ \t]{0,3}$/;  // Single-line version of above
@@ -38,8 +38,8 @@ const regex_e3 = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]{3,60})([ \t]*)([\d]{1,2}|\(
 const regex_e4 = /^[ ]*(\([\d] or [\d]\)|\([\d]{1,2}[\-\–][\d]{1,2}\))([ ]*[\r\n])([\s\S]*)/;  // TRAD catches (0 or 1)
 const regex_z1 = /[A-Z]{2,4}[0-9]{3,4}-[A-Z]{1,3}[A-Z]{0,1}|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,1}/; // looks for a course code
 const regex_z2 = /([\s\S]*\)[ ]{1,2}\d weeks)([ ]*)([A-Z]{1}[a-z]{3}[\s\S]*|A [a-z]{3}[\s\S]*)/;	
-const regex_z3 = /([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([  \t]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
-const regex_c2 = /^([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])[  \t]{1,3}([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120})(\s){0,1}/; // almost identical to above, but kinda needs differnt groups -- should be refactored at some point -- unsure why "/gm" needs to be removed at the end of the regex code - will need further inspection 
+const regex_z3 = /([A-Z]{2,4}[0-9 ]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])([  \t]{1,3})([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120}){0,1}/gm;// this regex finds the code and includes a look-head that will discover a title upto 3 spaces away, and groups results
+const regex_c2 = /^([A-Z]{2,4}[0-9 ]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1,4}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])[  \t]{1,3}([A-Z{1}][a-zA-Z\d *’'`.,&:\-\–\/() ]{3,120})(\s){0,1}/; // almost identical to above, but kinda needs differnt groups -- should be refactored at some point -- unsure why "/gm" needs to be removed at the end of the regex code - will need further inspection 
 
 const regex_z4 = /[ \t]*[\r\n]/gm; // find an unlimited amount of tabs or spaces prior to the return or newline characters
 const regex_z5 = /([\s\S]*[ ]{0,2})( [a-zA-Z][a-z]{1,}[ ]{0,3}[a-zA-Z][a-z]{1,} )([ ]{0,2}[\s\S]*)/;
