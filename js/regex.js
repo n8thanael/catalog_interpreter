@@ -13,7 +13,7 @@ const regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z, ]*Concentration[ ]*(?=[\r\n]))/gm; 
 //const regex_a3_specific = /^([ ]{0,3})(Concentration Courses|~~[a-zA-Z ]{0,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
 const regex_a3_specific = /^([ ]{0,3})(Concentration Courses)[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
 const regex_a3a = /^(~~[a-zA-Z*’'`.,&:\-\–\/ ]{0,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[CREDITScreditsHOUhou ]*[ ]{0,2})(?=[\r\n])/gm; // lines beginning with "~~" are forced to headings that justify a number to the right
-const regex_a3b = /^(~~~[a-zA-Z ]{0,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2})(?=[\r\n])/gm; // lines beginning with "~~~" are forced to subheadings that justify a number to the right
+const regex_a3b = /^(~~~[a-zA-Z\- ]{0,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ CEDTHOURShours]{0,8})(?=[\r\n])/gm; // lines beginning with "~~~" are forced to subheadings that justify a number to the right
 const regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*|Major [a-zA-Z ]*|Available [a-zA-Z ]*Courses|The [a-zA-Z\d- ]*Policy|General[a-zA-Z ]*Requirements|[a-zA-Z ]*?Objectives[: \t]*|[a-zA-Z ]*?Objective[: \t]*|[ ]*Completion[ ]*|[ ]*Cost[ ]*|[ ]*Admission Requirements[ ]*([\r\n]))/gm; // looking for headings
 const regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 const regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...

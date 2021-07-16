@@ -63,7 +63,7 @@ function interpretPaste_a(){
 		string = fixDoubleSpacesBetweenWords(string);
 		string = trimSpacesBeforeReturnCharacters(string);
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
-		console.log(string);
+		// console.log(string);
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a3_specific,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a3a,'╪╪$1\t$2');  // adds (ALT+216) - Sub Heading with Right Justify)
@@ -207,14 +207,14 @@ function repairAnomalies(rawArray){
 			nextLine = rawArray[i+1] ? rawArray[i+1].trim() : "";
 			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because
 			// they are probably a well-formatted paragraph.
-			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
+			if(rawArray[i].length < 40 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
 				console.log('repairAnomalies() fired because line:::| ' + rawArray[i] + ' doesn\'t contain a lineDesignationCodes[]');
 				if(thisLine.includes('\t')){
 					// contains a tab - it maybe a credit list item
 					if(previousLine[1] === '┌'){
 						newLine = '┌┌' + thisLine; // continue the list
 						pushOriginalLine = false;
-					} else if(thisLine.length < 50 && thisLine.includes('\t') && (nextLine.includes('┌') || nextLine.includes('╒'))){
+					} else if(thisLine.length < 40 && thisLine.includes('\t') && (nextLine.includes('┌') || nextLine.includes('╒'))){
 						// this line contains a tab, is short and comes before either a list or a subSubheading... it's probobly a heading of sometype...
 						newLine = '╪╪' + thisLine; // Make this a Subheading.
 						pushOriginalLine = false;
@@ -226,7 +226,7 @@ function repairAnomalies(rawArray){
 					let trimLine = previousLine + " " + thisLine;
 					newLine = '╒╒' + trimLine.trim();
 					pushOriginalLine = false;
-				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 50) && nextLine.includes('\t') && !thisLine.includes('\t') && !nextLine.includes('█')  && !nextLine.includes('╪')){
+				} else if((thisLine[thisLine.length -1] === ',' || thisLine.length < 40) && nextLine.includes('\t') && !thisLine.includes('\t') && !nextLine.includes('█')  && !nextLine.includes('╪')){
 					// last character is a comma
 					// or the line is less than 49
 					// AND the next line includes a tab
@@ -441,7 +441,7 @@ function interpretProgramTemplateArray_e(rawArray){
 				  // reset counters		
 				lc_layerB = 0;
 				count_paragraph = 0;
-				console.log(text);
+				// console.log(text);
 				break;
 			case '┌┌':
 				// list1
