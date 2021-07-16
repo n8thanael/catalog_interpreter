@@ -216,7 +216,6 @@ function insertHTMLIntoTabSepartedListsAndHeadings(type,string){
 		break;
 		// "╪╪";
 		case 'subheading':
-			console.log(string);
 			replace_2 = string.replace(regex_a7_single,'$2');
 			replace_3 = string.replace(regex_a7_single,'$3');
 		// regex_a7b: ╫╫
