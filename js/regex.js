@@ -18,7 +18,8 @@ const regex_a4 = /^[ ]{0,3}([0-9]{1,3} Semester Credits|Concentration [a-zA-Z ]*
 const regex_a5 = /(•[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (•)
 const regex_a6 = /(»[ \t]*)([\S ]*(?=\n))/gm; // looking for bullet point lists: (») which indicates a list inside a list...
 const regex_a7 = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "GROUP NAME[tab]99 CREDITS" - sub heading
-const regex_a7_single = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)[ \t]{0,3}$/;  // Single-line version of above
+//const regex_a7_single = /^([ ]{0,3})([A-Z \d *’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)[ \t]{0,3}$/;  // Single-line version of above
+const regex_a7_single = /^([ ]{0,3})([a-zA-Z \d ~*’'`.,&:\-\–\/()]{6,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a7b = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)(?=[\r\n])/gm;  // catches "PROGRAM TOTAL[tab]999 CREDITS | Total[tab]9Credit Hours" - sub heading
 const regex_a7b_single = /^([ ]{0,3})([PROGAMrogamTLtl ]{5,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/;  // Single-line version of above
 const regex_a7d = /^(MAJOR)([\t]{0,2})([ ]{0,}[\d]{1,3}[-\d]{0,3}[ ]{0,2}[CREDITScredits ]*|[ ]{0,}[\d]{1,3}[-\d]{0,3}[ ]{0,2}[CREDITScreditsHOUhou ]*)[ \t]{0,3}$/gm;  // Looking specifically for the word : ^MAJOR TAB and then some type of Number and Hours or Credits etc.
