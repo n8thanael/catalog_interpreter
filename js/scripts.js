@@ -73,6 +73,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a7b,'╫╫$2\t$3');  // adds (ALT+215) - Sub Heading Total with Right Justify)
 		// string = string.replace(regex_a7c,'╓╓$1'); // adds (ALT+214) - SubHeading - Sub Heading With Left Justify, but no <SPAN> -- 
 		string = string.replace(regex_a7d,'ßß$1\t$3');  // adds (ALT+225) - Sub Heading with Right Justify & Splits between Catalog Description and Catalog Required Courses )
+		string = string.replace(regex_a3b,'╜╜$1\t$2');  // adds (ALT+189) - Looking for >> over-ride Sub Headings with Right Justify & Splits between Catalog Description and Catalog Required Courses )
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
 		// console.log(string);
@@ -178,10 +179,11 @@ function repairAnomalies(rawArray){
 	 *	"╪╪" = "subheading";
 	 *	"╫╫" = "subheadingtotal";
 	 *	"╒╒" = "subSUBheading";
+	 *	"╜╜" = "subSUBheading";
 	 *  'ππ' = 'course';
 	 */
 	outputArray = [];
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','ππ'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','ππ','╜╜'];
 	let thisLine = '';
 	let previousLine = '';
 	let nextLine = '';
@@ -201,6 +203,7 @@ function repairAnomalies(rawArray){
 			// we should simply send long 50+ character strings back into the array if they do not contain one of the lineDesignationCodes because
 			// they are probably a well-formatted paragraph.
 			if(rawArray[i].length < 50 && !lineDesignationCodes.some(substring=>thisLine.includes(substring))){
+				console.log('repairAnomalies() fired because line:::| ' + rawArray[i] + ' doesn\'t contain a lineDesignationCodes[]');
 				if(thisLine.includes('\t')){
 					// contains a tab - it maybe a credit list item
 					if(previousLine[1] === '┌'){
@@ -232,18 +235,20 @@ function repairAnomalies(rawArray){
 					pushOriginalLine = false;
 					i++;
 				}
-			} else {
-				// If this line is here, it must not have a lineDesignationCode yet
+			} else if(!lineDesignationCodes.some(substring=>thisLine.includes(substring))) {
+				// If this line is here, it shouldn't have a lineDesignationCode
 				// Also, it potentially may also end in a ":" and it doesn't contain a [TAB] character
 				// which builds the case that we need this line to be a subSubHeading
 				if(thisLine[thisLine.length -1] === ':' && !thisLine.includes('\t') && !thisLine.includes('╒') && thisLine.length < 100){
 					newLine = '╒╒' + thisLine; // code this string for subheading processing
+					console.log('repairAnomalies() Found a colon and made this line :::| ' + rawArray[i] + ' a subheading:::| ' + newLine);
 					pushOriginalLine = false;
 				// IF ... it DOES contain a [TAB] character does this line have a Course Code? - if not, then let's grant it [TAB] processing as a heading...
 				} else if(thisLine[thisLine.length -1] === ':' && thisLine.length < 100 && !thisLine.includes('╒')){
 					// if it doesn't contain the course code... set the line as a subSUBheading to process it
 					if(!foundCourseId(thisLine)){
 						newLine = '╒╒' + thisLine; // code this string for subheading processing with a tab
+					    console.log('repairAnomalies() Found a colon and made this line :::| ' + rawArray[i] + ' a subheading:::| ' + newLine);
 						pushOriginalLine = false;
 					} else {
 						// it contains a course code...leave it as a paragraph.
@@ -346,6 +351,20 @@ function interpretProgramTemplateArray_e(rawArray){
 				// Sub Heading
 				text = rawArray[i].substr(2);
 				type = "subheading_split";
+				//  - this necessitates the end of both prior list layers
+				if(lc_layerA + lc_layerB > 0){
+					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
+					if(lc_layerA > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_A"});}
+					  // reset counters
+					lc_layerA = 0;
+					lc_layerB = 0;
+				}
+				count_paragraph = 0;
+				break;
+			case '╜╜':
+				// Sub Heading
+				text = rawArray[i].substr(2);
+				type = "subSUBheading";
 				//  - this necessitates the end of both prior list layers
 				if(lc_layerA + lc_layerB > 0){
 					if(lc_layerB > 0){cleanArray.splice(lastGoodIndex,0,{'text':'','type':"lc_end_B"});}
@@ -463,6 +482,7 @@ function interpretProgramTemplateArray_e(rawArray){
 				} else {
 					//simply fix any lines at this point that lead or end with spaces 
 					rawArray[i] = rawArray[i].trim();
+					console.log(rawArray[i]);
 					// find and strip any odd characters from the text as well as throw an error, but continue processing
 					if (rawArray[i].search(/[¡█┌┘]{1,}/) !== -1){
 						cleanArray.push({'text':rawArray[i],'type':"error"});
@@ -486,6 +506,7 @@ function interpretProgramTemplateArray_e(rawArray){
 						// there are more than 1 detected "paragraphs" in a row... accumulate text to the prior one
 						// include a "caution"
 						} else {
+							console.log('CAUTION: ' + rawArray[i]);
 							caution = true;
 							// it's possible that there were junk lines splitting up paragraphs ... include junk counter
 							if(cleanArray[lastGoodIndex-1].type == "paragraph"){
@@ -495,6 +516,7 @@ function interpretProgramTemplateArray_e(rawArray){
 								type = "caution";
 								text = rawArray[i];
 							} else {
+								console.log('ERROR: ' + rawArray[i]);
 								caution = false;
 								error = true;
 								type = "error";
@@ -503,6 +525,7 @@ function interpretProgramTemplateArray_e(rawArray){
 						}
 					} else {
 						type = "unknown";
+						console.log('unknown: ' + rawArray[i]);
 						text = rawArray[i];
 						if(lc_layerA > 0){cleanArray.push({'text':'','type':"lc_end_A"});}
 						if(lc_layerB > 0){cleanArray.push({'text':'','type':"lc_end_B"});}
@@ -542,7 +565,7 @@ function interpretProgramTemplateArray_e(rawArray){
 			lc_layerB = 0;  // reset list counter
 		}
 	} // end of for loop
-	// console.log(cleanArray);
+	console.log(cleanArray);
 	return cleanArray
 }
 
@@ -984,7 +1007,7 @@ function reportAlert(text,type){
 }
 
 function cleanOutAnyLineDesignationCodesRemaining(string){
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','╜╜','>>'];
 	for(let i = 0; lineDesignationCodes.length > i; i++){
 		string = string.replace(lineDesignationCodes[i],"");
 	}

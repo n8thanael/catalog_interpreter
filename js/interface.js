@@ -7,11 +7,13 @@ var merge_toggle = document.querySelector("input[name=toggle_merge]");
 var merge_toggle_switch = document.querySelector("label.switch.toggle_merge");
 var title_output_toggle = document.querySelector("input[name=title_output_toggle]");
 var html_output_toggle = document.querySelector("input[name=html_output_toggle]");
+var unknown_output_toggle = document.querySelector("input[name=unknown_output_toggle]");
 var all_html_controls = document.getElementById("all_html_controls");
 var separate_html_controls = document.getElementById("separate_html_controls");
 document.catalogObj.merge = false;
 document.catalogObj.title_output_toggle = true;
 document.catalogObj.html_output_toggle = true;
+document.catalogObj.unknown_output_toggle = true;
 
 
 // default settings:
@@ -55,6 +57,7 @@ var toggle_ags_trad = document.querySelector("input[name=toggle_ags_trad]");
 var ags_trad_button = document.querySelector("#ags_trad");
 var title_output_toggle_label = document.querySelector("#title_output_toggle_label");
 var html_output_toggle_label = document.querySelector("#html_output_toggle_label");
+var unknown_output_toggle_label = document.querySelector("#unknown_output_toggle_label");
 
 toggle_ags_trad.addEventListener( 'change', function() {
     if(this.checked) {
@@ -105,6 +108,19 @@ title_output_toggle.addEventListener( 'change', function() {
     }
 });
 
+unknown_output_toggle.addEventListener( 'change', function() {
+    if(this.checked) {
+        document.catalogObj.unknown_output_toggle = true;
+        unknown_output_toggle_label.classList.add("off");
+        programButton.classList.add("and_merge");
+        console.log('unknown_output_toggle on');
+    } else {
+        document.catalogObj.unknown_output_toggle = false;
+        unknown_output_toggle_label.classList.remove("off");
+        console.log('unknown_output_toggle off');
+    }
+});
+
 html_output_toggle.addEventListener( 'change', function() {
     if(this.checked) {
         all_html_controls.classList.add('hide');
@@ -124,6 +140,7 @@ html_output_toggle.addEventListener( 'change', function() {
         console.log('html_output_toggle off');
     }
 });
+
 
 function htmlToClipboard(targetId = ''){
     let updateStatus = document.getElementById("status").textContent; 

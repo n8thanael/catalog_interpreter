@@ -269,6 +269,7 @@ function majorAndConcentrationOutput(array, major){
  *	"╪╪" = "subheading";
  *	"╫╫" = "subheadingtotal";
  *	"╒╒" = "subSUBheading";
+ *	'╜╜' = "subSUBheading";
  *	"ππ" = "course";
  */
 	array.forEach(function(index){
@@ -323,11 +324,12 @@ function majorAndConcentrationOutput(array, major){
 			case 'paragraph':
 				output_html += `<p>${text}</p>`;
 				break;
-/*				
 			case 'unknown':
-				output_html += `<p>${text}</p>`;
+				if(!document.catalogObj.unknown_output_toggle){
+					output_html += `<p>${text}</p>`;
+				}
 				break;
-*/
+
 			// console.log(index);
 		}
 	});// end of array.forEach

@@ -83,15 +83,15 @@ input:focus + .slider.ags_trad {
   box-shadow: 0 0 1px #007bff;
 }
 
-.slider.debug, .slider.title_output, .slider.html_output{
+.slider.debug, .slider.title_output, .slider.html_output, .slider.unknown_output, {
   background-color: grey;
 }
 
-input:checked + .slider.debug, input:checked + .slider.title_output, input:checked + .slider.html_output  {
+input:checked + .slider.debug, input:checked + .slider.title_output, input:checked + .slider.html_output, input:checked + .slider.unknown_output  {
   background-color: black;
 }
 
-input:focus + .slider.debug, input:focus + .slider.title_output, input:focus + .slider.html_output {
+input:focus + .slider.debug, input:focus + .slider.title_output, input:focus + .slider.html_output, input:focus + .slider.unknown_output {
   box-shadow: 0 0 1px black;
 }
 
