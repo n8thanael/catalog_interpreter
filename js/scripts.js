@@ -65,6 +65,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a3_specific,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
+		string = string.replace(regex_a3a,'╪╪$1\t$2');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a4,'██$1');  // adds (ALT+219) - Heading
 		string = string.replace(regex_a10,'ππ$1 $3\t$5');  // adds (ALT+227 - discovers if this is a "double-tabbed" [ABC1234\tTitle of Course\t#] course in the required courses and removes the first tab as well as spaces or something after the title)
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
@@ -73,7 +74,7 @@ function interpretPaste_a(){
 		string = string.replace(regex_a7b,'╫╫$2\t$3');  // adds (ALT+215) - Sub Heading Total with Right Justify)
 		// string = string.replace(regex_a7c,'╓╓$1'); // adds (ALT+214) - SubHeading - Sub Heading With Left Justify, but no <SPAN> -- 
 		string = string.replace(regex_a7d,'ßß$1\t$3');  // adds (ALT+225) - Sub Heading with Right Justify & Splits between Catalog Description and Catalog Required Courses )
-		string = string.replace(regex_a3b,'╜╜$1\t$2');  // adds (ALT+189) - Looking for >> over-ride Sub Headings with Right Justify & Splits between Catalog Description and Catalog Required Courses )
+		string = string.replace(regex_a3b,'╜╜$1\t$2');  // adds (ALT+189) - Looking for ~~~ over-ride Sub Headings with Right Justify & Splits between Catalog Description and Catalog Required Courses )
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
 		// console.log(string);
@@ -183,7 +184,7 @@ function repairAnomalies(rawArray){
 	 *  'ππ' = 'course';
 	 */
 	outputArray = [];
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','ππ','╜╜'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','ππ','╜╜','~~~','~~'];
 	let thisLine = '';
 	let previousLine = '';
 	let nextLine = '';
@@ -482,7 +483,7 @@ function interpretProgramTemplateArray_e(rawArray){
 				} else {
 					//simply fix any lines at this point that lead or end with spaces 
 					rawArray[i] = rawArray[i].trim();
-					console.log(rawArray[i]);
+					// console.log(rawArray[i]);
 					// find and strip any odd characters from the text as well as throw an error, but continue processing
 					if (rawArray[i].search(/[¡█┌┘]{1,}/) !== -1){
 						cleanArray.push({'text':rawArray[i],'type':"error"});
@@ -1007,10 +1008,11 @@ function reportAlert(text,type){
 }
 
 function cleanOutAnyLineDesignationCodesRemaining(string){
-	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','╜╜','>>'];
+	let lineDesignationCodes = ['▌▌','▄▄','██','┌┌','┘┘','╪╪','╫╫','╒╒','╘╘','ßß','╜╜','~~~','~~'];
 	for(let i = 0; lineDesignationCodes.length > i; i++){
 		string = string.replace(lineDesignationCodes[i],"");
 	}
+	// console.log(string);
 	return string;
 }
 
