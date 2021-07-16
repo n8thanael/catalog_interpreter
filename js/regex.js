@@ -7,7 +7,7 @@
 const regex_d = /^([a-zA-Z\d *’'`.,&:\-\–\/() ]*)(\([\w\d ]*\))([\d ]* weeks| week)$/;
 // var regex_pa_c1 = /^([ ]{0,3}[A-Z\t: ]{6,}[\r\n])([\s\S]*)/;  // finds the program name as group 1, extracts everything else as group 2 ----> AGS ONLY
 const regex_a1 = /^[ ]{0,3}([A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}-[A-Z]{1,3}(?=[ \t]{1}[A-Z])|[A-Z]{2,4}[0-9]{3,4}[A-Z]{0,3}(?=[ \t]{1}[A-Z])|[A-Z]{2} \| [A-Z ]{2,20}[\r\n])/gm;	// First-in line Code identification that looks ahead for tab or space
-const regex_a2 = /^[ ]{0,3}(([A-Z]{2} in [a-zA-Z&-() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&-() ]{6,40}(?=\n)|[A-Z:\-() ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
+const regex_a2 = /^[ ]{0,3}(([A-Zed]{2,4} in [a-zA-Z&-() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&-() ]{6,40}(?=\n)|[A-Z:\-() ]{6,}|[A-Zed]{2,4} in [A-Z]{1}[a-zA-Z&() ]{6,})(?=[\r\n]))/gm; // looking for MAJORS / Program Names for TRAD and AGS
 const regex_a3 = /^[ ]{0,3}([A-Z]{1}[a-zA-Z, ]*Concentration[ ]*(?=[\r\n]))/gm; // Looking for Concentrations
 // made it possible to add a ">" before a line that has "Words and Words/t#" -- this forces the line into a subheading
 //const regex_a3_specific = /^([ ]{0,3})(Concentration Courses|~~[a-zA-Z ]{0,})[\t]{0,2}([ ]{0,}[\d]{1,3}[-\d]{0,2}[ ]{0,2}[CREDITScreditsHOUhou ]*|[ ]{0,}[\d]{1,3}[ ]{0,2}[HOURShours ]*)(?=[\r\n])/gm;  // catches "Concentration Courses[tab]99 CREDITS" - sub heading
@@ -29,7 +29,7 @@ const regex_a8_single = /^([ ]{0,3})([A-Za-z \d *’'`.,&:\-\–\/()]{6,})[\t]{0
 const regex_a9 = /^[ ]{0,3}((Required|Remaining)[a-zA-Z\d *’'`.,&:\-\–\/() ]*(Requirements|Courses)[: ]*(?!\t))(?=[\r\n])/gm; // looking for headings
 const regex_a_ = /(([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n))[\S ]{1,}([ ]{0,}(\r\n|\n)[ ]{0,}(\r\n|\n)))/gm;  // catches straggling lines that are page artifacts between pages
 
-const regex_pa_c1 = /^([ ]{0,3}[A-Z]{2} in [a-zA-Z&\-() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&\-() ]{6,40}(?=\n)|[A-Z\t:\-() ]{6,}|[A-Z]{2} in [A-Z]{1}[a-zA-Z&\-() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names Majors as group 1 (including a /r/n), extracts everything else as group 2
+const regex_pa_c1 = /^([ ]{0,3}[A-Zed]{2,4} in [a-zA-Z&\-() ]{6,}[\r\n]{1}(and |[A-Z]{1}[a-z]{2,} )[A-Z]{1}[a-zA-Z&\-() ]{6,40}(?=\n)|[A-Z\t:\-() ]{6,}|[A-Zed]{2,4} in [A-Z]{1}[a-zA-Z&\-() ]{6,}[\r\n])([\s\S]*)/;  //finds the TRAD and AGS program names Majors as group 1 (including a /r/n), extracts everything else as group 2
 const regex_pa_c2 = /^([ ]{0,3}██[\da-zA-Z()-: ]{5,}[\r\n])([\s\S]*)/gm; // separates the major's title from the rest of the raw text
 const regex_pa_c3 = /([ ]{0,3}[A-Z]{1}[a-zA-Z, ]*Concentration)([\r\n]*)([\s\S]*)/; // separates the concentration tile from the rest of the raw text 
 const regex_e1 = /^[\d]{1,2}[ ]{0,3}[\r\n]{1}/; // TRAD catches 1-2 credit digits

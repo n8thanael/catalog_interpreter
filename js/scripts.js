@@ -63,6 +63,7 @@ function interpretPaste_a(){
 		string = fixDoubleSpacesBetweenWords(string);
 		string = trimSpacesBeforeReturnCharacters(string);
 		string = string.replace(regex_a2,'▌▌$1');  // adds (ALT+221) - MAJOR / Program Names
+		console.log(string);
 		string = string.replace(regex_a3,'▄▄$1');  // adds (ALT+220) - Concentration
 		string = string.replace(regex_a3_specific,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a3a,'╪╪$1\t$2');  // adds (ALT+216) - Sub Heading with Right Justify)
@@ -85,13 +86,15 @@ function interpretPaste_a(){
     return result;
 }
 
+
+
 /*
  *	.split('▐▐') and .split('▌▌') breaks up the content in a raw array depending on the mode selected
  */
 function interpretPaste_b(paste){
 	var array = [];
     string = paste;		
-    
+    // console.log(string);
 	if(document.catalogObj.mode == "courses"){
 		var array = string.split('▐▐');
 		document.catalogObj.rawCourses = array;
@@ -106,6 +109,8 @@ function interpretPaste_b(paste){
 		}
 	}
 }
+
+
 
 // sets up all the concentration arrays and raw text within
 function interpretProgramArray_c(){
@@ -158,7 +163,6 @@ function interpretProgramArray_c(){
 			document.catalogObj.programs[major] = thisMajor;
 		}
 	}
-
 	return document.catalogObj.programs;
 }
 
