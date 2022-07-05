@@ -146,6 +146,9 @@ function htmlToClipboard(targetId = ''){
     let updateStatus = document.getElementById("status").textContent; 
     document.addEventListener('copy', function(e){
       var text = html_beautify(document.getElementById(targetId).outerHTML.toString());
+      text = text.replace('id="' + targetId + '" ','');
+      console.log(text);
+      // we don't want to carry over the targetId from the tool interface
       e.clipboardData.setData('text/plain', text);
       e.preventDefault();
     });
