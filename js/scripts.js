@@ -71,10 +71,11 @@ function interpretPaste_a(){
 		string = string.replace(regex_a10,'ππ$1 $3\t$5');  // adds (ALT+227 - discovers if this is a "double-tabbed" [ABC1234\tTitle of Course\t#] course in the required courses and removes the first tab as well as spaces or something after the title)
 		string = string.replace(regex_a5,'┌┌$2');  // adds (ALT+218) - List Item
 		string = string.replace(regex_a6,'┘┘$2');  // adds (ALT+217) = Sub List Item
-		string = string.replace(regex_a7,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
-		string = string.replace(regex_a7b,'╫╫$2\t$3');  // adds (ALT+215) - Sub Heading Total with Right Justify)
+		/*  PROGRAM used to be the sub-heading under MAJOR, this was removed and replaced with "Core" recently, these codes catched that. */
+		//string = string.replace(regex_a7b,'╫╫$2\t$3');  // adds (ALT+215) - Sub Heading Total with Right Justify)
 		// string = string.replace(regex_a7c,'╓╓$1'); // adds (ALT+214) - SubHeading - Sub Heading With Left Justify, but no <SPAN> -- 
 		string = string.replace(regex_a7d,'ßß$1\t$3');  // adds (ALT+225) - Sub Heading with Right Justify & Splits between Catalog Description and Catalog Required Courses )
+		string = string.replace(regex_a7,'╪╪$2\t$3');  // adds (ALT+216) - Sub Heading with Right Justify)
 		string = string.replace(regex_a3b,'╜╜$1\t$2');  // adds (ALT+189) - Looking for ~~~ over-ride Sub Headings with Right Justify & Splits between Catalog Description and Catalog Required Courses )
 		string = string.replace(regex_a9,'╒╒$1\n'); // adds (ALT+213) - Sub>SUBHeading - Sub>SUB Heading With Left Justify - almost insignificant 
 		string = string.replace(regex_a8,'┌┌$2\t$3');  // adds (ALT+218 - Bullet-point enabled lists with Right Justify)
