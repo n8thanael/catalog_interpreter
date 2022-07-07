@@ -10,6 +10,46 @@ This program is designed to:
 Catalog Interpreter ·•» v.1.4
 5.)  Eventually to create an XML output of sometype 
 
+How to use:
+1.)  Transform word document text into plain text by copy/pasting or whatever
+2.)  Paste this first into the interpreter: when it is in default ([X] Interpret Courses, [X] AGS )
+ACC2020	Accounting I	3
+The double-entry system of bookkeeping and the basic accounting cycle, including communicating financial information according to generally accepted accounting principles.
+Prerequisite: MAT1250 or higher
+ACC2050	Accounting Information Systems	3
+Implementation and management of automated accounting systems, with an emphasis on internal controls and information accuracy.
+Prerequisite: ACC2020
+ACC2300	Individual Income Taxation	3
+Federal tax laws and their impact on individuals, estates, and trusts, including tax return preparation.
+ACC2460	Accounting Software Applications	3
+This hands-on course introduces students to the use of computerized accounting software for a small business. Topics include setting up a new company, creating a chart of accounts, recording banking, customer, and vendor transactions, using inventory, recording payroll, making adjusting entries, and generating financial statements and management reports.  
+Prerequisite: ACC2020
+ACC2620	Accounting for Managers	3
+This course introduces students to the accounting concepts and procedures used by managers to make strategic business and financial decisions in a company. The course has two components: financial accounting and managerial accounting. Throughout the course, an emphasis will be placed on the ethical issues involved in preparing, analyzing, and using accounting information in managerial decision-making and performance evaluation.
+3.) You'll see the courses are processed without errors and you can inspect them
+4.) Toggle ([ ] Interpret Courses, and [X] Interpret Programs & Merge)
+5.)  Paste this in next:
+AA in Business
+The Associate of Arts in Business equips students with basic skills in essential business areas. The integration of a Christian worldview ensures that the education is morally and ethically grounded.
+Objectives:
+•	Explain how the four functions of management can be addressed through the Christian worldview.
+•	Discuss market segmentation and targeting using the 7 P’s (product, price, place, promotion, packaging, positioning, and people) of marketing.
+•	Illustrate data used by decision-makers in today’s business environments.
+•	Develop the entrepreneurial decision-making process from research to business plan creation.
+MAJOR	27 Hours
+ACC2020	Accounting I	3
+ACC2050	Accounting Information Systems	3
+BUS2070	Macroeconomics	3
+ACC2300	Individual Income Taxation	3
+ACC2460	Accounting Software Applications	3
+ACC2620	Accounting for Managers	3
+Electives in ACC, BUS, FIN, LDR, or MKT 	3
+Anything else that needs to go  	3
+*You can put additional text in various forms as needed in many different ways.
+6.)  Press the button: Interpret Programs & Merge
+7.)  You'll notice it discovers which courses match and which don't.  It also Separates the data when it sees 'MAJOR\t27 Hours' as well as creates HTML for various headings and bootstrap-capable dropdowns.
+8.)  This project could use lots more documentation, but IDK if anyone else will ever use it - I think I'll "bake" it into the most current Python/Django as an application that helps the Database information get processed.
+
 
 >>>>>  Processing Processes
 Functionality:  -  Begin in scripts.js
